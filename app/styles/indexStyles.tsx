@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
 
   marker: {
     backgroundColor: "#276389",
-    padding: 2,
+    padding: 20,
     borderRadius: 20,
     elevation: 5,
   },
@@ -69,6 +69,11 @@ export const styles = StyleSheet.create({
     fontFamily: "Pacifico_400Regular",
   },
 
+  body: {
+    fontSize: 18,
+    fontFamily: "Lexend_400Regular",
+  },
+
   userCircle: {
     width: 45,
     height: 45,
@@ -81,9 +86,9 @@ export const styles = StyleSheet.create({
   mapWrapper: {
     flex: 1,
     margin: 20,
-    borderRadius: 20,
     overflow: "hidden",
     backgroundColor: "#ddd",
+    borderRadius: 20,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -115,11 +120,5 @@ export const styles = StyleSheet.create({
 
   navItem: {
     alignItems: "center",
-  },
-
-  navText: {
-    fontSize: 12,
-    marginTop: 4,
-    color: "#888",
   },
 });
