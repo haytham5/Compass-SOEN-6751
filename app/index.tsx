@@ -1,5 +1,4 @@
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
-import AppLoading from "expo-app-loading";
 import * as NavigationBar from "expo-navigation-bar";
 import { useEffect, useRef, useState } from "react";
 import { StatusBar, Text, TouchableOpacity, View } from "react-native";
@@ -63,7 +62,7 @@ export default function Index() {
   });
 
   if (!fontsLoaded) {
-    return <AppLoading />;
+    return null;
   }
   return (
     <SafeAreaView style={styles.background}>
