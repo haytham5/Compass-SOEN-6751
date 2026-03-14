@@ -16,7 +16,7 @@ export default function BottomNav() {
       >
         <TouchableOpacity
           style={styles.navItem}
-          onPress={() => router.replace("/")}
+          onPress={() => router.replace("../home")}
         >
           <Icon name="home" size={26} color="#276389" />
         </TouchableOpacity>

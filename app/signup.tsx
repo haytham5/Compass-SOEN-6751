@@ -47,7 +47,7 @@ export default function SignUp() {
       return;
     }
     setError(null);
-    router.push("/");
+    router.push("../home");
   };
 
   return (

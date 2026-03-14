@@ -4,10 +4,10 @@ import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import {
-    StatusBar,
-    Text,
-    TouchableOpacity,
-    View
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "./styles/userAuthStyles";
@@ -61,7 +61,7 @@ export default function Welcome(){
           <TouchableOpacity
             style={styles.ghostButton}
             activeOpacity={0.7}
-            onPress={() => router.push("/")}
+            onPress={() => router.push("../home")}
           >
             <Text style={styles.ghostButtonText}>Continue without account</Text>
           </TouchableOpacity>

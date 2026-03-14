@@ -80,7 +80,7 @@ export default function Settings() {
           onChange={setAccessibility}
         />
 
-        <TouchableOpacity style={styles.logout} onPress={() => router.replace("../welcome")}>
+        <TouchableOpacity style={styles.logout} onPress={() => router.replace("/")}>
           <Text style={(styles.label, styles.logoutLabel)}>Log Out</Text>
         </TouchableOpacity>
       </ScrollView>
