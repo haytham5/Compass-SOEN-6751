@@ -220,6 +220,7 @@ export const styles = StyleSheet.create({
 
   title: {
     fontSize: 25,
+    width: "70%",
     fontFamily: "Lexend_400Regular",
     color: "#1F1F1F",
   },
@@ -467,7 +468,6 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-
   updatesSection: {
     marginBottom: 16,
   },
@@ -576,6 +576,4 @@ export const styles = StyleSheet.create({
     color: "#5A6B80",
     textAlign: "center",
   },
-
-
 });
