@@ -44,10 +44,16 @@ export default function Signin() {
       setError("Please fill in all fields.");
       return;
     }
-    if ( email !="example@live.concordia.ca" || password != "password") {
-      setError("Incorrect email or password.");
-      return;
-    }
+  const validCredentials =
+    (email === "example@live.concordia.ca" && password === "password") ||
+    (email === "1" && password === "1")  ||
+    (email === "security@concordia.ca" && password === "password");
+
+  if (!validCredentials) {
+    setError("Incorrect email or password.");
+    return;
+  }
+
     setError(null);
     router.push("../home");
   };
