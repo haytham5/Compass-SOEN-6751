@@ -64,11 +64,13 @@ export const styles = StyleSheet.create({
   subCardActive: {
     borderWidth: 2,
     borderColor: "#276389",
-    transform: [{ scale: 1.03 }],
+    transform: [{ scale: 1.02 }],
+    margin: 2,
   },
 
   subCardInactive: {
     opacity: 0.7,
+    marginTop: 2,
   },
 
   subBody: {
@@ -322,7 +324,3 @@ export const styles = StyleSheet.create({
     color: "#3E4B57",
   },
 });
-
-
-
-

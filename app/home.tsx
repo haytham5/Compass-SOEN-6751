@@ -357,7 +357,7 @@ export default function Home() {
   return (
     <SafeAreaView style={styles.background}>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 20 }}
+        contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20 }}
         showsVerticalScrollIndicator={false}
       >
         {/*

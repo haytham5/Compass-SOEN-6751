@@ -4,7 +4,6 @@ export const styles = StyleSheet.create({
   background: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-    paddingHorizontal: 20,
   },
 
   hiddenMarkerContainer: {
@@ -380,7 +379,6 @@ export const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-
   sectionDescription: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
@@ -544,6 +542,4 @@ export const styles = StyleSheet.create({
     color: "#276389",
     fontFamily: "Lexend_400Regular",
   },
-
-
 });
