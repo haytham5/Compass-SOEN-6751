@@ -13,11 +13,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
 import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BottomNav from "./components/bottomNav";
 import { getReports, Report } from "./data/reportSH";
 import { styles } from "./styles/eventsStyles";
+import ReportFormModal from "./components/ReportFormModal";
 
 type Event = {
   id: string;
@@ -66,6 +68,7 @@ export default function Events() {
 
   const [selectedBuildings, setSelectedBuildings] = useState<string[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isReportModalVisible, setIsReportModalVisible] = useState(false);
 
   const [manualEvents] = useState<Record<string, Event[]>>({
     "2026-03-25": [
@@ -423,7 +426,13 @@ export default function Events() {
           </Pressable>
         </Modal>
 
-        <BottomNav />
+        <ReportFormModal
+            visible={isReportModalVisible}
+            onClose={() => setIsReportModalVisible(false)}
+            onSubmitSuccess={loadReports}
+        />
+
+        <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />
       </SafeAreaView>
   );
 }
