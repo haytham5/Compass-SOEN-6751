@@ -2,6 +2,8 @@ import { useFonts } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
 import { useEffect, useRef, useState } from "react";
+import NearBuildingBanner from "./components/NearBuildingBanner";
+import { simulateNearBuilding } from "./utils/simulateGeofence";
 
 import {
   initialSubscriptions,
@@ -33,6 +35,7 @@ import { styles } from "./styles/indexStyles";
 export default function Home() {
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
+  const [demoMode, setDemoMode] = useState(false);
 
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync("#F7F9FF");
@@ -214,6 +217,7 @@ export default function Home() {
   return (
       <SafeAreaView style={styles.background}>
         <OfflineBanner />
+        <NearBuildingBanner />
         <ScrollView
             contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20 }}
             showsVerticalScrollIndicator={false}
@@ -233,7 +237,9 @@ export default function Home() {
           <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
           <View style={styles.header}>
-            <Text style={styles.title}>Home</Text>
+            <TouchableOpacity onLongPress={() => setDemoMode(prev => !prev)} style={{ flexShrink: 0 }}>
+              <Text style={styles.title} numberOfLines={1}>Home</Text>
+            </TouchableOpacity>
 
             <View style={styles.userCircle}>
               <Icon name="person" size={20} color="white" />
@@ -414,7 +420,22 @@ export default function Home() {
             onClose={() => setIsReportModalVisible(false)}
             onSubmitSuccess={handleReportSubmitSuccess}
         />
-
+          {demoMode && (
+            <View style={styles.demoContainer}>
+              <Text style={styles.demoLabel}>Demo Mode — Simulate Location</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {["EV", "LB", "H", "JMSB"].map((b) => (
+                  <TouchableOpacity
+                    key={b}
+                    style={styles.demoButton}
+                    onPress={() => simulateNearBuilding(b)}
+                  >
+                    <Text style={styles.demoButtonText}>Near {b}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
         <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />
       </SafeAreaView>
   );

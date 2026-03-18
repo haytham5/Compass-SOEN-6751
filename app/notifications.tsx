@@ -3,6 +3,8 @@ import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { useEffect, useState } from "react";
 
 import {
@@ -64,6 +66,24 @@ export default function Notifications() {
 
   const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
 
+  useEffect(() => {
+  const loadSubscriptions = async () => {
+    try {
+      const raw = await AsyncStorage.getItem("subscriptions");
+      if (raw) {
+        setSubscriptions(JSON.parse(raw));
+      } else {
+        // First time — save the defaults to AsyncStorage
+        await AsyncStorage.setItem("subscriptions", JSON.stringify(initialSubscriptions));
+      }
+    } catch (e) {
+      console.log("Error loading subscriptions:", e);
+    }
+  };
+
+    loadSubscriptions();
+  }, []);
+
   // // mocked data for notifications
   // const notifications: NotificationItem[] = [
   //   {
@@ -119,11 +139,14 @@ export default function Notifications() {
   }
   // logic handling
   const handleToggleSubscription = (id: string) => {
-    setSubscriptions((current) =>
-      current.map((sub) =>
-        sub.id === id ? { ...sub, isSubscribed: !sub.isSubscribed } : sub,
-      ),
-    );
+    setSubscriptions((current) => {
+      const updated = current.map((sub) =>
+        sub.id === id ? { ...sub, isSubscribed: !sub.isSubscribed } : sub
+      );
+      // Save to AsyncStorage so background location task can read it
+      AsyncStorage.setItem("subscriptions", JSON.stringify(updated));
+      return updated;
+    });
   };
   // filter notifications based on active subscriptions
   const activeBuildingIds = subscriptions
