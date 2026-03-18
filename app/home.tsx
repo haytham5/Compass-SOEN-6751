@@ -4,6 +4,8 @@ import * as NavigationBar from "expo-navigation-bar";
 import { useEffect, useRef, useState } from "react";
 import NearBuildingBanner from "./components/NearBuildingBanner";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
+import { useFocusEffect } from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   initialSubscriptions,
@@ -24,6 +26,8 @@ import {
 import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { Platform } from "react-native";
+
 
 import ViewShot, { captureRef } from "react-native-view-shot";
 import BottomNav from "./components/bottomNav";
@@ -31,6 +35,7 @@ import MapInfo from "./components/mapInfo";
 import OfflineBanner from "./components/offlineBanner";
 import ReportFormModal from "./components/ReportFormModal";
 import { styles } from "./styles/indexStyles";
+
 
 export default function Home() {
   const [isMapExpanded, setIsMapExpanded] = useState(false);
@@ -68,42 +73,58 @@ export default function Home() {
     setSelectedBuilding(buildingId);
   };
 
-  const loadReports = async () => {
+  const loadReports = useCallback(async () => {
     try {
       const data = await getReports();
       setReports(data);
+
+      if (selectedBuilding) {
+        const filtered = data.filter((r) => r.building === selectedBuilding);
+        setBuildingReports(filtered);
+      }
+
       console.log("Reports loaded:", data);
     } catch (e) {
       console.log("report load error", e);
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedBuilding]);
 
   useEffect(() => {
     loadReports();
-  }, []);
+  }, [loadReports]);
+
+  useFocusEffect(
+      useCallback(() => {
+        loadReports();
+      }, [loadReports]),
+  );
 
   const handleReportSubmitSuccess = async () => {
     await loadReports();
-
-    if (selectedBuilding) {
-      const allReports = await getReports();
-      const filtered = allReports.filter((r) => r.building === selectedBuilding);
-      setBuildingReports(filtered);
-    }
   };
 
   const previewMapRef = useRef<MapView | null>(null);
   const expandedMapRef = useRef<MapView | null>(null);
 
+  // const onMapReady = (mapInstance: MapView | null) => {
+  //   if (!mapInstance) return;
+  //
+  //   mapInstance.setMapBoundaries(
+  //       { latitude: 45.5000284224813, longitude: -73.5759524037535 },
+  //       { latitude: 45.49070461581633, longitude: -73.58196697011486 },
+  //   );
+  // };
   const onMapReady = (mapInstance: MapView | null) => {
     if (!mapInstance) return;
 
-    mapInstance.setMapBoundaries(
-        { latitude: 45.5000284224813, longitude: -73.5759524037535 },
-        { latitude: 45.49070461581633, longitude: -73.58196697011486 },
-    );
+    if (Platform.OS === "android") {
+      mapInstance.setMapBoundaries(
+          { latitude: 45.5000284224813, longitude: -73.5759524037535 },
+          { latitude: 45.49070461581633, longitude: -73.58196697011486 },
+      );
+    }
   };
 
   const buildings: Record<string, { latitude: number; longitude: number }> = {
@@ -241,9 +262,6 @@ export default function Home() {
               <Text style={styles.title} numberOfLines={1}>Home</Text>
             </TouchableOpacity>
 
-            <View style={styles.userCircle}>
-              <Icon name="person" size={20} color="white" />
-            </View>
           </View>
 
           <View style={styles.mapPreviewWrapper}>
