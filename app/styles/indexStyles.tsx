@@ -293,6 +293,7 @@ export const styles = StyleSheet.create({
   updateCard: {
     padding: 16,
     marginBottom: 12,
+    paddingBottom: 0, 
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#DDE3EA",    // grey all around
@@ -666,5 +667,40 @@ export const styles = StyleSheet.create({
   },
   actionCountDisabled: {
     color: "#aaa",
+  },
+
+  chevronButton: {
+    alignItems: "center",
+    paddingTop: 5,
+  },
+
+  modalImage: {
+  width: "100%",
+  height: 180,
+  borderRadius: 10,
+  marginBottom: 12,
+  },
+  timelineRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 10,
+    marginBottom: 8,
+  },
+  timelineDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 999,
+    backgroundColor: "#276389",
+    marginTop: 5,
+  },
+  timelineText: {
+    flex: 1,
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: "#3E4B57",
+  },
+  timelineTime: {
+    color: "#5A6B80",
+    fontStyle: "italic",
   },
 });

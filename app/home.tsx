@@ -14,6 +14,7 @@ import { simulateNearBuilding } from "./utils/simulateGeofence";
 
 
 import {
+  Image,
   Modal,
   Platform,
   Pressable,
@@ -45,18 +46,15 @@ import { getReports, markReportResolved, Report, upvoteReport, verifyReport } fr
     LB: "#FFC107",
   };
 
+  const today = new Date().toISOString().split("T")[0];
+
 export default function Home() {
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
 
-  const buildingColorMap: Record<string, string> = {
-    EV: "#FF9898",
-    H: "#4CAF50",
-    JMSB: "#2196F3",
-    LB: "#FFC107",
-  };
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
 
   const [showAuthRequiredModal, setShowAuthRequiredModal] = useState(false);
 
@@ -396,13 +394,15 @@ export default function Home() {
               </Text>
             </View>
 
-            {reports.filter((r) => activeBuildingIds.includes(r.building) && !r.isScheduledEvent)
-              .slice(0, 5)
-              .length > 0 ? (
-              reports
-                .filter((r) => activeBuildingIds.includes(r.building) && !r.isScheduledEvent)
-                .slice(0, 5)
-                .map((report) => {
+            {(() => {
+              const filtered = reports.filter((r) =>
+                activeBuildingIds.includes(r.building) &&
+                !r.isScheduledEvent &&
+                r.date === today
+              ).slice(0, 5);
+
+              return filtered.length > 0 ? (
+                filtered.map((report) => {
                   const hasUpvoted = currentUserId
                     ? report.upvotedBy?.includes(currentUserId)
                     : false;
@@ -429,35 +429,20 @@ export default function Home() {
                         { borderLeftColor: buildingColorMap[report.building] ?? "#DDE3EA" }
                       ]}
                     >
-                      {/* Left content + Right buttons */}
                       <View style={styles.updateCardInner}>
-
+                        
                         {/* LEFT SIDE */}
                         <View style={styles.updateCardLeft}>
-
-                          {/* Title */}
                           <Text style={styles.updateEventTitle}>
                             {report.name || report.type}
                           </Text>
-
-                          {/* Time */}
                           <Text style={styles.updateMeta}>
-                            {report.time} · {report.date}
+                            {report.time}
                           </Text>
-
-                          {/* Type icon + label */}
                           <View style={styles.updateTypeRow}>
-                            <Icon
-                              name={typeIcon}
-                              size={16}
-                              color="#276389"
-                            />
-                            <Text style={styles.updateTypeLabel}>
-                              {typeLabel}
-                            </Text>
+                            <Icon name={typeIcon} size={16} color="#276389" />
+                            <Text style={styles.updateTypeLabel}>{typeLabel}</Text>
                           </View>
-
-                          {/* Reported by + verified */}
                           <View style={styles.updateReporterRow}>
                             <Text style={styles.updateMeta}>
                               Reported by {submitterLabel}
@@ -470,10 +455,9 @@ export default function Home() {
                             )}
                           </View>
                         </View>
+
                         {/* RIGHT SIDE — upvote + resolve buttons */}
                         <View style={styles.updateCardActions}>
-
-                          {/* Upvote button */}
                           <TouchableOpacity
                             style={[
                               styles.actionButton,
@@ -494,7 +478,6 @@ export default function Home() {
                             </Text>
                           </TouchableOpacity>
 
-                          {/* Resolve button */}
                           <TouchableOpacity
                             style={[
                               styles.actionButton,
@@ -514,22 +497,28 @@ export default function Home() {
                               {isResolved ? "✓" : "0"}
                             </Text>
                           </TouchableOpacity>
-
                         </View>
+
                       </View>
+                        {/* CHEVRON — centered at bottom of card */}
+                        <TouchableOpacity
+                          style={styles.chevronButton}
+                          onPress={() => setSelectedReport(report)}
+                        >
+                          <Icon name="expand-more" size={24} color="#276389" />
+                        </TouchableOpacity>
                     </View>
                   );
                 })
-            ) : (
-              <View style={styles.emptyUpdatesState}>
-                <Text style={styles.emptyUpdatesTitle}>
-                  No subscribed updates
-                </Text>
-                <Text style={styles.emptyUpdatesBody}>
-                  Turn on notifications for buildings to see alerts here.
-                </Text>
-              </View>
-            )}
+              ) : (
+                <View style={styles.emptyUpdatesState}>
+                  <Text style={styles.emptyUpdatesTitle}>No subscribed updates</Text>
+                  <Text style={styles.emptyUpdatesBody}>
+                    Turn on notifications for buildings to see alerts here.
+                  </Text>
+                </View>
+              );
+            })()}
           </View>
         </ScrollView>
 
@@ -612,7 +601,76 @@ export default function Home() {
               </ScrollView>
             </View>
         )}
+        <Modal
+          visible={selectedReport !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setSelectedReport(null)}
+        >
+          <Pressable
+            style={styles.modalOverlay}
+            onPress={() => setSelectedReport(null)}
+          >
+            <Pressable
+              style={styles.modalCard}
+              onPress={(e) => e.stopPropagation()}
+            >
+              {selectedReport && (
+                <>
+                  <View style={styles.modalHeader}>
+                    <Text style={styles.modalTitle}>
+                      {selectedReport.name || selectedReport.type}
+                    </Text>
+                    <TouchableOpacity onPress={() => setSelectedReport(null)}>
+                      <Icon name="close" size={24} color="#276389" />
+                    </TouchableOpacity>
+                  </View>
 
+                  <Text style={styles.modalBuilding}>
+                    {selectedReport.building} · Floor {selectedReport.floor}
+                  </Text>
+
+                  {/* Description */}
+                  {selectedReport.description ? (
+                    <>
+                      <Text style={styles.modalSectionTitle}>Description</Text>
+                      <Text style={styles.modalDescription}>
+                        {selectedReport.description}
+                      </Text>
+                    </>
+                  ) : null}
+
+                  {/* Photo */}
+                  {selectedReport.image ? (
+                    <>
+                      <Text style={styles.modalSectionTitle}>Photo</Text>
+                      <Image
+                        source={{ uri: selectedReport.image }}
+                        style={styles.modalImage}
+                        resizeMode="cover"
+                      />
+                    </>
+                  ) : null}
+
+                  {/* Timeline */}
+                  <Text style={styles.modalSectionTitle}>Timeline</Text>
+                  {(selectedReport.timeline ?? []).map((event, index) => (
+                    <View key={index} style={styles.timelineRow}>
+                      <View style={styles.timelineDot} />
+                      <Text style={styles.timelineText}>
+                        {event.action === "reported" && `First reported by ${event.by}`}
+                        {event.action === "upvoted" && `Confirmed by a concordian`}
+                        {event.action === "verified" && `Verified by security`}
+                        {event.action === "resolved" && `Marked resolved`}
+                        <Text style={styles.timelineTime}> · {event.time}</Text>
+                      </Text>
+                    </View>
+                  ))}
+                </>
+              )}
+            </Pressable>
+          </Pressable>
+        </Modal>
         <BottomNav onPressAdd={handleOpenReportFlow} />
       </SafeAreaView>
   );

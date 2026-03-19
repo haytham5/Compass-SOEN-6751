@@ -2,15 +2,23 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const REPORTS_STORAGE_KEY = "reports";
 
+export type TimelineEvent = {
+  action: "reported" | "upvoted" | "verified" | "resolved";
+  by: string;  // role or user identifier
+  time: string;
+};
+
 export type AccessibilitySubtype =
   | "escalator"
   | "elevator"
   | "ramp"
   | "foot_traffic";
 
+
 export type ReportType = "protest" | "event" | "accessibility";
 
 export type UserRole = "security" | "concordian" | "admin";
+
 
 export type Report = {
   id: string;
@@ -22,26 +30,17 @@ export type Report = {
   image?: string;
   date: string;
   time: string;
-
-  // Accessibility subtype — only populated when type === "accessibility"
   accessibilitySubtype?: AccessibilitySubtype;
-
-  // Who submitted the report
   submittedBy: UserRole;
-
-  // Admin-only scheduled future events
   isScheduledEvent: boolean;
-
-  // Security-only
   isSevere: boolean;
-  isVerifiedBySecurity: boolean;
-
-  // Upvotes — stores IDs of users who upvoted
   upvotedBy: string[];
-
-  // Resolved flag — anyone can mark, doesn't remove the report
   isResolved: boolean;
-  resolvedBy?: string;   // user ID or name of who marked it resolved
+  resolvedBy?: string;
+  isVerifiedBySecurity: boolean;
+  eventStartDate?: string;
+  eventEndDate?: string;
+  timeline: TimelineEvent[];  // ← new
 };
 
 const parseReports = async (): Promise<Report[]> => {
@@ -57,11 +56,26 @@ const parseReports = async (): Promise<Report[]> => {
 export const saveNewReport = async (report: Report): Promise<void> => {
   try {
     const reports = await parseReports();
-    reports.push(report);
+    const reportWithVerification = {
+      ...report,
+      isVerifiedBySecurity: report.submittedBy === "security" ? true : false,
+    };
+    reports.push(reportWithVerification);
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(reports));
-    console.log("Report saved successfully");
   } catch (error) {
     console.error("Error saving report:", error);
+  }
+};
+
+export const verifyReport = async (reportId: string): Promise<void> => {
+  try {
+    const reports = await parseReports();
+    const updated = reports.map((r) =>
+      r.id === reportId ? { ...r, isVerifiedBySecurity: true } : r
+    );
+    await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
+  } catch (error) {
+    console.error("Error verifying report:", error);
   }
 };
 
