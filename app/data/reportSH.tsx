@@ -3,8 +3,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const REPORTS_STORAGE_KEY = "reports";
 
 export type TimelineEvent = {
-  action: "reported" | "upvoted" | "verified" | "resolved";
-  by: string;  // role or user identifier
+  action: "reported" | "upvoted" | "verified" | "resolved" | "severe";
+  by: string;
   time: string;
 };
 
@@ -202,15 +202,46 @@ export const markReportResolved = async (
 };
 
 // Mark a report as severe — security only (enforce in UI)
-export const markReportSevere = async (
-  reportId: string,
-): Promise<void> => {
+export const markReportSevere = async (reportId: string): Promise<void> => {
   try {
     const reports = await parseReports();
+    const report = reports.find((r) => r.id === reportId);
+    if (!report) {
+      console.log("markReportSevere: report not found", reportId);  // ← add
+      return;
+    }
+
+    const now = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
     const updated = reports.map((r) =>
-      r.id === reportId ? { ...r, isSevere: true } : r
+      r.id === reportId
+        ? {
+            ...r,
+            isSevere: true,
+            timeline: [...(r.timeline ?? []), {
+              action: "severe" as const,
+              by: "security",
+              time: now,
+            }],
+          }
+        : r
     );
+
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
+
+    const nearBuildingData = {
+      buildingId: report.building,
+      buildingName: report.building,
+      time: now,
+      isSevere: true,
+    };
+    console.log("Writing nearBuilding:", nearBuildingData);  // ← add
+    await AsyncStorage.setItem("nearBuilding", JSON.stringify(nearBuildingData));
+    console.log("nearBuilding written successfully");  // ← add
+
   } catch (error) {
     console.error("Error marking report severe:", error);
   }

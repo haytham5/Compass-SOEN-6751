@@ -24,6 +24,22 @@ export default function RootLayout() {
       }
     };
 
+    const seedSecurityUser = async () => {
+      const users = await getUsers();
+      const securityExists = users.some((u) => u.email === "security@concordia.ca");
+      if (!securityExists) {
+        await addUser({
+          firstName: "Security",
+          lastName: "Officer",
+          role: "security",
+          idNumber: "111111",
+          phone: "",
+          email: "security@concordia.ca",
+          password: "security123",
+        });
+      }
+    };
+
     const seedTestReports = async () => {
       // Remove old test reports
       const existing = await getReports();
@@ -42,6 +58,7 @@ export default function RootLayout() {
 
     const setup = async () => {
       await seedAdminUser();
+      await seedSecurityUser(); 
       await seedTestReports();
       await AsyncStorage.setItem("seeded", "true"); 
     };

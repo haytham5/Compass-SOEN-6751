@@ -131,7 +131,7 @@ const reportEventsByDate = useMemo(() => {
   const grouped: Record<string, Event[]> = {};
 
   reports
-    .filter((report) => report.isScheduledEvent === true)  // ← add this
+    .filter((report) => report.isScheduledEvent === true) 
     .forEach((report) => {
       if (!grouped[report.date]) {
         grouped[report.date] = [];

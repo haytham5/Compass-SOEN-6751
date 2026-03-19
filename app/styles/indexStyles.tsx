@@ -771,4 +771,17 @@ export const styles = StyleSheet.create({
     color: "#F59E0B",
     fontWeight: "bold",
   },
+
+  markSevereButton: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 4,
+  marginTop: 4,
+  },
+  markSevereText: {
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: "#F59E0B",
+    textDecorationLine: "underline",
+  },
 });

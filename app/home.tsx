@@ -9,6 +9,7 @@ import NearBuildingBanner from "./components/NearBuildingBanner";
 import {
   initialSubscriptions,
 } from "./data/notificationData";
+import { markReportSevere } from "./data/reportSH";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
 
 
@@ -48,6 +49,8 @@ import { getReports, markReportResolved, Report, upvoteReport, verifyReport } fr
 
   const today = new Date().toISOString().split("T")[0];
 
+
+
 export default function Home() {
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   const [isMapExpanded, setIsMapExpanded] = useState(false);
@@ -61,6 +64,12 @@ export default function Home() {
   disruptions: false,
   resolved: false,
   });
+
+  const handleMarkSevere = async (reportId: string) => {
+    if (currentUserRole !== "security") return;
+    await markReportSevere(reportId);
+    await loadReports();
+  };
 
   const toggleSection = (section: string) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -554,6 +563,7 @@ export default function Home() {
                                     <Icon name={typeIcon} size={16} color="#276389" />
                                     <Text style={styles.updateTypeLabel}>{typeLabel}</Text>
                                   </View>
+
                                   <View style={styles.updateReporterRow}>
                                     <Text style={styles.updateMeta}>
                                       Reported by {submitterLabel}
@@ -565,9 +575,20 @@ export default function Home() {
                                       </View>
                                     )}
                                   </View>
-                                </View>
 
-                                <View style={styles.updateCardActions}>
+                                  {/* Mark Severe button — security only */}
+                                  {currentUserRole === "security" && !report.isSevere && (
+                                    <TouchableOpacity
+                                      onPress={() => handleMarkSevere(report.id)}
+                                      style={styles.markSevereButton}
+                                    >
+                                      <TriangleAlert size={13} color="#F59E0B" />
+                                      <Text style={styles.markSevereText}>Mark Severe</Text>
+                                    </TouchableOpacity>
+                                  )}
+
+                                  </View>  {/* closes updateCardLeft */}
+                                  <View style={styles.updateCardActions}>
                                   <TouchableOpacity
                                     style={[
                                       styles.actionButton,
@@ -775,6 +796,7 @@ export default function Home() {
                         {event.action === "upvoted" && `Confirmed by a concordian`}
                         {event.action === "verified" && `Verified by security`}
                         {event.action === "resolved" && `Marked resolved by ${event.by === "security" ? "security" : "a concordian"}`}
+                        {event.action === "severe" && `Marked severe by security`}
                         <Text style={styles.timelineTime}> · {event.time}</Text>
                       </Text>
                     </View>

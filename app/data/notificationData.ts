@@ -126,7 +126,7 @@ export const testReports: Report[] = [
     time: "10:15 AM",
     submittedBy: "security",
     isScheduledEvent: false,
-    isSevere: true,
+    isSevere: false,
     isVerifiedBySecurity: true,
     timeline: [
         { action: "reported", by: "security", time: "10:15 AM" },
@@ -148,7 +148,7 @@ export const testReports: Report[] = [
     time: "08:45 AM",
     submittedBy: "security",
     isScheduledEvent: false,
-    isSevere: true,
+    isSevere: false,
     isVerifiedBySecurity: true,
     timeline: [
         { action: "reported", by: "security", time: "08:45 AM" },

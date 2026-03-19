@@ -416,6 +416,7 @@ export default function Notifications() {
                       {event.action === "upvoted" && `Confirmed by a concordian`}
                       {event.action === "verified" && `Verified by security`}
                       {event.action === "resolved" && `Marked resolved by ${event.by === "security" ? "security" : "a concordian"}`}
+                      {event.action === "severe" && `Marked severe by security`} 
                       <Text style={styles.timelineTime}> · {event.time}</Text>
                     </Text>
                   </View>
