@@ -703,4 +703,62 @@ export const styles = StyleSheet.create({
     color: "#5A6B80",
     fontStyle: "italic",
   },
+
+  accordionSection: {
+  marginBottom: 8,
+  },
+
+  accordionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#F5F8F4",
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderLeftWidth: 5,
+    borderWidth: 1,
+    borderColor: "#DDE3EA",
+  },
+  accordionHeaderLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  accordionLabel: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: "#1F1F1F",
+  },
+  accordionBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 999,
+    backgroundColor: "#276389",
+  },
+  accordionBadgeText: {
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: "#FFFFFF",
+  },
+  accordionContent: {
+    marginTop: 6,
+    gap: 0,
+  },
+  accordionEmptyText: {
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: "#aaa",
+    fontStyle: "italic",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+
+  resolvedMeta: {
+  fontSize: 12,
+  fontFamily: "Lexend_400Regular",
+  color: "#1FA64A",
+  fontStyle: "italic",
+  marginBottom: 2,
+  },
 });

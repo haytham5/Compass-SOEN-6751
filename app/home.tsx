@@ -56,6 +56,16 @@ export default function Home() {
 
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
 
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+  access: false,
+  disruptions: false,
+  resolved: false,
+  });
+
+  const toggleSection = (section: string) => {
+    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
+
   const [showAuthRequiredModal, setShowAuthRequiredModal] = useState(false);
 
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -145,7 +155,7 @@ export default function Home() {
 
   const handleResolve = async (reportId: string) => {
     if (!currentUserId || isGuest) return;
-    await markReportResolved(reportId, currentUserId);
+    await markReportResolved(reportId, currentUserRole ?? "concordian"); 
     await loadReports();
   };
 
@@ -197,24 +207,27 @@ export default function Home() {
   };
 
   const buildingCounts: Record<
-      string,
-      { protests: number; accessibility: number }
+    string,
+    { protests: number; accessibility: number }
   > = {};
 
-  reports.forEach((r) => {
-    if (!buildingCounts[r.building]) {
-      buildingCounts[r.building] = {
-        protests: 0,
-        accessibility: 0,
-      };
-    }
+  reports
+    reports
+  .filter((r) => r.date === today && !r.isScheduledEvent)
+    .forEach((r) => {
+      if (!buildingCounts[r.building]) {
+        buildingCounts[r.building] = {
+          protests: 0,
+          accessibility: 0,
+        };
+      }
 
-    if (r.type === "accessibility") {
-      buildingCounts[r.building].accessibility++;
-    } else {
-      buildingCounts[r.building].protests++;
-    }
-  });
+      if (r.type === "accessibility") {
+        buildingCounts[r.building].accessibility++;
+      } else {
+        buildingCounts[r.building].protests++;
+      }
+    });
 
   const bubbleRefs: Record<string, React.RefObject<ViewShot | null>> = {
     EV: useRef<ViewShot | null>(null),
@@ -388,136 +401,180 @@ export default function Home() {
 
           <View style={styles.updatesSection}>
             <View style={styles.updatesHeader}>
-              <Text style={styles.updatesTitle}>Your Updates</Text>
+              <Text style={styles.updatesTitle}>Your Updates for Today</Text>
               <Text style={styles.updatesSubtitle}>
                 Subscribed reports and alerts
               </Text>
             </View>
 
             {(() => {
-              const filtered = reports.filter((r) =>
-                activeBuildingIds.includes(r.building) &&
-                !r.isScheduledEvent &&
-                r.date === today
-              ).slice(0, 5);
+            const todayReports = reports.filter((r) =>
+              !r.isScheduledEvent &&
+              r.date === today
+            );
 
-              return filtered.length > 0 ? (
-                filtered.map((report) => {
-                  const hasUpvoted = currentUserId
-                    ? report.upvotedBy?.includes(currentUserId)
-                    : false;
-                  const isResolved = report.isResolved;
-                  const isDisabled = isGuest || !currentUserId;
-
-                  const typeIcon = report.type === "accessibility"
-                    ? "accessible"
-                    : "campaign";
-
-                  const typeLabel = report.accessibilitySubtype
-                    ? report.accessibilitySubtype.replace("_", " ")
-                    : report.type;
-
-                  const submitterLabel = report.submittedBy === "security"
-                    ? "security"
-                    : "a concordian";
-
-                  return (
-                    <View
-                      key={report.id}
-                      style={[
-                        styles.updateCard,
-                        { borderLeftColor: buildingColorMap[report.building] ?? "#DDE3EA" }
-                      ]}
-                    >
-                      <View style={styles.updateCardInner}>
-                        
-                        {/* LEFT SIDE */}
-                        <View style={styles.updateCardLeft}>
-                          <Text style={styles.updateEventTitle}>
-                            {report.name || report.type}
-                          </Text>
-                          <Text style={styles.updateMeta}>
-                            {report.time}
-                          </Text>
-                          <View style={styles.updateTypeRow}>
-                            <Icon name={typeIcon} size={16} color="#276389" />
-                            <Text style={styles.updateTypeLabel}>{typeLabel}</Text>
-                          </View>
-                          <View style={styles.updateReporterRow}>
-                            <Text style={styles.updateMeta}>
-                              Reported by {submitterLabel}
-                            </Text>
-                            {report.isVerifiedBySecurity && (
-                              <View style={styles.verifiedBadge}>
-                                <Icon name="check-circle" size={13} color="#1FA64A" />
-                                <Text style={styles.verifiedText}>Verified</Text>
-                              </View>
-                            )}
-                          </View>
-                        </View>
-
-                        {/* RIGHT SIDE — upvote + resolve buttons */}
-                        <View style={styles.updateCardActions}>
-                          <TouchableOpacity
-                            style={[
-                              styles.actionButton,
-                              (hasUpvoted || isDisabled) && styles.actionButtonDisabled,
-                            ]}
-                            onPress={() => handleUpvote(report.id)}
-                            disabled={hasUpvoted || isDisabled}
-                          >
-                            <ThumbsUp
-                              size={18}
-                              color={hasUpvoted || isDisabled ? "#aaa" : "#276389"}
-                            />
-                            <Text style={[
-                              styles.actionCount,
-                              (hasUpvoted || isDisabled) && styles.actionCountDisabled,
-                            ]}>
-                              {report.upvotedBy?.length ?? 0}
-                            </Text>
-                          </TouchableOpacity>
-
-                          <TouchableOpacity
-                            style={[
-                              styles.actionButton,
-                              (isResolved || isDisabled) && styles.actionButtonDisabled,
-                            ]}
-                            onPress={() => handleResolve(report.id)}
-                            disabled={isResolved || isDisabled}
-                          >
-                            <CheckCircle
-                              size={18}
-                              color={isResolved || isDisabled ? "#aaa" : "#276389"}
-                            />
-                            <Text style={[
-                              styles.actionCount,
-                              (isResolved || isDisabled) && styles.actionCountDisabled,
-                            ]}>
-                              {isResolved ? "✓" : "0"}
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-
-                      </View>
-                        {/* CHEVRON — centered at bottom of card */}
-                        <TouchableOpacity
-                          style={styles.chevronButton}
-                          onPress={() => setSelectedReport(report)}
-                        >
-                          <Icon name="expand-more" size={24} color="#276389" />
-                        </TouchableOpacity>
-                    </View>
-                  );
-                })
-              ) : (
-                <View style={styles.emptyUpdatesState}>
-                  <Text style={styles.emptyUpdatesTitle}>No subscribed updates</Text>
-                  <Text style={styles.emptyUpdatesBody}>
-                    Turn on notifications for buildings to see alerts here.
-                  </Text>
-                </View>
+              const accessReports = todayReports.filter(
+                (r) => r.type === "accessibility" && !r.isResolved
               );
+              const disruptionReports = todayReports.filter(
+                (r) => (r.type === "protest" || r.type === "event") && !r.isResolved
+              );
+              const resolvedReports = todayReports.filter((r) => r.isResolved);
+
+              const sections = [
+                { key: "access", label: "Access", reports: accessReports, icon: "accessible" },
+                { key: "disruptions", label: "Disruptions", reports: disruptionReports, icon: "campaign" },
+                { key: "resolved", label: "Resolved", reports: resolvedReports, icon: "check-circle" },
+              ];
+
+              return sections.map(({ key, label, reports: sectionReports, icon }) => (
+                <View key={key} style={styles.accordionSection}>
+                  <TouchableOpacity
+                    style={styles.accordionHeader}
+                    onPress={() => toggleSection(key)}
+                    activeOpacity={0.8}
+                  >
+                    <View style={styles.accordionHeaderLeft}>
+                      <Icon name={icon} size={22} color="#276389" />
+                      <Text style={styles.accordionLabel}>{label}</Text>
+                      <View style={styles.accordionBadge}>
+                        <Text style={styles.accordionBadgeText}>
+                          {sectionReports.length}
+                        </Text>
+                      </View>
+                    </View>
+                    <Icon
+                      name={openSections[key] ? "expand-less" : "expand-more"}
+                      size={24}
+                      color="#276389"
+                    />
+                  </TouchableOpacity>
+
+                  {/* Cards */}
+                  {openSections[key] && (
+                    <View style={styles.accordionContent}>
+                      {sectionReports.length === 0 ? (
+                        <Text style={styles.accordionEmptyText}>
+                          No {label.toLowerCase()} reports today.
+                        </Text>
+                      ) : (
+                        sectionReports.map((report) => {
+                          const hasUpvoted = currentUserId
+                            ? report.upvotedBy?.includes(currentUserId)
+                            : false;
+                          const isResolved = report.isResolved;
+                          const isDisabled = isGuest || !currentUserId;
+
+                          const typeIcon = report.type === "accessibility"
+                            ? "accessible"
+                            : "campaign";
+
+                          const typeLabel = report.accessibilitySubtype
+                            ? report.accessibilitySubtype.replace("_", " ")
+                            : report.type;
+
+                          const submitterLabel = report.submittedBy === "security"
+                            ? "security"
+                            : "a concordian";
+
+                          return (
+                            <View
+                              key={report.id}
+                              style={[
+                                styles.updateCard,
+                                { borderLeftColor: buildingColorMap[report.building] ?? "#DDE3EA" }
+                              ]}
+                            >
+                              <View style={styles.updateCardInner}>
+                                <View style={styles.updateCardLeft}>
+                                  <Text style={styles.updateEventTitle}>
+                                    {report.name || report.type}
+                                  </Text>
+                                    {/* Resolved time — only shows if resolved */}
+                                    {report.isResolved && report.timeline && (
+                                      <Text style={styles.resolvedMeta}>
+                                        Resolved at {report.timeline.find((e) => e.action === "resolved")?.time ?? "unknown"}
+                                      </Text>
+                                    )}
+
+                                    {/* Time */}
+                                  <Text style={styles.updateMeta}>
+                                    {report.time}
+                                  </Text>
+                                  <View style={styles.updateTypeRow}>
+                                    <Icon name={typeIcon} size={16} color="#276389" />
+                                    <Text style={styles.updateTypeLabel}>{typeLabel}</Text>
+                                  </View>
+                                  <View style={styles.updateReporterRow}>
+                                    <Text style={styles.updateMeta}>
+                                      Reported by {submitterLabel}
+                                    </Text>
+                                    {report.isVerifiedBySecurity && (
+                                      <View style={styles.verifiedBadge}>
+                                        <Icon name="check-circle" size={13} color="#1FA64A" />
+                                        <Text style={styles.verifiedText}>Verified</Text>
+                                      </View>
+                                    )}
+                                  </View>
+                                </View>
+
+                                <View style={styles.updateCardActions}>
+                                  <TouchableOpacity
+                                    style={[
+                                      styles.actionButton,
+                                      (hasUpvoted || isDisabled) && styles.actionButtonDisabled,
+                                    ]}
+                                    onPress={() => handleUpvote(report.id)}
+                                    disabled={hasUpvoted || isDisabled}
+                                  >
+                                    <ThumbsUp
+                                      size={18}
+                                      color={hasUpvoted || isDisabled ? "#aaa" : "#276389"}
+                                    />
+                                    <Text style={[
+                                      styles.actionCount,
+                                      (hasUpvoted || isDisabled) && styles.actionCountDisabled,
+                                    ]}>
+                                      {report.upvotedBy?.length ?? 0}
+                                    </Text>
+                                  </TouchableOpacity>
+
+                                  <TouchableOpacity
+                                    style={[
+                                      styles.actionButton,
+                                      (isResolved || isDisabled) && styles.actionButtonDisabled,
+                                    ]}
+                                    onPress={() => handleResolve(report.id)}
+                                    disabled={isResolved || isDisabled}
+                                  >
+                                    <CheckCircle
+                                      size={18}
+                                      color={isResolved || isDisabled ? "#aaa" : "#276389"}
+                                    />
+                                    <Text style={[
+                                      styles.actionCount,
+                                      (isResolved || isDisabled) && styles.actionCountDisabled,
+                                    ]}>
+                                      {isResolved ? "✓" : "0"}
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              </View>
+
+                              <TouchableOpacity
+                                style={styles.chevronButton}
+                                onPress={() => setSelectedReport(report)}
+                              >
+                                <Icon name="expand-more" size={24} color="#276389" />
+                              </TouchableOpacity>
+                            </View>
+                          );
+                        })
+                      )}
+                    </View>
+                  )}
+                </View>
+              ));
             })()}
           </View>
         </ScrollView>
@@ -661,7 +718,7 @@ export default function Home() {
                         {event.action === "reported" && `First reported by ${event.by}`}
                         {event.action === "upvoted" && `Confirmed by a concordian`}
                         {event.action === "verified" && `Verified by security`}
-                        {event.action === "resolved" && `Marked resolved`}
+                        {event.action === "resolved" && `Marked resolved by ${event.by === "security" ? "security" : "a concordian"}`}
                         <Text style={styles.timelineTime}> · {event.time}</Text>
                       </Text>
                     </View>

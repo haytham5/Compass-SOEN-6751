@@ -56,11 +56,24 @@ const parseReports = async (): Promise<Report[]> => {
 export const saveNewReport = async (report: Report): Promise<void> => {
   try {
     const reports = await parseReports();
-    const reportWithVerification = {
+    const reportWithDefaults = {
       ...report,
-      isVerifiedBySecurity: report.submittedBy === "security" ? true : false,
+      isVerifiedBySecurity: report.submittedBy === "security",
+      timeline: [
+        {
+          action: "reported" as const,
+          by: report.submittedBy,
+          time: report.time,
+        },
+        // auto-add verified entry if security submitted
+        ...(report.submittedBy === "security" ? [{
+          action: "verified" as const,
+          by: "security",
+          time: report.time,
+        }] : []),
+      ],
     };
-    reports.push(reportWithVerification);
+    reports.push(reportWithDefaults);
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(reports));
   } catch (error) {
     console.error("Error saving report:", error);
@@ -70,8 +83,22 @@ export const saveNewReport = async (report: Report): Promise<void> => {
 export const verifyReport = async (reportId: string): Promise<void> => {
   try {
     const reports = await parseReports();
+    const now = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     const updated = reports.map((r) =>
-      r.id === reportId ? { ...r, isVerifiedBySecurity: true } : r
+      r.id === reportId
+        ? {
+            ...r,
+            isVerifiedBySecurity: true,
+            timeline: [...(r.timeline ?? []), {
+              action: "verified" as const,
+              by: "security",
+              time: now,
+            }],
+          }
+        : r
     );
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
   } catch (error) {
@@ -119,11 +146,23 @@ export const upvoteReport = async (
 ): Promise<void> => {
   try {
     const reports = await parseReports();
+    const now = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     const updated = reports.map((r) => {
       if (r.id !== reportId) return r;
-      if (r.name === userId) return r; // can't upvote own report
-      if (r.upvotedBy.includes(userId)) return r; // already upvoted
-      return { ...r, upvotedBy: [...r.upvotedBy, userId] };
+      if (r.name === userId) return r;
+      if ((r.upvotedBy ?? []).includes(userId)) return r;
+      return {
+        ...r,
+        upvotedBy: [...(r.upvotedBy ?? []), userId],
+        timeline: [...(r.timeline ?? []), {
+          action: "upvoted" as const,
+          by: userId,
+          time: now,
+        }],
+      };
     });
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
   } catch (error) {
@@ -138,9 +177,22 @@ export const markReportResolved = async (
 ): Promise<void> => {
   try {
     const reports = await parseReports();
+    const now = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
     const updated = reports.map((r) =>
       r.id === reportId
-        ? { ...r, isResolved: true, resolvedBy }
+        ? {
+            ...r,
+            isResolved: true,
+            resolvedBy,
+            timeline: [...(r.timeline ?? []), {
+              action: "resolved" as const,
+              by: resolvedBy,
+              time: now,
+            }],
+          }
         : r
     );
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
