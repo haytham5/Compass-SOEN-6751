@@ -1,6 +1,7 @@
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
-import React, { useMemo, useState } from "react";
+import { X } from "lucide-react-native";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     Image,
     Modal,
@@ -11,9 +12,9 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { X } from "lucide-react-native";
-import { saveNewReport } from "../data/reportSH";
+import { AccessibilitySubtype, saveNewReport } from "../data/reportSH";
 import { styles } from "../styles/reportFormModalStyles";
+import { getCurrentUser } from "../utils/authStorage";
 
 interface ReportFormModalProps {
     visible: boolean;
@@ -24,38 +25,37 @@ interface ReportFormModalProps {
 const TOTAL_STEPS = 4;
 
 export default function ReportFormModal({
-                                            visible,
-                                            onClose,
-                                            onSubmitSuccess,
-                                        }: ReportFormModalProps) {
+    visible,
+    onClose,
+    onSubmitSuccess,
+}: ReportFormModalProps) {
     const [step, setStep] = useState(1);
-
     const [image, setImage] = useState<string | undefined>(undefined);
     const [name, setName] = useState("");
     const [building, setBuilding] = useState("EV");
     const [floor, setFloor] = useState("1");
-    const [type, setType] = useState<"protest" | "event" | "accessibility">(
-        "protest",
-    );
+    const [type, setType] = useState<"protest" | "event" | "accessibility">("protest");
     const [description, setDescription] = useState("");
+    const [accessibilitySubtype, setAccessibilitySubtype] = useState<AccessibilitySubtype>("elevator");
+    const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
 
-    // const progressPercent = useMemo(() => {
-    //     return `${(step / TOTAL_STEPS) * 100}%`;
-    // }, [step]);
+    useEffect(() => {
+        if (visible) {
+            getCurrentUser().then((user) => {
+                setCurrentUserRole(user?.role ?? null);
+            });
+        }
+    }, [visible]);
+
     const progressPercent = `${(step / TOTAL_STEPS) * 100}%` as `${number}%`;
 
     const stepTitle = useMemo(() => {
         switch (step) {
-            case 1:
-                return "Report Type";
-            case 2:
-                return "Location";
-            case 3:
-                return "Details";
-            case 4:
-                return "Photo & Submit";
-            default:
-                return "Add Report";
+            case 1: return "Report Type";
+            case 2: return "Location";
+            case 3: return "Details";
+            case 4: return "Photo & Submit";
+            default: return "Add Report";
         }
     }, [step]);
 
@@ -64,7 +64,6 @@ export default function ReportFormModal({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             quality: 0.8,
         });
-
         if (!result.canceled) {
             setImage(result.assets[0].uri);
         }
@@ -78,6 +77,7 @@ export default function ReportFormModal({
         setFloor("1");
         setType("protest");
         setDescription("");
+        setAccessibilitySubtype("elevator");
     };
 
     const handleClose = () => {
@@ -86,15 +86,11 @@ export default function ReportFormModal({
     };
 
     const goNext = () => {
-        if (step < TOTAL_STEPS) {
-            setStep((prev) => prev + 1);
-        }
+        if (step < TOTAL_STEPS) setStep((prev) => prev + 1);
     };
 
     const goBack = () => {
-        if (step > 1) {
-            setStep((prev) => prev - 1);
-        }
+        if (step > 1) setStep((prev) => prev - 1);
     };
 
     const submitReport = async () => {
@@ -111,6 +107,12 @@ export default function ReportFormModal({
                 hour: "2-digit",
                 minute: "2-digit",
             }),
+            accessibilitySubtype: type === "accessibility" ? accessibilitySubtype : undefined,
+            submittedBy: (currentUserRole as any) ?? "concordian",
+            isScheduledEvent: false,
+            isSevere: false,
+            upvotedBy: [],
+            isResolved: false,
         });
 
         resetForm();
@@ -135,6 +137,23 @@ export default function ReportFormModal({
                                 <Picker.Item label="Accessibility" value="accessibility" />
                             </Picker>
                         </View>
+
+                        {type === "accessibility" && (
+                            <>
+                                <Text style={styles.stepLabel}>Accessibility type:</Text>
+                                <View style={styles.dropdown}>
+                                    <Picker
+                                        selectedValue={accessibilitySubtype}
+                                        onValueChange={setAccessibilitySubtype}
+                                    >
+                                        <Picker.Item label="Elevator" value="elevator" />
+                                        <Picker.Item label="Escalator" value="escalator" />
+                                        <Picker.Item label="Ramp" value="ramp" />
+                                        <Picker.Item label="Foot Traffic / Crowding" value="foot_traffic" />
+                                    </Picker>
+                                </View>
+                            </>
+                        )}
 
                         <View style={styles.helperBox}>
                             <Text style={styles.helperText}>
@@ -210,6 +229,11 @@ export default function ReportFormModal({
                         <View style={styles.reviewCard}>
                             <Text style={styles.reviewTitle}>Review</Text>
                             <Text style={styles.reviewText}>Type: {type}</Text>
+                            {type === "accessibility" && (
+                                <Text style={styles.reviewText}>
+                                    Accessibility type: {accessibilitySubtype}
+                                </Text>
+                            )}
                             <Text style={styles.reviewText}>Building: {building}</Text>
                             <Text style={styles.reviewText}>Floor: {floor}</Text>
                             <Text style={styles.reviewText}>Title: {name || "—"}</Text>
@@ -274,10 +298,7 @@ export default function ReportFormModal({
                                 <Text style={styles.submitText}>Next</Text>
                             </TouchableOpacity>
                         ) : (
-                            <TouchableOpacity
-                                style={styles.submitButton}
-                                onPress={submitReport}
-                            >
+                            <TouchableOpacity style={styles.submitButton} onPress={submitReport}>
                                 <Text style={styles.submitText}>Submit Report</Text>
                             </TouchableOpacity>
                         )}

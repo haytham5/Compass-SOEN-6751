@@ -16,11 +16,13 @@ import {
 
 import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AdminEventModal from "./components/AdminEventModal";
 import BottomNav from "./components/bottomNav";
 import OfflineBanner from "./components/offlineBanner";
+import ReportFormModal from "./components/ReportFormModal";
 import { getReports, Report } from "./data/reportSH";
 import { styles } from "./styles/eventsStyles";
-import ReportFormModal from "./components/ReportFormModal";
+import { getCurrentUser } from "./utils/authStorage";
 
 type Event = {
   id: string;
@@ -71,48 +73,15 @@ export default function Events() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
 
-  const [manualEvents] = useState<Record<string, Event[]>>({
-    "2026-03-25": [
-      {
-        id: "manual-1",
-        title: "Protest Spotted",
-        acc: "EV",
-        type: "protest",
-        location: "EV",
-        floor: "1",
-        date: "2026-03-25",
-        time: "12:00pm",
-        description:
-            "A protest has been reported near the building entrance. Expect delays and heavier pedestrian traffic.",
-      },
-      {
-        id: "manual-2",
-        title: "Elevators Out of Order",
-        acc: "LB",
-        location: "LB",
-        floor: "2",
-        type: "maintenance",
-        date: "2026-03-25",
-        time: "2:00pm",
-        description:
-            "Elevators are temporarily unavailable. Please use an alternate route if needed.",
-      },
-    ],
-    "2026-03-26": [
-      {
-        id: "manual-3",
-        title: "Protest Seen",
-        acc: "EV",
-        type: "protest",
-        location: "EV",
-        floor: "3",
-        date: "2026-03-26",
-        time: "11:00am",
-        description:
-            "A protest was seen around the area. Foot traffic may be heavier than usual.",
-      },
-    ],
-  });
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showAdminEventModal, setShowAdminEventModal] = useState(false);
+
+  useEffect(() => {
+    getCurrentUser().then((user) => {
+      setIsAdmin(user?.role === "admin");
+    });
+  }, []);
+
 
   const [selectedDate, setSelectedDate] = useState(
       new Date().toISOString().split("T")[0]
@@ -150,10 +119,12 @@ export default function Events() {
       }, [loadReports])
   );
 
-  const reportEventsByDate = useMemo(() => {
-    const grouped: Record<string, Event[]> = {};
+const reportEventsByDate = useMemo(() => {
+  const grouped: Record<string, Event[]> = {};
 
-    reports.forEach((report) => {
+  reports
+    .filter((report) => report.isScheduledEvent === true)  // ← add this
+    .forEach((report) => {
       if (!grouped[report.date]) {
         grouped[report.date] = [];
       }
@@ -171,18 +142,10 @@ export default function Events() {
       });
     });
 
-    return grouped;
-  }, [reports]);
+  return grouped;
+}, [reports]);
 
-  const allEvents = useMemo(() => {
-    const merged: Record<string, Event[]> = { ...manualEvents };
-
-    Object.entries(reportEventsByDate).forEach(([date, reportEvents]) => {
-      merged[date] = [...(merged[date] || []), ...reportEvents];
-    });
-
-    return merged;
-  }, [manualEvents, reportEventsByDate]);
+  const allEvents = reportEventsByDate;
 
   const markedDates = useMemo(() => {
     const marks: Record<string, any> = {};
@@ -231,9 +194,17 @@ export default function Events() {
             contentContainerStyle={styles.scrollableContent}
             ListHeaderComponent={
               <>
-                <View style={styles.header}>
-                  <Text style={styles.title}>Your Events</Text>
-                </View>
+            <View style={styles.header}>
+              <Text style={styles.title}>Your Events</Text>
+              {isAdmin && (
+                <TouchableOpacity
+                  style={styles.adminButton}
+                  onPress={() => setShowAdminEventModal(true)}
+                >
+                  <Text style={styles.adminButtonText}>+ Add Event</Text>
+                </TouchableOpacity>
+              )}
+            </View>
 
                 <Text style={styles.sectionDescription}>
                   Tap a building to filter events.
@@ -431,7 +402,11 @@ export default function Events() {
             onClose={() => setIsReportModalVisible(false)}
             onSubmitSuccess={loadReports}
         />
-
+        <AdminEventModal
+          visible={showAdminEventModal}
+          onClose={() => setShowAdminEventModal(false)}
+          onSubmitSuccess={loadReports}
+        />
         <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />
       </SafeAreaView>
   );

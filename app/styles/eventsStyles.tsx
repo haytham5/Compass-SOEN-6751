@@ -382,4 +382,16 @@ export const styles = StyleSheet.create({
     color: "#5A6B80",
     marginBottom: 10,
   },
+
+  adminButton: {
+  backgroundColor: "#276389",
+  paddingHorizontal: 14,
+  paddingVertical: 8,
+  borderRadius: 8,
+  },
+  adminButtonText: {
+    color: "white",
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+  },
 });
