@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export type UserRole = "concordian" | "security";
+export type UserRole = "concordian" | "security" | "admin";
 
 export type StoredUser = {
     firstName: string;

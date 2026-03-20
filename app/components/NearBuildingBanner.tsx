@@ -11,6 +11,7 @@ export default function NearBuildingBanner({ onBannerPress }: Props) {
     buildingId: string;
     buildingName: string;
     time: string;
+    isSevere?: boolean;
   } | null>(null);
 
   useEffect(() => {
@@ -33,13 +34,15 @@ export default function NearBuildingBanner({ onBannerPress }: Props) {
   if (!nearBuilding) return null;
 
   return (
-    <View style={styles.banner}>
+    <View style={[styles.banner, nearBuilding.isSevere && styles.bannerSevere]}>
       <TouchableOpacity
         style={styles.textContainer}
         onPress={() => onBannerPress?.(nearBuilding.buildingId)}
       >
         <Text style={styles.text}>
-          You are near {nearBuilding.buildingName} which has active alerts
+          {nearBuilding.isSevere
+            ? `Severe alert at ${nearBuilding.buildingName} — marked by security`
+            : `You are near ${nearBuilding.buildingName} which has active alerts`}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={async () => {
@@ -74,5 +77,9 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     paddingLeft: 10,
+  },
+
+  bannerSevere: {
+    backgroundColor: "#D9534F",  // red instead of the default colour
   },
 });
