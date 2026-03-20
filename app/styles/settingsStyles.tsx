@@ -8,7 +8,9 @@ export const styles = StyleSheet.create({
   },
 
   scrollableContent: {
-    paddingVertical: 20,
+    paddingTop: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 120,
   },
 
   header: {
@@ -22,31 +24,7 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 25,
     fontFamily: "Lexend_400Regular",
-  },
-
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    marginBottom: 0,
-  },
-
-  label: {
-    fontSize: 18,
-    fontFamily: "Lexend_400Regular",
-  },
-
-  logout: {
-    paddingHorizontal: 20,
-    marginTop: 24,
-  },
-
-  logoutLabel: {
-    fontSize: 18,
-    fontWeight: "bold",
-    fontFamily: "Lexend_400Regular",
-    color: "#f16c6c",
+    color: "#223A5E",
   },
 
   tabContainer: {
@@ -83,22 +61,103 @@ export const styles = StyleSheet.create({
   profileCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 24,
-    padding: 20,
-    marginHorizontal: 2,
+  },
+
+  profileHero: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F7F9FF",
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: "#E6EDF6",
+  },
+
+  avatarCircle: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    backgroundColor: "#223A5E",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 14,
+  },
+
+  avatarText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 24,
+    color: "#FFFFFF",
+  },
+
+  profileHeroText: {
+    flex: 1,
   },
 
   profileName: {
     fontFamily: "Lexend_400Regular",
     fontSize: 22,
     color: "#223A5E",
-    marginBottom: 20,
   },
 
-  profileRow: {
+  roleBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: "#EAF1FB",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    marginTop: 6,
+    marginBottom: 6,
+  },
+
+  roleBadgeText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 12,
+    color: "#223A5E",
+  },
+
+  profileSubText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 13,
+    color: "#7A90A8",
+  },
+
+  sectionBlock: {
+    marginTop: 8,
     marginBottom: 16,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#EEF3FB",
+  },
+
+  sectionTitle: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 16,
+    color: "#223A5E",
+    marginBottom: 10,
+  },
+
+  infoCard: {
+    backgroundColor: "#F9FBFD",
+    borderWidth: 1,
+    borderColor: "#E7EEF7",
+    borderRadius: 18,
+    padding: 14,
+  },
+
+  formCard: {
+    backgroundColor: "#F9FBFD",
+    borderWidth: 1,
+    borderColor: "#E7EEF7",
+    borderRadius: 18,
+    padding: 14,
+  },
+
+  infoRow: {
+    paddingVertical: 6,
+  },
+
+  infoDivider: {
+    height: 1,
+    backgroundColor: "#EEF3FB",
+    marginVertical: 8,
   },
 
   profileLabel: {
@@ -113,22 +172,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: "#223A5E",
   },
-  floatingEditButton: {
-    position: "absolute",
-    right: 24,
-    bottom: 120,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#223A5E",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 6,
-  },
+
   profileInput: {
     backgroundColor: "#F7F9FF",
     borderWidth: 1,
@@ -142,11 +186,6 @@ export const styles = StyleSheet.create({
     color: "#223A5E",
   },
 
-  floatingEditButtonText: {
-    fontFamily: "Lexend_400Regular",
-    fontSize: 14,
-    color: "#FFFFFF",
-  },
   profileReadOnlyBox: {
     backgroundColor: "#EEF3FB",
     borderWidth: 1,
@@ -162,6 +201,112 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     color: "#6D86A0",
   },
+
+  primaryProfileButtonFull: {
+    backgroundColor: "#223A5E",
+    paddingVertical: 13,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 18,
+    width: "100%",
+  },
+
+  primaryProfileButton: {
+    flex: 1,
+    backgroundColor: "#223A5E",
+    paddingVertical: 13,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  primaryProfileButtonText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 14,
+    color: "#FFFFFF",
+  },
+
+  secondaryProfileButton: {
+    flex: 1,
+    backgroundColor: "#EEF3FB",
+    paddingVertical: 13,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  secondaryProfileButtonText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 14,
+    color: "#223A5E",
+  },
+
+  editActionsRow: {
+    flexDirection: "row",
+    columnGap: 10,
+    marginTop: 8,
+    marginBottom: 8,
+  },
+
+  settingsCard: {
+    backgroundColor: "#F9FBFD",
+    borderWidth: 1,
+    borderColor: "#E7EEF7",
+    borderRadius: 18,
+    overflow: "hidden",
+    marginBottom: 18,
+  },
+
+  settingRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+  },
+
+  settingLabel: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: "#223A5E",
+  },
+
+  settingsDivider: {
+    height: 1,
+    backgroundColor: "#EEF3FB",
+    marginHorizontal: 16,
+  },
+
+  dangerButton: {
+    backgroundColor: "#FCEBEC",
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
+  },
+
+  dangerButtonText: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: "#C94B56",
+  },
+
+  dangerButtonSecondary: {
+    backgroundColor: "#FFF6F6",
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  dangerButtonSecondaryText: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: "#D86A6A",
+  },
+
   preferencesModalScreen: {
     flex: 1,
     backgroundColor: "#F7F9FF",
