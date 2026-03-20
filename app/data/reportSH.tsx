@@ -9,16 +9,14 @@ export type TimelineEvent = {
 };
 
 export type AccessibilitySubtype =
-  | "escalator"
-  | "elevator"
-  | "ramp"
-  | "foot_traffic";
-
+    | "escalator"
+    | "elevator"
+    | "ramp"
+    | "foot_traffic";
 
 export type ReportType = "protest" | "event" | "accessibility";
 
 export type UserRole = "security" | "concordian" | "admin";
-
 
 export type Report = {
   id: string;
@@ -40,8 +38,13 @@ export type Report = {
   isVerifiedBySecurity: boolean;
   eventStartDate?: string;
   eventEndDate?: string;
-  timeline: TimelineEvent[];  // ← new
+  timeline: TimelineEvent[];
 };
+
+export type NewReportInput = Omit<
+    Report,
+    "isVerifiedBySecurity" | "timeline"
+>;
 
 const parseReports = async (): Promise<Report[]> => {
   try {
@@ -53,26 +56,31 @@ const parseReports = async (): Promise<Report[]> => {
   }
 };
 
-export const saveNewReport = async (report: Report): Promise<void> => {
+export const saveNewReport = async (report: NewReportInput): Promise<void> => {
   try {
     const reports = await parseReports();
-    const reportWithDefaults = {
+
+    const reportWithDefaults: Report = {
       ...report,
       isVerifiedBySecurity: report.submittedBy === "security",
       timeline: [
         {
-          action: "reported" as const,
+          action: "reported",
           by: report.submittedBy,
           time: report.time,
         },
-        // auto-add verified entry if security submitted
-        ...(report.submittedBy === "security" ? [{
-          action: "verified" as const,
-          by: "security",
-          time: report.time,
-        }] : []),
+        ...(report.submittedBy === "security"
+            ? [
+              {
+                action: "verified" as const,
+                by: "security",
+                time: report.time,
+              },
+            ]
+            : []),
       ],
     };
+
     reports.push(reportWithDefaults);
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(reports));
   } catch (error) {
@@ -87,19 +95,24 @@ export const verifyReport = async (reportId: string): Promise<void> => {
       hour: "2-digit",
       minute: "2-digit",
     });
+
     const updated = reports.map((r) =>
-      r.id === reportId
-        ? {
-            ...r,
-            isVerifiedBySecurity: true,
-            timeline: [...(r.timeline ?? []), {
-              action: "verified" as const,
-              by: "security",
-              time: now,
-            }],
-          }
-        : r
+        r.id === reportId
+            ? {
+              ...r,
+              isVerifiedBySecurity: true,
+              timeline: [
+                ...(r.timeline ?? []),
+                {
+                  action: "verified" as const,
+                  by: "security",
+                  time: now,
+                },
+              ],
+            }
+            : r
     );
+
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
   } catch (error) {
     console.error("Error verifying report:", error);
@@ -121,28 +134,25 @@ export const getReports = async (): Promise<Report[]> => {
 };
 
 export const getReportsByBuilding = async (
-  buildingId: string,
+    buildingId: string
 ): Promise<Report[]> => {
   const reports = await getReports();
   return reports.filter((report) => report.building === buildingId);
 };
 
-// Returns only admin-created scheduled future events (for calendar)
 export const getScheduledEvents = async (): Promise<Report[]> => {
   const reports = await getReports();
   return reports.filter((r) => r.isScheduledEvent);
 };
 
-// Returns only non-scheduled reports (for notifications/map)
 export const getActiveReports = async (): Promise<Report[]> => {
   const reports = await getReports();
   return reports.filter((r) => !r.isScheduledEvent);
 };
 
-// Upvote a report — userId must not be the original reporter
 export const upvoteReport = async (
-  reportId: string,
-  userId: string,
+    reportId: string,
+    userId: string
 ): Promise<void> => {
   try {
     const reports = await parseReports();
@@ -150,30 +160,35 @@ export const upvoteReport = async (
       hour: "2-digit",
       minute: "2-digit",
     });
+
     const updated = reports.map((r) => {
       if (r.id !== reportId) return r;
       if (r.name === userId) return r;
       if ((r.upvotedBy ?? []).includes(userId)) return r;
+
       return {
         ...r,
         upvotedBy: [...(r.upvotedBy ?? []), userId],
-        timeline: [...(r.timeline ?? []), {
-          action: "upvoted" as const,
-          by: userId,
-          time: now,
-        }],
+        timeline: [
+          ...(r.timeline ?? []),
+          {
+            action: "upvoted" as const,
+            by: userId,
+            time: now,
+          },
+        ],
       };
     });
+
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
   } catch (error) {
     console.error("Error upvoting report:", error);
   }
 };
 
-// Mark a report as resolved
 export const markReportResolved = async (
-  reportId: string,
-  resolvedBy: string,
+    reportId: string,
+    resolvedBy: string
 ): Promise<void> => {
   try {
     const reports = await parseReports();
@@ -181,33 +196,38 @@ export const markReportResolved = async (
       hour: "2-digit",
       minute: "2-digit",
     });
+
     const updated = reports.map((r) =>
-      r.id === reportId
-        ? {
-            ...r,
-            isResolved: true,
-            resolvedBy,
-            timeline: [...(r.timeline ?? []), {
-              action: "resolved" as const,
-              by: resolvedBy,
-              time: now,
-            }],
-          }
-        : r
+        r.id === reportId
+            ? {
+              ...r,
+              isResolved: true,
+              resolvedBy,
+              timeline: [
+                ...(r.timeline ?? []),
+                {
+                  action: "resolved" as const,
+                  by: resolvedBy,
+                  time: now,
+                },
+              ],
+            }
+            : r
     );
+
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
   } catch (error) {
     console.error("Error marking report resolved:", error);
   }
 };
 
-// Mark a report as severe — security only (enforce in UI)
 export const markReportSevere = async (reportId: string): Promise<void> => {
   try {
     const reports = await parseReports();
     const report = reports.find((r) => r.id === reportId);
+
     if (!report) {
-      console.log("markReportSevere: report not found", reportId);  // ← add
+      console.log("markReportSevere: report not found", reportId);
       return;
     }
 
@@ -217,17 +237,20 @@ export const markReportSevere = async (reportId: string): Promise<void> => {
     });
 
     const updated = reports.map((r) =>
-      r.id === reportId
-        ? {
-            ...r,
-            isSevere: true,
-            timeline: [...(r.timeline ?? []), {
-              action: "severe" as const,
-              by: "security",
-              time: now,
-            }],
-          }
-        : r
+        r.id === reportId
+            ? {
+              ...r,
+              isSevere: true,
+              timeline: [
+                ...(r.timeline ?? []),
+                {
+                  action: "severe" as const,
+                  by: "security",
+                  time: now,
+                },
+              ],
+            }
+            : r
     );
 
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
@@ -238,10 +261,10 @@ export const markReportSevere = async (reportId: string): Promise<void> => {
       time: now,
       isSevere: true,
     };
-    console.log("Writing nearBuilding:", nearBuildingData);  // ← add
-    await AsyncStorage.setItem("nearBuilding", JSON.stringify(nearBuildingData));
-    console.log("nearBuilding written successfully");  // ← add
 
+    console.log("Writing nearBuilding:", nearBuildingData);
+    await AsyncStorage.setItem("nearBuilding", JSON.stringify(nearBuildingData));
+    console.log("nearBuilding written successfully");
   } catch (error) {
     console.error("Error marking report severe:", error);
   }

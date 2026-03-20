@@ -162,4 +162,10 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     color: "#6D86A0",
   },
+  preferencesModalScreen: {
+    flex: 1,
+    backgroundColor: "#F7F9FF",
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
 });
