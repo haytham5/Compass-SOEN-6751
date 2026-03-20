@@ -3,13 +3,24 @@ import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect } from "react";
-import { StatusBar, Text, TouchableOpacity, View } from "react-native";
+import {
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { styles } from "./styles/userAuthStyles";
+import { styles as importStyles } from "./styles/userAuthStyles";
 
 import AppLoading from "expo-app-loading";
+import { Themes } from "./styles/Themes";
 
 export default function Welcome() {
+  const styles = importStyles(
+    useColorScheme() === "dark" ? Themes.dark : Themes.light,
+  );
+
   let [fontsLoaded] = useFonts({
     Pacifico_400Regular,
     Lexend_400Regular,

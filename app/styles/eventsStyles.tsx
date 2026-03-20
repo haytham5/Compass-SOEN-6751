@@ -1,185 +1,184 @@
 import { Platform, StyleSheet } from "react-native";
-import { Themes } from "./Themes";
+import { ThemeType } from "../data/themeProvider";
 
-const theme = Themes.light;
+export const styles = (theme: ThemeType) =>
+  StyleSheet.create({
+    background: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
 
-export const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    backgroundColor: theme.background,
-  },
+    scrollableContent: {
+      paddingHorizontal: 20,
+      paddingBottom: 20,
+    },
 
-  scrollableContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
+    scrollableContentHorizontal: {
+      padding: 0,
+    },
 
-  scrollableContentHorizontal: {
-    padding: 0,
-  },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 0,
+      paddingVertical: 10,
+    },
 
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 0,
-    paddingVertical: 10,
-  },
+    title: {
+      fontSize: 28,
+      fontFamily: "Pacifico_400Regular",
+    },
 
-  title: {
-    fontSize: 28,
-    fontFamily: "Pacifico_400Regular",
-  },
+    body: {
+      fontSize: 18,
+      fontFamily: "Lexend_400Regular",
+    },
 
-  body: {
-    fontSize: 18,
-    fontFamily: "Lexend_400Regular",
-  },
+    eventLegends: {
+      flexDirection: "row",
+      gap: 0,
+      marginBottom: 30,
+    },
 
-  eventLegends: {
-    flexDirection: "row",
-    gap: 0,
-    marginBottom: 30,
-  },
+    subCard: {
+      width: 65,
+      height: 65,
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: 10,
 
-  subCard: {
-    width: 65,
-    height: 65,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 10,
+      borderRadius: 8,
+      ...Platform.select({
+        ios: {
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.8,
+          shadowRadius: 1,
+        },
+        android: {
+          elevation: 1,
+          shadowColor: "#000",
+        },
+      }),
+    },
 
-    borderRadius: 8,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.8,
-        shadowRadius: 1,
-      },
-      android: {
-        elevation: 1,
-        shadowColor: "#000",
-      },
-    }),
-  },
+    eventCard: {
+      marginHorizontal: 15,
+      marginVertical: 6,
+      padding: 14,
+      borderRadius: 10,
+    },
 
-  eventCard: {
-    marginHorizontal: 15,
-    marginVertical: 6,
-    padding: 14,
-    borderRadius: 10,
-  },
+    eventText: {
+      color: theme.on_background,
+      fontWeight: "700",
+    },
 
-  eventText: {
-    color: theme.textOnPrimary,
-    fontWeight: "700",
-  },
+    subBody: {
+      fontSize: 24,
+      fontWeight: "bold",
+      fontFamily: "Lexend_400Regular",
+      color: theme.on_background,
+    },
 
-  subBody: {
-    fontSize: 24,
-    fontWeight: "bold",
-    fontFamily: "Lexend_400Regular",
-    color: theme.textOnPrimary,
-  },
+    eventLegend: {
+      padding: 16,
+      marginBottom: 15,
+      borderRadius: 8,
+    },
 
-  eventLegend: {
-    padding: 16,
-    marginBottom: 15,
-    borderRadius: 8,
-  },
+    notification: {
+      padding: 16,
+      marginBottom: 15,
+      borderRadius: 8,
+    },
 
-  notification: {
-    padding: 16,
-    marginBottom: 15,
-    borderRadius: 8,
-  },
+    notificationBody: {
+      color: theme.on_background,
+      fontSize: 18,
+      fontFamily: "Lexend_400Regular",
+    },
 
-  notificationBody: {
-    color: theme.textOnPrimary,
-    fontSize: 18,
-    fontFamily: "Lexend_400Regular",
-  },
+    bold: {
+      fontWeight: "700",
+    },
 
-  bold: {
-    fontWeight: "700",
-  },
+    red: {
+      backgroundColor: theme.evBuilding,
+    },
 
-  red: {
-    backgroundColor: theme.evBuilding,
-  },
+    green: {
+      backgroundColor: theme.fbBuilding,
+    },
 
-  green: {
-    backgroundColor: theme.fbBuilding,
-  },
+    unsubbed: {
+      backgroundColor: theme.surface_dim,
+      opacity: 0.7,
+    },
 
-  unsubbed: {
-    backgroundColor: theme.unsubbed,
-    opacity: 0.7,
-  },
-
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: theme.overlay,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  modalCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 20,
-    width: "100%",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 5,
-        shadowColor: "#000",
-      },
-    }),
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontFamily: "Pacifico_400Regular",
-    color: theme.primary,
-    flex: 1,
-  },
-  modalBuilding: {
-    fontSize: 16,
-    fontFamily: "Lexend_400Regular",
-    color: theme.textSecondary,
-    marginBottom: 6,
-  },
-  modalTime: {
-    fontSize: 13,
-    fontFamily: "Lexend_400Regular",
-    color: theme.textMuted,
-    fontStyle: "italic",
-    marginBottom: 12,
-  },
-  modalDescription: {
-    fontSize: 15,
-    fontFamily: "Lexend_400Regular",
-    color: theme.textTertiary,
-  },
-  closeButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  closeButtonText: {
-    fontSize: 28,
-    color: theme.primary,
-    lineHeight: 28,
-  },
-});
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: theme.overlay,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 20,
+    },
+    modalCard: {
+      backgroundColor: theme.background,
+      borderRadius: 12,
+      padding: 20,
+      width: "100%",
+      ...Platform.select({
+        ios: {
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.2,
+          shadowRadius: 4,
+        },
+        android: {
+          elevation: 5,
+          shadowColor: "#000",
+        },
+      }),
+    },
+    modalHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 10,
+    },
+    modalTitle: {
+      fontSize: 20,
+      fontFamily: "Pacifico_400Regular",
+      color: theme.primary,
+      flex: 1,
+    },
+    modalBuilding: {
+      fontSize: 16,
+      fontFamily: "Lexend_400Regular",
+      color: theme.on_surface,
+      marginBottom: 6,
+    },
+    modalTime: {
+      fontSize: 13,
+      fontFamily: "Lexend_400Regular",
+      color: theme.on_surface_medium,
+      fontStyle: "italic",
+      marginBottom: 12,
+    },
+    modalDescription: {
+      fontSize: 15,
+      fontFamily: "Lexend_400Regular",
+      color: theme.on_surface_variant,
+    },
+    closeButton: {
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+    },
+    closeButtonText: {
+      fontSize: 28,
+      color: theme.primary,
+      lineHeight: 28,
+    },
+  });

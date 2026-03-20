@@ -1,10 +1,7 @@
 import { Platform, StyleSheet } from "react-native";
+import { ThemeType } from "../data/themeProvider";
 
-export const bottomNavStyles = (theme: {
-  border: any;
-  textOnPrimary: any;
-  surfaceHighlight: any;
-}) =>
+export const bottomNavStyles = (theme: ThemeType) =>
   StyleSheet.create({
     wrapper: {
       backgroundColor: "transparent",
@@ -18,7 +15,7 @@ export const bottomNavStyles = (theme: {
       paddingHorizontal: 10,
       borderTopWidth: 1,
       borderTopColor: theme.border,
-      backgroundColor: theme.textOnPrimary,
+      backgroundColor: theme.on_primary,
 
       ...Platform.select({
         ios: {
@@ -46,7 +43,7 @@ export const bottomNavStyles = (theme: {
     },
 
     activeNavItem: {
-      backgroundColor: theme.surfaceHighlight,
+      backgroundColor: theme.surface_variant,
       borderRadius: 16,
       paddingVertical: 10,
     },

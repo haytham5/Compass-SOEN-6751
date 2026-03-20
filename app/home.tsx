@@ -2,7 +2,7 @@ import { useFonts } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
 import { useEffect, useRef, useState } from "react";
-import darkMapStyle from "./styles/darkMapStyle.json";
+import mapThemes from "./styles/mapThemes.json";
 
 import {
   initialSubscriptions,
@@ -18,6 +18,7 @@ import {
   StatusBar,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
@@ -28,15 +29,20 @@ import ViewShot, { captureRef } from "react-native-view-shot";
 import BottomNav from "./components/bottomNav";
 import MapInfo from "./components/mapInfo";
 import ReportFormModal from "./components/ReportFormModal";
-import { styles } from "./styles/indexStyles";
+import { styles as importStyles } from "./styles/indexStyles";
 import { Themes } from "./styles/Themes";
 
 export default function Home() {
+  const styles = importStyles(
+    useColorScheme() === "dark" ? Themes.dark : Themes.light,
+  );
+  const mapTheme =
+    useColorScheme() === "dark" ? mapThemes[0].dark : mapThemes[0].light;
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
 
   useEffect(() => {
-    NavigationBar.setBackgroundColorAsync(Themes.dark.surface);
+    NavigationBar.setBackgroundColorAsync(Themes.light.surface);
     NavigationBar.setButtonStyleAsync("dark");
     NavigationBar.setBehaviorAsync("overlay-swipe");
   }, []);
@@ -194,7 +200,7 @@ export default function Home() {
         maxZoomLevel={18}
         ref={mapRef}
         onMapReady={() => onMapReady(mapRef.current)}
-        customMapStyle={darkMapStyle}
+        customMapStyle={mapTheme}
       >
         {Object.keys(buildings).map((b) => {
           const coord = buildings[b];

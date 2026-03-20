@@ -1,11 +1,10 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { usePathname, useRouter } from "expo-router";
 import React from "react";
-import { TouchableOpacity, View } from "react-native";
-import { bottomNavStyles } from "../styles/bottomNavStyles";
+import { TouchableOpacity, useColorScheme, View } from "react-native";
+import { bottomNavStyles as importStyles } from "../styles/bottomNavStyles";
 
 import { Bell, Calendar, House, Plus, User } from "lucide-react-native";
-
 import { Themes } from "../styles/Themes";
 
 interface BottomNavProps {
@@ -24,15 +23,15 @@ export default function BottomNav({ onPressAdd }: BottomNavProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const scheme = "dark";
-  const theme = scheme === "dark" ? Themes.dark : Themes.light;
-
-  const styles = bottomNavStyles(theme);
+  const styles = importStyles(
+    useColorScheme() === "dark" ? Themes.dark : Themes.light,
+  );
+  const theme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
 
   return (
     <View style={styles.wrapper}>
       <LinearGradient
-        colors={[theme.surfaceSoft, theme.background, theme.background]}
+        colors={[theme.surface_bright, theme.background, theme.background]}
         style={styles.bottomNav}
       >
         {navItems.map((item) => {
@@ -54,7 +53,9 @@ export default function BottomNav({ onPressAdd }: BottomNavProps) {
             >
               <Icon
                 size={26}
-                color={isActive ? theme.textPrimary : theme.textLight}
+                color={
+                  isActive ? theme.on_surface : theme.on_surface_variant_light
+                }
                 strokeWidth={2}
               />
             </TouchableOpacity>

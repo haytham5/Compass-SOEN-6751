@@ -11,13 +11,15 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import BottomNav from "./components/bottomNav";
 import { deleteAllReports } from "./data/reportSH";
-import { styles } from "./styles/settingsStyles";
+import { styles as importStyles } from "./styles/settingsStyles";
+import { Themes } from "./styles/Themes";
 import {
   clearCurrentUser,
   getCurrentUser,
@@ -38,6 +40,10 @@ export default function Settings() {
     Pacifico_400Regular,
     Lexend_400Regular,
   });
+
+  const styles = importStyles(
+    useColorScheme() === "dark" ? Themes.dark : Themes.light,
+  );
 
   const [lightMode, setLightMode] = useState(true);
   const [notifications, setNotifications] = useState(true);
@@ -276,7 +282,9 @@ export default function Settings() {
             <SettingRow
               label="Light Mode"
               value={lightMode}
-              onChange={setLightMode}
+              onChange={(alterTheme) => {
+                setLightMode(!lightMode);
+              }}
             />
 
             <SettingRow

@@ -18,6 +18,7 @@ import {
   StatusBar,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 
@@ -25,7 +26,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import BottomNav from "./components/bottomNav";
 
-import { styles } from "./styles/notificationsStyles";
+import { styles as importStyles } from "./styles/notificationsStyles";
+import { Themes } from "./styles/Themes";
 
 // //definition of what a notification obj contains/looks like
 // type NotificationItem = {
@@ -41,6 +43,10 @@ import { styles } from "./styles/notificationsStyles";
 // };
 
 export default function Notifications() {
+  const styles = importStyles(
+    useColorScheme() === "dark" ? Themes.dark : Themes.light,
+  );
+
   const [fontsLoaded] = useFonts({
     // FONT LOADING
     Pacifico_400Regular,

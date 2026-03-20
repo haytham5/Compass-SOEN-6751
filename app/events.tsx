@@ -10,13 +10,15 @@ import {
   StatusBar,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BottomNav from "./components/bottomNav";
 import { getReports, Report } from "./data/reportSH";
-import { styles } from "./styles/eventsStyles";
+import { styles as importStyles } from "./styles/eventsStyles";
+import { Themes } from "./styles/Themes";
 
 interface RowProps {
   acc: string;
@@ -38,6 +40,10 @@ type Event = {
 // - calendar events are only from reputable sources
 
 export default function Events() {
+  const styles = importStyles(
+    useColorScheme() === "dark" ? Themes.dark : Themes.light,
+  );
+
   const [reports, setReports] = useState<Report[]>([]);
   const [loadingReports, setLoading] = useState(true);
 
