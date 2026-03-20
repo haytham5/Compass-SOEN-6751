@@ -25,11 +25,11 @@ import type {
 } from "../utils/authStorage";
 
 const DEFAULT_BUILDINGS = [
-    { id: "hall", name: "Hall Building" },
-    { id: "library", name: "Webster Library" },
-    { id: "ev", name: "EV Building" },
-    { id: "mb", name: "MB Building" },
-    { id: "jmsb", name: "JMSB" },
+    { id: "EV", name: "EV Building" },
+    { id: "H", name: "Hall Building" },
+    { id: "FB", name: "Faubourg Building" },
+    { id: "LB", name: "Webster Library" },
+    { id: "JMSB", name: "JMSB / JM" },
 ] as const;
 
 const DAYS: DayKey[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -83,6 +83,40 @@ interface BuildingPreferencesWizardProps {
     showTopHeader?: boolean;
 }
 
+function normalizeBuildingId(buildingId?: string): string {
+    const value = buildingId?.toLowerCase().trim();
+
+    switch (value) {
+        case "ev":
+            return "EV";
+
+        case "hall":
+        case "hall building":
+        case "h":
+            return "H";
+
+        case "faubourg":
+        case "faubourg building":
+        case "fb":
+            return "FB";
+
+        case "library":
+        case "webster":
+        case "webster library":
+        case "lb":
+            return "LB";
+
+        case "jmsb":
+        case "jm":
+        case "jmsb/jm":
+        case "jmsb / jm":
+            return "JMSB";
+
+        default:
+            return buildingId ?? "";
+    }
+}
+
 function makeDefaultPreferences(): BuildingPreference[] {
     return DEFAULT_BUILDINGS.map((building) => ({
         buildingId: building.id,
@@ -104,7 +138,9 @@ function normalizePreferences(
     if (!prefs?.length) return makeDefaultPreferences();
 
     return DEFAULT_BUILDINGS.map((building) => {
-        const existing = prefs.find((p) => p.buildingId === building.id);
+        const existing = prefs.find(
+            (p) => normalizeBuildingId(p.buildingId) === building.id
+        );
 
         if (!existing) {
             return {
@@ -122,8 +158,8 @@ function normalizePreferences(
         }
 
         return {
-            buildingId: existing.buildingId,
-            buildingName: existing.buildingName || building.name,
+            buildingId: building.id,
+            buildingName: building.name,
             subscribed: existing.subscribed ?? false,
             dayPreferences: DAYS.map((day) => {
                 const existingDay = existing.dayPreferences?.find((d) => d.day === day);
@@ -157,8 +193,6 @@ export default function BuildingPreferencesWizard({
     const [preferences, setPreferences] = useState<BuildingPreference[]>(
         normalizePreferences(initialPreferences)
     );
-    // const insets = useSafeAreaInsets();
-
 
     const [step, setStep] = useState<WizardStep>(showIntro ? "intro" : 0);
     const [timePickerState, setTimePickerState] = useState<{
@@ -705,7 +739,7 @@ const styles = StyleSheet.create({
     },
     contentWrapper: {
         paddingTop: 6,
-        flexGrow:1,
+        flexGrow: 1,
     },
     progressWrapper: {
         marginBottom: 18,
@@ -1044,7 +1078,6 @@ const styles = StyleSheet.create({
     scrollArea: {
         flex: 1,
     },
-
     scrollContent: {
         paddingBottom: 32,
     },
