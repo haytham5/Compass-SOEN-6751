@@ -784,4 +784,42 @@ export const styles = StyleSheet.create({
     color: "#F59E0B",
     textDecorationLine: "underline",
   },
+
+  reportModeToggle: {
+    flexDirection: "row",
+    marginTop: 12,
+    gap: 10,
+  },
+
+  reportModeButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 18,
+    backgroundColor: "#EEF3F7",
+    borderWidth: 1,
+    borderColor: "#D7E2EA",
+  },
+
+  reportModeButtonActive: {
+    backgroundColor: "#276389",
+    borderColor: "#276389",
+  },
+
+  reportModeButtonDisabled: {
+    opacity: 0.55,
+  },
+
+  reportModeButtonText: {
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: "#276389",
+  },
+
+  reportModeButtonTextActive: {
+    color: "#FFFFFF",
+  },
+
+  reportModeButtonTextDisabled: {
+    color: "#276389",
+  },
 });

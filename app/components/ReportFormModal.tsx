@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { AccessibilitySubtype, saveNewReport } from "../data/reportSH";
 import { styles } from "../styles/reportFormModalStyles";
-import { getCurrentUser } from "../utils/authStorage";
+import { getCurrentUser, type UserRole } from "../utils/authStorage";
 
 interface ReportFormModalProps {
     visible: boolean;
@@ -37,8 +37,7 @@ export default function ReportFormModal({
     const [type, setType] = useState<"protest" | "event" | "accessibility">("protest");
     const [description, setDescription] = useState("");
     const [accessibilitySubtype, setAccessibilitySubtype] = useState<AccessibilitySubtype>("elevator");
-    const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
-
+    const [currentUserRole, setCurrentUserRole] = useState<UserRole | null>(null);
     useEffect(() => {
         if (visible) {
             getCurrentUser().then((user) => {
@@ -108,8 +107,7 @@ export default function ReportFormModal({
                 minute: "2-digit",
             }),
             accessibilitySubtype: type === "accessibility" ? accessibilitySubtype : undefined,
-            submittedBy: (currentUserRole as any) ?? "concordian",
-            isScheduledEvent: false,
+            submittedBy: currentUserRole ?? "concordian",            isScheduledEvent: false,
             isSevere: false,
             upvotedBy: [],
             isResolved: false,
