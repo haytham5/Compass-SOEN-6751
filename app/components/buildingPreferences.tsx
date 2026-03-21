@@ -83,6 +83,25 @@ interface BuildingPreferencesWizardProps {
     showTopHeader?: boolean;
 }
 
+const COLORS = {
+    white: "#FFFFFF",
+    black: "#111111",
+    text: "#1F1F1F",
+    subtext: "#4E4E4E",
+    muted: "#6B7280",
+
+    primary: "#56bab8",
+    primaryDark: "#5a8c8b",
+    pink: "#e7548b",
+    lavender: "#9796b8",
+    softPink: "#d6b1c3",
+
+    border: "#E7E7EC",
+    softBg: "#F9FAFB",
+    tealTint: "#EEF9F8",
+    pinkTint: "#FCEAF1",
+};
+
 function normalizeBuildingId(buildingId?: string): string {
     const value = buildingId?.toLowerCase().trim();
 
@@ -132,9 +151,7 @@ function makeDefaultPreferences(): BuildingPreference[] {
     }));
 }
 
-function normalizePreferences(
-    prefs?: BuildingPreference[]
-): BuildingPreference[] {
+function normalizePreferences(prefs?: BuildingPreference[]): BuildingPreference[] {
     if (!prefs?.length) return makeDefaultPreferences();
 
     return DEFAULT_BUILDINGS.map((building) => {
@@ -375,10 +392,7 @@ export default function BuildingPreferencesWizard({
             </TouchableOpacity>
 
             {allowSkip && (
-                <TouchableOpacity
-                    style={styles.secondaryButton}
-                    onPress={() => onSkip?.()}
-                >
+                <TouchableOpacity style={styles.secondaryButton} onPress={() => onSkip?.()}>
                     <Text style={styles.secondaryButtonText}>Skip for now</Text>
                 </TouchableOpacity>
             )}
@@ -395,7 +409,7 @@ export default function BuildingPreferencesWizard({
         return (
             <View style={styles.panel}>
                 <View style={styles.stepHeader}>
-                    <MapPin size={18} color="#276389" />
+                    <MapPin size={18} color={COLORS.primary} />
                     <Text style={styles.stepTitle}>{currentBuilding.buildingName}</Text>
                 </View>
 
@@ -478,7 +492,7 @@ export default function BuildingPreferencesWizard({
                                     </View>
 
                                     {day.enabled ? (
-                                        <ChevronRight size={18} color="#64748B" />
+                                        <ChevronRight size={18} color={COLORS.muted} />
                                     ) : null}
                                 </TouchableOpacity>
 
@@ -494,7 +508,7 @@ export default function BuildingPreferencesWizard({
                                                         allDay: value,
                                                     }))
                                                 }
-                                                trackColor={{ false: "#D3DCE6", true: "#B39DDB" }}
+                                                trackColor={{ false: COLORS.border, true: COLORS.primary }}
                                                 thumbColor="#FFFFFF"
                                             />
                                         </View>
@@ -511,7 +525,7 @@ export default function BuildingPreferencesWizard({
                                                         })
                                                     }
                                                 >
-                                                    <Clock3 size={16} color="#276389" />
+                                                    <Clock3 size={16} color={COLORS.primaryDark} />
                                                     <Text style={styles.timeButtonText}>
                                                         Start: {day.startTime}
                                                     </Text>
@@ -527,7 +541,7 @@ export default function BuildingPreferencesWizard({
                                                         })
                                                     }
                                                 >
-                                                    <Clock3 size={16} color="#276389" />
+                                                    <Clock3 size={16} color={COLORS.primaryDark} />
                                                     <Text style={styles.timeButtonText}>
                                                         End: {day.endTime}
                                                     </Text>
@@ -543,7 +557,7 @@ export default function BuildingPreferencesWizard({
 
                 <View style={styles.footerRow}>
                     <TouchableOpacity style={styles.backButton} onPress={goBack}>
-                        <ChevronLeft size={16} color="#475569" />
+                        <ChevronLeft size={16} color={COLORS.subtext} />
                         <Text style={styles.backButtonText}>Back</Text>
                     </TouchableOpacity>
 
@@ -592,7 +606,7 @@ export default function BuildingPreferencesWizard({
 
             <View style={styles.footerRow}>
                 <TouchableOpacity style={styles.backButton} onPress={goBack}>
-                    <ChevronLeft size={16} color="#475569" />
+                    <ChevronLeft size={16} color={COLORS.subtext} />
                     <Text style={styles.backButtonText}>Back</Text>
                 </TouchableOpacity>
 
@@ -632,11 +646,10 @@ export default function BuildingPreferencesWizard({
                     <View style={styles.timeModal}>
                         <View style={styles.timeModalHeader}>
                             <Text style={styles.timeModalTitle}>
-                                Select{" "}
-                                {timePickerState.field === "startTime" ? "start" : "end"} time
+                                Select {timePickerState.field === "startTime" ? "start" : "end"} time
                             </Text>
                             <TouchableOpacity onPress={() => setTimePickerState(null)}>
-                                <X size={20} color="#111827" />
+                                <X size={20} color={COLORS.primaryDark} />
                             </TouchableOpacity>
                         </View>
 
@@ -676,7 +689,7 @@ export default function BuildingPreferencesWizard({
             {showTopHeader && (
                 <View style={[styles.topHeader, { paddingTop: Math.min(insets.top, 20) }]}>
                     <TouchableOpacity style={styles.topHeaderButton} onPress={onCancel}>
-                        <ChevronLeft size={18} color="#334155" />
+                        <ChevronLeft size={18} color={COLORS.primaryDark} />
                         <Text style={styles.topHeaderButtonText}>Back</Text>
                     </TouchableOpacity>
 
@@ -709,7 +722,9 @@ const styles = StyleSheet.create({
     container: {
         width: "100%",
         flex: 1,
+        backgroundColor: COLORS.white,
     },
+
     topHeader: {
         flexDirection: "row",
         alignItems: "center",
@@ -717,6 +732,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4,
         paddingBottom: 14,
     },
+
     topHeaderButton: {
         flexDirection: "row",
         alignItems: "center",
@@ -724,360 +740,457 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         paddingHorizontal: 4,
     },
+
     topHeaderButtonText: {
         fontSize: 15,
         fontWeight: "600",
-        color: "#334155",
+        color: COLORS.primaryDark,
     },
+
     topHeaderTitle: {
         fontSize: 18,
         fontWeight: "700",
-        color: "#1E293B",
+        color: COLORS.black,
     },
+
     topHeaderSpacer: {
         width: 56,
     },
+
     contentWrapper: {
         paddingTop: 6,
         flexGrow: 1,
     },
+
     progressWrapper: {
         marginBottom: 18,
         paddingTop: 4,
     },
+
     progressBarTrack: {
         height: 6,
         borderRadius: 999,
-        backgroundColor: "#E5EAF1",
+        backgroundColor: COLORS.border,
         position: "absolute",
         left: 0,
         right: 0,
         top: 10,
     },
+
     progressBarFill: {
         height: 6,
         borderRadius: 999,
-        backgroundColor: "#276389",
+        backgroundColor: COLORS.primary,
         position: "absolute",
         left: 0,
         top: 10,
     },
+
     progressDotsRow: {
         flexDirection: "row",
         justifyContent: "space-between",
         marginBottom: 12,
     },
+
     progressDot: {
         width: 16,
         height: 16,
         borderRadius: 999,
-        backgroundColor: "#D5DEE8",
+        backgroundColor: COLORS.border,
     },
+
     progressDotActive: {
-        backgroundColor: "#276389",
+        backgroundColor: COLORS.primary,
     },
+
     progressText: {
         fontSize: 12,
-        color: "#64748B",
+        color: COLORS.subtext,
         marginTop: 10,
+        fontFamily: "Lexend_400Regular",
     },
+
     panel: {
-        backgroundColor: "#FFFFFF",
-        borderRadius: 20,
+        backgroundColor: COLORS.white,
+        borderRadius: 22,
         borderWidth: 1,
-        borderColor: "#E5EAF1",
+        borderColor: COLORS.border,
         padding: 18,
     },
+
     title: {
         fontSize: 22,
         fontWeight: "700",
-        color: "#1E293B",
+        color: COLORS.black,
         marginBottom: 8,
+        fontFamily: "Lexend_400Regular",
     },
+
     subtitle: {
         fontSize: 14,
         lineHeight: 21,
-        color: "#64748B",
+        color: COLORS.subtext,
         marginBottom: 16,
+        fontFamily: "Lexend_400Regular",
     },
+
     infoCard: {
-        backgroundColor: "#F8FAFC",
-        borderRadius: 14,
+        backgroundColor: COLORS.tealTint,
+        borderRadius: 16,
         padding: 14,
         marginBottom: 18,
+        borderWidth: 1,
+        borderColor: COLORS.border,
     },
+
     infoTitle: {
         fontSize: 14,
         fontWeight: "700",
-        color: "#1E293B",
+        color: COLORS.black,
         marginBottom: 4,
+        fontFamily: "Lexend_400Regular",
     },
+
     infoText: {
         fontSize: 13,
         lineHeight: 19,
-        color: "#64748B",
+        color: COLORS.primaryDark,
+        fontFamily: "Lexend_400Regular",
     },
+
     primaryButton: {
-        backgroundColor: "#276389",
-        borderRadius: 14,
+        backgroundColor: COLORS.pink,
+        borderRadius: 16,
         paddingVertical: 14,
         alignItems: "center",
         marginBottom: 10,
     },
+
     primaryButtonSmall: {
-        backgroundColor: "#276389",
-        borderRadius: 14,
+        backgroundColor: COLORS.pink,
+        borderRadius: 16,
         paddingVertical: 14,
         paddingHorizontal: 20,
         alignItems: "center",
     },
+
     primaryButtonText: {
-        color: "#FFFFFF",
+        color: COLORS.white,
         fontWeight: "700",
         fontSize: 14,
+        fontFamily: "Lexend_400Regular",
     },
+
     secondaryButton: {
         borderWidth: 1,
-        borderColor: "#D7E0EA",
-        borderRadius: 14,
+        borderColor: COLORS.border,
+        borderRadius: 16,
         paddingVertical: 14,
         alignItems: "center",
+        backgroundColor: COLORS.softBg,
     },
+
     secondaryButtonText: {
-        color: "#334155",
+        color: COLORS.primaryDark,
         fontWeight: "600",
         fontSize: 14,
+        fontFamily: "Lexend_400Regular",
     },
+
     linkButton: {
         alignItems: "center",
         marginTop: 14,
     },
+
     linkText: {
-        color: "#276389",
+        color: COLORS.primaryDark,
         fontSize: 13,
         fontWeight: "600",
+        fontFamily: "Lexend_400Regular",
     },
+
     stepHeader: {
         flexDirection: "row",
         alignItems: "center",
         gap: 8,
         marginBottom: 12,
     },
+
     stepTitle: {
         fontSize: 20,
         fontWeight: "700",
-        color: "#1E293B",
+        color: COLORS.black,
+        fontFamily: "Lexend_400Regular",
     },
+
     stepQuestion: {
         fontSize: 14,
-        color: "#475569",
+        color: COLORS.subtext,
         marginBottom: 14,
+        fontFamily: "Lexend_400Regular",
     },
+
     choiceRow: {
         flexDirection: "row",
         gap: 10,
         marginBottom: 16,
     },
+
     choiceButton: {
         flex: 1,
-        borderRadius: 14,
+        borderRadius: 16,
         borderWidth: 1,
-        borderColor: "#D7E0EA",
+        borderColor: COLORS.border,
         paddingVertical: 12,
         alignItems: "center",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: COLORS.white,
     },
+
     choiceButtonActive: {
-        backgroundColor: "#E8F1F7",
-        borderColor: "#276389",
+        backgroundColor: COLORS.tealTint,
+        borderColor: COLORS.primary,
     },
+
     choiceButtonInactive: {
-        backgroundColor: "#F8FAFC",
+        backgroundColor: COLORS.softBg,
     },
+
     choiceText: {
-        color: "#334155",
+        color: COLORS.subtext,
         fontWeight: "600",
+        fontFamily: "Lexend_400Regular",
     },
+
     choiceTextActive: {
-        color: "#276389",
+        color: COLORS.primaryDark,
     },
+
     presetRow: {
         flexDirection: "row",
         gap: 8,
         flexWrap: "wrap",
         marginBottom: 14,
     },
+
     presetButton: {
         paddingHorizontal: 12,
         paddingVertical: 8,
-        backgroundColor: "#F1F5F9",
+        backgroundColor: COLORS.softBg,
         borderRadius: 999,
+        borderWidth: 1,
+        borderColor: COLORS.border,
     },
+
     presetText: {
         fontSize: 12,
-        color: "#334155",
+        color: COLORS.primaryDark,
         fontWeight: "600",
+        fontFamily: "Lexend_400Regular",
     },
+
     sectionLabel: {
         fontSize: 13,
-        color: "#475569",
+        color: COLORS.subtext,
         fontWeight: "700",
         marginBottom: 10,
+        fontFamily: "Lexend_400Regular",
     },
+
     dayCard: {
         borderWidth: 1,
-        borderColor: "#E5EAF1",
-        borderRadius: 14,
+        borderColor: COLORS.border,
+        borderRadius: 16,
         padding: 12,
         marginBottom: 10,
+        backgroundColor: COLORS.white,
     },
+
     dayHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
     },
+
     dayTitleRow: {
         flexDirection: "row",
         alignItems: "center",
         gap: 10,
     },
+
     checkbox: {
         width: 22,
         height: 22,
         borderRadius: 6,
         borderWidth: 1,
-        borderColor: "#CBD5E1",
+        borderColor: COLORS.border,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: COLORS.white,
     },
+
     checkboxActive: {
-        backgroundColor: "#276389",
-        borderColor: "#276389",
+        backgroundColor: COLORS.primary,
+        borderColor: COLORS.primary,
     },
+
     dayTitle: {
         fontSize: 14,
         fontWeight: "700",
-        color: "#1E293B",
+        color: COLORS.black,
+        fontFamily: "Lexend_400Regular",
     },
+
     dayDetails: {
         marginTop: 12,
         paddingTop: 12,
         borderTopWidth: 1,
-        borderTopColor: "#EEF2F6",
+        borderTopColor: COLORS.border,
     },
+
     allDayRow: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
     },
+
     allDayLabel: {
         fontSize: 13,
-        color: "#334155",
+        color: COLORS.subtext,
         fontWeight: "600",
+        fontFamily: "Lexend_400Regular",
     },
+
     timeRow: {
         gap: 10,
         marginTop: 12,
     },
+
     timeButton: {
         flexDirection: "row",
         alignItems: "center",
         gap: 8,
         borderWidth: 1,
-        borderColor: "#D7E0EA",
-        borderRadius: 12,
+        borderColor: COLORS.border,
+        borderRadius: 14,
         paddingHorizontal: 12,
         paddingVertical: 12,
-        backgroundColor: "#F8FAFC",
+        backgroundColor: COLORS.softBg,
     },
+
     timeButtonText: {
-        color: "#276389",
+        color: COLORS.primaryDark,
         fontWeight: "600",
+        fontFamily: "Lexend_400Regular",
     },
+
     footerRow: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
         marginTop: 18,
     },
+
     backButton: {
         flexDirection: "row",
         alignItems: "center",
         gap: 6,
     },
+
     backButtonText: {
-        color: "#475569",
+        color: COLORS.subtext,
         fontWeight: "600",
+        fontFamily: "Lexend_400Regular",
     },
+
     reviewScroll: {
         maxHeight: 320,
     },
+
     reviewCard: {
         borderWidth: 1,
-        borderColor: "#E5EAF1",
-        borderRadius: 14,
+        borderColor: COLORS.border,
+        borderRadius: 16,
         padding: 12,
         marginBottom: 10,
+        backgroundColor: COLORS.white,
     },
+
     reviewTitle: {
         fontSize: 14,
         fontWeight: "700",
-        color: "#1E293B",
+        color: COLORS.black,
         marginBottom: 6,
+        fontFamily: "Lexend_400Regular",
     },
+
     reviewLine: {
         fontSize: 13,
-        color: "#475569",
+        color: COLORS.subtext,
         marginBottom: 3,
+        fontFamily: "Lexend_400Regular",
     },
+
     reviewMuted: {
         fontSize: 13,
-        color: "#94A3B8",
+        color: COLORS.muted,
+        fontFamily: "Lexend_400Regular",
     },
+
     modalOverlay: {
         flex: 1,
         justifyContent: "flex-end",
-        backgroundColor: "rgba(0,0,0,0.35)",
+        backgroundColor: "rgba(17,17,17,0.35)",
     },
+
     modalBackdrop: {
         flex: 1,
     },
+
     timeModal: {
-        backgroundColor: "#FFFFFF",
-        borderTopLeftRadius: 22,
-        borderTopRightRadius: 22,
+        backgroundColor: COLORS.white,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
         padding: 18,
         maxHeight: "60%",
     },
+
     timeModalHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
     },
+
     timeModalTitle: {
         fontSize: 16,
         fontWeight: "700",
-        color: "#111827",
+        color: COLORS.black,
+        fontFamily: "Lexend_400Regular",
     },
+
     timeModalSubtitle: {
         fontSize: 13,
-        color: "#64748B",
+        color: COLORS.subtext,
         marginTop: 6,
         marginBottom: 12,
+        fontFamily: "Lexend_400Regular",
     },
+
     timeOption: {
         paddingVertical: 14,
         borderBottomWidth: 1,
-        borderBottomColor: "#EEF2F6",
+        borderBottomColor: COLORS.border,
     },
+
     timeOptionText: {
         fontSize: 15,
-        color: "#1E293B",
+        color: COLORS.black,
+        fontFamily: "Lexend_400Regular",
     },
+
     scrollArea: {
         flex: 1,
     },
+
     scrollContent: {
         paddingBottom: 32,
     },

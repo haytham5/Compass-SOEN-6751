@@ -58,7 +58,7 @@ export default function SignUp() {
 
     useEffect(() => {
         if (Platform.OS === "android") {
-            NavigationBar.setBackgroundColorAsync("#F7F9FF");
+            NavigationBar.setBackgroundColorAsync("#FFFFFF");
             NavigationBar.setButtonStyleAsync("dark");
             NavigationBar.setBehaviorAsync("overlay-swipe");
         }
@@ -148,7 +148,7 @@ export default function SignUp() {
     const RequiredLabel = ({ label }: { label: string }) => (
         <View style={localStyles.labelRow}>
             <Text style={styles.inputLabel}>{label}</Text>
-            <Asterisk size={12} color="#D7263D" strokeWidth={2.5} />
+            <Asterisk size={12} color="#e7548b" strokeWidth={2.5} />
         </View>
     );
 
@@ -158,7 +158,7 @@ export default function SignUp() {
 
     return (
         <SafeAreaView style={styles.background}>
-            <StatusBar backgroundColor="#F7F9FF" barStyle="dark-content" />
+            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
             <TouchableOpacity
                 style={[styles.topBackButton, { top: insets.top + 6 }]}
@@ -172,7 +172,7 @@ export default function SignUp() {
                 activeOpacity={0.7}
             >
                 <View style={localStyles.backRow}>
-                    {step === "preferences" && <ChevronLeft size={16} color="#243447" />}
+                    {step === "preferences" && <ChevronLeft size={16} color="#5a8c8b" />}
                     <Text style={styles.topBackText}>
                         {step === "preferences" ? "Back to account form" : "← Back"}
                     </Text>
@@ -189,7 +189,7 @@ export default function SignUp() {
                     showsVerticalScrollIndicator={false}
                 >
                     <View style={styles.logoArea}>
-                        <Text style={styles.appTitle}>App Name</Text>
+                        <Text style={styles.appTitle}>Compass</Text>
                     </View>
 
                     <View style={styles.card}>
@@ -208,8 +208,7 @@ export default function SignUp() {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="First name"
-                                    placeholderTextColor="#AABCD4"
-                                    value={firstName}
+                                    placeholderTextColor="#8E8E98"                                    value={firstName}
                                     onChangeText={(text) => {
                                         setFirstName(text);
                                         clearError();
@@ -220,7 +219,7 @@ export default function SignUp() {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Last name"
-                                    placeholderTextColor="#AABCD4"
+                                    placeholderTextColor="#8E8E98"
                                     value={lastName}
                                     onChangeText={(text) => {
                                         setLastName(text);
@@ -295,7 +294,7 @@ export default function SignUp() {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Student ID"
-                                    placeholderTextColor="#AABCD4"
+                                    placeholderTextColor="#8E8E98"
                                     value={idNumber}
                                     onChangeText={(text) => {
                                         setIdNumber(text);
@@ -307,7 +306,7 @@ export default function SignUp() {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="5141234567"
-                                    placeholderTextColor="#AABCD4"
+                                    placeholderTextColor="#8E8E98"
                                     value={phone}
                                     keyboardType="phone-pad"
                                     onChangeText={(text) => {
@@ -320,7 +319,7 @@ export default function SignUp() {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="you@university.ca"
-                                    placeholderTextColor="#AABCD4"
+                                    placeholderTextColor="#8E8E98"
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                     autoCorrect={false}
@@ -336,7 +335,7 @@ export default function SignUp() {
                                     <TextInput
                                         style={[styles.input, styles.passwordInput]}
                                         placeholder="Min. 8 characters"
-                                        placeholderTextColor="#AABCD4"
+                                        placeholderTextColor="#8E8E98"
                                         secureTextEntry={!showPassword}
                                         autoCapitalize="none"
                                         value={password}
@@ -350,9 +349,9 @@ export default function SignUp() {
                                         onPress={() => setShowPassword((v) => !v)}
                                     >
                                         {showPassword ? (
-                                            <EyeOff size={22} color="#5A6B7B" />
+                                            <EyeOff size={22} color="#5a8c8b" />
                                         ) : (
-                                            <Eye size={22} color="#5A6B7B" />
+                                            <Eye size={22} color="#5a8c8b" />
                                         )}
                                     </TouchableOpacity>
                                 </View>
@@ -399,6 +398,34 @@ export default function SignUp() {
     );
 }
 
+// const localStyles = StyleSheet.create({
+//     labelRow: {
+//         flexDirection: "row",
+//         alignItems: "center",
+//         gap: 6,
+//         marginBottom: 6,
+//     },
+//     requiredInfoBox: {
+//         flexDirection: "row",
+//         alignItems: "center",
+//         gap: 8,
+//         backgroundColor: "#FFF4E5",
+//         borderRadius: 12,
+//         paddingHorizontal: 12,
+//         paddingVertical: 10,
+//         marginBottom: 18,
+//     },
+//     requiredInfoText: {
+//         color: "#7A3E00",
+//         fontSize: 13,
+//         flex: 1,
+//     },
+//     backRow: {
+//         flexDirection: "row",
+//         alignItems: "center",
+//         gap: 4,
+//     },
+// });
 const localStyles = StyleSheet.create({
     labelRow: {
         flexDirection: "row",
@@ -406,21 +433,27 @@ const localStyles = StyleSheet.create({
         gap: 6,
         marginBottom: 6,
     },
+
     requiredInfoBox: {
         flexDirection: "row",
         alignItems: "center",
         gap: 8,
-        backgroundColor: "#FFF4E5",
-        borderRadius: 12,
+        backgroundColor: "#FCEAF1",
+        borderRadius: 14,
         paddingHorizontal: 12,
         paddingVertical: 10,
         marginBottom: 18,
+        borderWidth: 1,
+        borderColor: "#F1C8D9",
     },
+
     requiredInfoText: {
-        color: "#7A3E00",
+        color: "#8E3B62",
         fontSize: 13,
         flex: 1,
+        fontFamily: "Lexend_400Regular",
     },
+
     backRow: {
         flexDirection: "row",
         alignItems: "center",

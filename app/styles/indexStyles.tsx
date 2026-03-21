@@ -1,9 +1,35 @@
 import { Platform, StyleSheet } from "react-native";
 
+const COLORS = {
+  white: "#FFFFFF",
+  black: "#111111",
+  text: "#1F1F1F",
+  subtext: "#4E4E4E",
+  muted: "#6B7280",
+
+  primary: "#56bab8",
+  primaryDark: "#5a8c8b",
+  pink: "#e7548b",
+  lavender: "#9796b8",
+  softPink: "#d6b1c3",
+
+  border: "#E7E7EC",
+  softBg: "#F9FAFB",
+  cardBg: "#FFFFFF",
+  tealTint: "#EEF9F8",
+  pinkTint: "#FCEAF1",
+  lavenderTint: "#F3F1FA",
+  softPinkTint: "#F8F1F5",
+
+  success: "#2E9B63",
+  warning: "#D98B1F",
+  disabled: "#B8BDC7",
+};
+
 export const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
   },
 
   hiddenMarkerContainer: {
@@ -17,48 +43,50 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingTop: 10,
-    paddingBottom: 14,
+    paddingBottom: 16,
   },
 
   title: {
-    fontSize: 25,
+    fontSize: 28,
     fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
+    color: COLORS.black,
+    letterSpacing: -0.4,
   },
 
   body: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
+    color: COLORS.subtext,
+    lineHeight: 20,
   },
 
   userCircle: {
     width: 45,
     height: 45,
     borderRadius: 999,
-    backgroundColor: "#276389",
+    backgroundColor: COLORS.primary,
     justifyContent: "center",
     alignItems: "center",
   },
 
   mapPreviewWrapper: {
-    height: 250,
-    borderRadius: 20,
+    height: 255,
+    borderRadius: 24,
     overflow: "hidden",
-    backgroundColor: "#F5F8F4",
-    marginBottom: 18,
-    borderWidth: 1.5,
-    borderColor: "#DDE3EA",
+    backgroundColor: COLORS.softBg,
+    marginBottom: 22,
+    borderWidth: 1,
+    borderColor: COLORS.border,
     position: "relative",
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.08,
-        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.07,
+        shadowRadius: 18,
       },
       android: {
-        elevation: 2,
+        elevation: 3,
       },
     }),
   },
@@ -72,22 +100,22 @@ export const styles = StyleSheet.create({
     position: "absolute",
     top: 14,
     alignSelf: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "rgba(255,255,255,0.96)",
     borderRadius: 999,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderWidth: 1,
-    borderColor: "#DDE3EA",
+    borderColor: COLORS.border,
   },
 
   mapPreviewText: {
     fontSize: 12,
     fontFamily: "Lexend_400Regular",
-    color: "#276389",
+    color: COLORS.black,
   },
 
   marker: {
-    backgroundColor: "#276389",
+    backgroundColor: COLORS.primary,
     padding: 20,
     borderRadius: 20,
     elevation: 5,
@@ -97,17 +125,17 @@ export const styles = StyleSheet.create({
     position: "absolute",
     bottom: 78,
     left: 15,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
     padding: 12,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#DDE3EA",
+    borderColor: COLORS.border,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.12,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
       },
       android: {
         elevation: 3,
@@ -119,17 +147,17 @@ export const styles = StyleSheet.create({
     position: "absolute",
     bottom: 18,
     left: 15,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
     padding: 12,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#DDE3EA",
+    borderColor: COLORS.border,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.12,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
       },
       android: {
         elevation: 3,
@@ -141,17 +169,17 @@ export const styles = StyleSheet.create({
     position: "absolute",
     bottom: 18,
     right: 15,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
     padding: 12,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#DDE3EA",
+    borderColor: COLORS.border,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.12,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
       },
       android: {
         elevation: 3,
@@ -161,29 +189,36 @@ export const styles = StyleSheet.create({
 
   fullScreenContainer: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
   },
 
   closeButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    position: "absolute",
+    top: 55,
+    right: 16,
+    backgroundColor: "rgba(255,255,255,0.96)",
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   fullScreenAddReport: {
     position: "absolute",
     bottom: 140,
     left: 15,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
     padding: 12,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#DDE3EA",
+    borderColor: COLORS.border,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.12,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
       },
       android: {
         elevation: 3,
@@ -195,17 +230,17 @@ export const styles = StyleSheet.create({
     position: "absolute",
     bottom: 80,
     left: 15,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
     padding: 12,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#DDE3EA",
+    borderColor: COLORS.border,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.12,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
       },
       android: {
         elevation: 3,
@@ -217,17 +252,17 @@ export const styles = StyleSheet.create({
     position: "absolute",
     bottom: 80,
     right: 15,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
     padding: 12,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#DDE3EA",
+    borderColor: COLORS.border,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.12,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
       },
       android: {
         elevation: 3,
@@ -241,8 +276,8 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 15,
     borderTopWidth: 1,
-    borderTopColor: "#DDE3EA",
-    backgroundColor: "#FFFFFF",
+    borderTopColor: COLORS.border,
+    backgroundColor: COLORS.white,
   },
 
   navItem: {
@@ -254,31 +289,44 @@ export const styles = StyleSheet.create({
   },
 
   updatesHeader: {
-    marginBottom: 10,
+    marginBottom: 12,
   },
 
   updatesTitle: {
-    fontSize: 22,
+    fontSize: 23,
     fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
-    marginBottom: 2,
+    color: COLORS.black,
+    marginBottom: 4,
+    letterSpacing: -0.3,
   },
 
   updatesSubtitle: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
+    color: COLORS.subtext,
+    lineHeight: 20,
   },
 
   updateCard: {
     padding: 16,
     marginBottom: 12,
-    paddingBottom: 0, 
-    borderRadius: 20,
+    paddingBottom: 0,
+    borderRadius: 22,
     borderWidth: 1,
-    borderColor: "#DDE3EA",    // grey all around
-    borderLeftWidth: 5,         // thicker left edge
-    backgroundColor: "#F5F8F4",
+    borderColor: COLORS.border,
+    borderLeftWidth: 5,
+    backgroundColor: COLORS.cardBg,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.05,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
   },
 
   updateTopRow: {
@@ -293,20 +341,20 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: 17,
     fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
+    color: COLORS.black,
   },
 
   updateBuilding: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#3E4B57",
+    color: COLORS.subtext,
     marginBottom: 6,
   },
 
   updateMeta: {
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
+    color: COLORS.muted,
   },
 
   updateBadge: {
@@ -316,17 +364,17 @@ export const styles = StyleSheet.create({
   },
 
   updateBadgeRed: {
-    backgroundColor: "#D9534F",
+    backgroundColor: COLORS.pink,
   },
 
   updateBadgeGreen: {
-    backgroundColor: "#1FA64A",
+    backgroundColor: COLORS.success,
   },
 
   updateBadgeText: {
     fontSize: 12,
     fontFamily: "Lexend_400Regular",
-    color: "#FFFFFF",
+    color: COLORS.white,
   },
 
   emptyUpdatesState: {
@@ -334,29 +382,29 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     alignItems: "center",
     borderRadius: 20,
-    backgroundColor: "#F8FAFD",
+    backgroundColor: COLORS.softBg,
     borderWidth: 1,
-    borderColor: "#DDE3EA",
+    borderColor: COLORS.border,
   },
 
   emptyUpdatesTitle: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-    color: "#276389",
+    color: COLORS.black,
     marginBottom: 4,
   },
 
   emptyUpdatesBody: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
+    color: COLORS.subtext,
     textAlign: "center",
   },
 
   sectionDescription: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
+    color: COLORS.subtext,
     marginBottom: 10,
   },
 
@@ -369,15 +417,14 @@ export const styles = StyleSheet.create({
   emptyStateTitle: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-    fontWeight: "600",
-    color: "#276389",
+    color: COLORS.black,
     marginBottom: 4,
   },
 
   emptyStateBody: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
+    color: COLORS.subtext,
     textAlign: "center",
   },
 
@@ -385,16 +432,17 @@ export const styles = StyleSheet.create({
     padding: 18,
     marginBottom: 15,
     borderRadius: 20,
-    borderWidth: 1.5,
-    backgroundColor: "#F5F8F4",
+    borderWidth: 1,
+    backgroundColor: COLORS.cardBg,
+    borderColor: COLORS.border,
   },
 
   notificationRed: {
-    borderColor: "#E98A8A",
+    borderColor: COLORS.softPink,
   },
 
   notificationGreen: {
-    borderColor: "#9FD8AE",
+    borderColor: COLORS.primary,
   },
 
   notificationTopRow: {
@@ -409,7 +457,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: 20,
     fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
+    color: COLORS.black,
   },
 
   notificationMetaRow: {
@@ -422,11 +470,11 @@ export const styles = StyleSheet.create({
   notificationMeta: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#2F2F2F",
+    color: COLORS.text,
   },
 
   badge: {
-    backgroundColor: "#16A34A",
+    backgroundColor: COLORS.primary,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 999,
@@ -435,20 +483,20 @@ export const styles = StyleSheet.create({
   badgeText: {
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    color: "#FFFFFF",
+    color: COLORS.white,
   },
 
   badgeRed: {
-    backgroundColor: "#D9534F",
+    backgroundColor: COLORS.pink,
   },
 
   badgeGreen: {
-    backgroundColor: "#1FA64A",
+    backgroundColor: COLORS.success,
   },
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.35)",
+    backgroundColor: "rgba(17, 17, 17, 0.35)",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
@@ -456,19 +504,20 @@ export const styles = StyleSheet.create({
 
   modalCard: {
     width: "100%",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    borderRadius: 22,
     padding: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.12,
+        shadowRadius: 20,
       },
       android: {
-        elevation: 5,
-        shadowColor: "#000",
+        elevation: 6,
       },
     }),
   },
@@ -477,54 +526,55 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 12,
   },
 
   modalTitle: {
     fontSize: 20,
     fontFamily: "Lexend_400Regular",
-    color: "#276389",
+    color: COLORS.black,
     flex: 1,
   },
 
   modalRow: {
-    backgroundColor: "#F0F4FF",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 6,
+    backgroundColor: COLORS.softBg,
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   modalRowText: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#333",
+    color: COLORS.black,
   },
 
   modalRowMeta: {
-    fontSize: 11,
-    color: "#888",
-    fontStyle: "italic",
-    marginTop: 2,
+    fontSize: 12,
+    color: COLORS.muted,
+    marginTop: 3,
   },
 
   modalSecurityCount: {
     fontSize: 13,
-    color: "#276389",
+    color: COLORS.primaryDark,
     fontWeight: "600",
     marginTop: 10,
   },
 
   modalEmptyText: {
     fontSize: 13,
-    color: "#aaa",
+    color: COLORS.muted,
     fontStyle: "italic",
   },
 
   modalBuilding: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: "Lexend_400Regular",
-    color: "#444",
-    marginBottom: 6,
+    color: COLORS.subtext,
+    marginBottom: 10,
   },
 
   modalBadgeRow: {
@@ -537,7 +587,7 @@ export const styles = StyleSheet.create({
   modalTime: {
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    color: "#888",
+    color: COLORS.muted,
     fontStyle: "italic",
     marginBottom: 12,
   },
@@ -545,264 +595,317 @@ export const styles = StyleSheet.create({
   modalSectionTitle: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
+    color: COLORS.black,
     marginBottom: 8,
   },
 
   modalDescription: {
     fontSize: 15,
     fontFamily: "Lexend_400Regular",
-    color: "#333",
+    color: COLORS.text,
+    lineHeight: 22,
+    marginBottom: 10,
   },
 
   closeButtonText: {
     fontSize: 28,
-    color: "#276389",
+    color: COLORS.primaryDark,
     lineHeight: 28,
   },
 
   demoContainer: {
-  backgroundColor: "#1e1e1e",
-  padding: 10,
-  borderTopWidth: 1,
-  borderTopColor: "#444",
+    backgroundColor: COLORS.black,
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#2E2E2E",
   },
+
   demoLabel: {
-    color: "#aaa",
+    color: "#C9C9C9",
     fontSize: 11,
     marginBottom: 6,
     fontFamily: "Lexend_400Regular",
   },
+
   demoButton: {
-    backgroundColor: "#276389",
+    backgroundColor: COLORS.primary,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 8,
+    borderRadius: 10,
     marginRight: 8,
   },
+
   demoButtonText: {
-    color: "white",
+    color: COLORS.white,
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
   },
 
   updateCardInner: {
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
   },
+
   updateCardLeft: {
     flex: 1,
     paddingRight: 10,
   },
+
   updateCardActions: {
     alignItems: "center",
     justifyContent: "space-around",
     gap: 12,
   },
+
   updateTypeRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    marginTop: 4,
-    marginBottom: 4,
+    marginTop: 5,
+    marginBottom: 5,
   },
+
   updateTypeLabel: {
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    color: "#276389",
+    color: COLORS.primaryDark,
     textTransform: "capitalize",
   },
+
   updateReporterRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
     flexWrap: "wrap",
   },
+
   verifiedBadge: {
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
+    backgroundColor: "#EEF9F2",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
   },
+
   verifiedText: {
     fontSize: 12,
     fontFamily: "Lexend_400Regular",
-    color: "#1FA64A",
+    color: COLORS.success,
   },
+
   actionButton: {
     alignItems: "center",
     justifyContent: "center",
-    padding: 6,
-    borderRadius: 8,
+    padding: 7,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#276389",
-    minWidth: 44,
+    borderColor: COLORS.primary,
+    minWidth: 46,
+    backgroundColor: COLORS.tealTint,
   },
+
   actionButtonDisabled: {
-    borderColor: "#DDE3EA",
-    backgroundColor: "#F8FAFD",
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.softBg,
   },
+
   actionCount: {
     fontSize: 12,
     fontFamily: "Lexend_400Regular",
-    color: "#276389",
+    color: COLORS.primaryDark,
     marginTop: 2,
   },
+
   actionCountDisabled: {
-    color: "#aaa",
+    color: COLORS.disabled,
   },
 
   chevronButton: {
     alignItems: "center",
-    paddingTop: 5,
+    paddingTop: 6,
   },
 
   modalImage: {
-  width: "100%",
-  height: 180,
-  borderRadius: 10,
-  marginBottom: 12,
+    width: "100%",
+    height: 180,
+    borderRadius: 14,
+    marginBottom: 12,
   },
+
   timelineRow: {
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 10,
     marginBottom: 8,
   },
+
   timelineDot: {
     width: 8,
     height: 8,
     borderRadius: 999,
-    backgroundColor: "#276389",
+    backgroundColor: COLORS.pink,
     marginTop: 5,
   },
+
   timelineText: {
     flex: 1,
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    color: "#3E4B57",
+    color: COLORS.subtext,
   },
+
   timelineTime: {
-    color: "#5A6B80",
+    color: COLORS.muted,
     fontStyle: "italic",
   },
 
   accordionSection: {
-  marginBottom: 8,
+    marginBottom: 10,
   },
 
   accordionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#F5F8F4",
-    borderRadius: 12,
-    paddingVertical: 12,
+    backgroundColor: COLORS.white,
+    borderRadius: 18,
+    paddingVertical: 13,
     paddingHorizontal: 16,
     borderLeftWidth: 5,
     borderWidth: 1,
-    borderColor: "#DDE3EA",
+    borderColor: COLORS.border,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.04,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
   },
+
   accordionHeaderLeft: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
   },
+
   accordionLabel: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
+    color: COLORS.black,
   },
+
   accordionBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: 9,
+    paddingVertical: 3,
     borderRadius: 999,
-    backgroundColor: "#276389",
+    backgroundColor: COLORS.primary,
   },
+
   accordionBadgeText: {
     fontSize: 12,
     fontFamily: "Lexend_400Regular",
-    color: "#FFFFFF",
+    color: COLORS.white,
   },
+
   accordionContent: {
-    marginTop: 6,
+    marginTop: 8,
     gap: 0,
   },
+
   accordionEmptyText: {
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    color: "#aaa",
+    color: COLORS.muted,
     fontStyle: "italic",
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
 
   resolvedMeta: {
-  fontSize: 12,
-  fontFamily: "Lexend_400Regular",
-  color: "#1FA64A",
-  fontStyle: "italic",
-  marginBottom: 2,
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.success,
+    fontStyle: "italic",
+    marginBottom: 2,
   },
-
 
   severeBadge: {
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
+    backgroundColor: "#FFF6E8",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
   },
+
   severeBadgeText: {
     fontSize: 12,
     fontFamily: "Lexend_400Regular",
-    color: "#F59E0B",
+    color: COLORS.warning,
     fontWeight: "bold",
   },
 
   severeIndicator: {
-  flexDirection: "row",
-  alignItems: "center",
-  gap: 4,
-  marginTop: 2,
-  marginBottom: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 2,
+    marginBottom: 5,
+    backgroundColor: "#FFF6E8",
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
   },
+
   severeIndicatorText: {
     fontSize: 12,
     fontFamily: "Lexend_400Regular",
-    color: "#F59E0B",
+    color: COLORS.warning,
     fontWeight: "bold",
   },
 
   markSevereButton: {
-  flexDirection: "row",
-  alignItems: "center",
-  gap: 4,
-  marginTop: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 6,
   },
+
   markSevereText: {
     fontSize: 12,
     fontFamily: "Lexend_400Regular",
-    color: "#F59E0B",
+    color: COLORS.pink,
     textDecorationLine: "underline",
   },
 
   reportModeToggle: {
     flexDirection: "row",
-    marginTop: 12,
+    marginTop: 14,
     gap: 10,
   },
 
   reportModeButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 18,
-    backgroundColor: "#EEF3F7",
+    paddingVertical: 9,
+    paddingHorizontal: 15,
+    borderRadius: 999,
+    backgroundColor: COLORS.softBg,
     borderWidth: 1,
-    borderColor: "#D7E2EA",
+    borderColor: COLORS.border,
   },
 
   reportModeButtonActive: {
-    backgroundColor: "#276389",
-    borderColor: "#276389",
+    backgroundColor: COLORS.pink,
+    borderColor: COLORS.pink,
   },
 
   reportModeButtonDisabled: {
@@ -812,14 +915,14 @@ export const styles = StyleSheet.create({
   reportModeButtonText: {
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    color: "#276389",
+    color: COLORS.black,
   },
 
   reportModeButtonTextActive: {
-    color: "#FFFFFF",
+    color: COLORS.white,
   },
 
   reportModeButtonTextDisabled: {
-    color: "#276389",
+    color: COLORS.black,
   },
 });

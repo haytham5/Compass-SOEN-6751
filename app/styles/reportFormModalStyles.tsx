@@ -1,4 +1,24 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
+
+const COLORS = {
+    white: "#FFFFFF",
+    black: "#111111",
+    text: "#1F1F1F",
+    subtext: "#4E4E4E",
+    muted: "#6B7280",
+
+    primary: "#56bab8",
+    primaryDark: "#5a8c8b",
+    pink: "#e7548b",
+    lavender: "#9796b8",
+    softPink: "#d6b1c3",
+
+    border: "#E7E7EC",
+    softBg: "#F9FAFB",
+    tealTint: "#EEF9F8",
+    pinkTint: "#FCEAF1",
+    lavenderTint: "#F3F1FA",
+};
 
 export const styles = StyleSheet.create({
     overlay: {
@@ -6,7 +26,7 @@ export const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         paddingHorizontal: 16,
-        backgroundColor: "rgba(0,0,0,0.35)",
+        backgroundColor: "rgba(17,17,17,0.35)",
     },
 
     backdrop: {
@@ -21,15 +41,23 @@ export const styles = StyleSheet.create({
         width: "100%",
         maxWidth: 420,
         maxHeight: "88%",
-        backgroundColor: "#FFFFFF",
-        borderRadius: 24,
+        backgroundColor: COLORS.white,
+        borderRadius: 26,
         paddingTop: 18,
         paddingBottom: 14,
-        shadowColor: "#000",
-        shadowOpacity: 0.2,
-        shadowRadius: 12,
-        shadowOffset: { width: 0, height: 4 },
-        elevation: 10,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        ...Platform.select({
+            ios: {
+                shadowColor: "#000",
+                shadowOpacity: 0.14,
+                shadowRadius: 18,
+                shadowOffset: { width: 0, height: 10 },
+            },
+            android: {
+                elevation: 8,
+            },
+        }),
     },
 
     header: {
@@ -48,28 +76,31 @@ export const styles = StyleSheet.create({
     title: {
         fontSize: 26,
         fontFamily: "Lexend_400Regular",
-        color: "#111111",
+        color: COLORS.black,
+        letterSpacing: -0.4,
     },
 
     stepTitle: {
         marginTop: 4,
         fontSize: 13,
         fontFamily: "Lexend_400Regular",
-        color: "#6B7280",
+        color: COLORS.subtext,
     },
 
     closeButton: {
         width: 38,
         height: 38,
         borderRadius: 19,
-        backgroundColor: "#F3F4F6",
+        backgroundColor: COLORS.tealTint,
         justifyContent: "center",
         alignItems: "center",
+        borderWidth: 1,
+        borderColor: COLORS.border,
     },
 
     progressTrack: {
         height: 8,
-        backgroundColor: "#E5E7EB",
+        backgroundColor: "#F1F3F5",
         borderRadius: 999,
         marginHorizontal: 20,
         overflow: "hidden",
@@ -78,7 +109,7 @@ export const styles = StyleSheet.create({
 
     progressFill: {
         height: "100%",
-        backgroundColor: "#276389",
+        backgroundColor: COLORS.primary,
         borderRadius: 999,
     },
 
@@ -95,82 +126,96 @@ export const styles = StyleSheet.create({
     stepLabel: {
         fontSize: 16,
         fontFamily: "Lexend_400Regular",
-        color: "#111111",
+        color: COLORS.black,
     },
 
     helperBox: {
-        backgroundColor: "#F8FAFC",
+        backgroundColor: COLORS.tealTint,
         padding: 12,
-        borderRadius: 12,
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: COLORS.border,
     },
 
     helperText: {
         fontSize: 13,
         fontFamily: "Lexend_400Regular",
-        color: "#667085",
+        color: COLORS.primaryDark,
+        lineHeight: 19,
     },
 
     imageBox: {
         height: 180,
-        borderRadius: 16,
-        backgroundColor: "#E9EEF5",
+        borderRadius: 18,
+        backgroundColor: COLORS.softBg,
         justifyContent: "center",
         alignItems: "center",
         overflow: "hidden",
+        borderWidth: 1,
+        borderColor: COLORS.border,
     },
 
     imageText: {
-        color: "#888",
+        color: COLORS.subtext,
         fontFamily: "Lexend_400Regular",
     },
 
     image: {
         width: "100%",
         height: "100%",
-        borderRadius: 16,
+        borderRadius: 18,
     },
 
     input: {
-        backgroundColor: "#F4F6FA",
+        backgroundColor: COLORS.softBg,
         padding: 14,
-        borderRadius: 12,
+        borderRadius: 14,
         fontFamily: "Lexend_400Regular",
-        color: "#111111",
+        color: COLORS.black,
+        borderWidth: 1,
+        borderColor: COLORS.border,
     },
 
     description: {
-        backgroundColor: "#F4F6FA",
+        backgroundColor: COLORS.softBg,
         padding: 14,
-        borderRadius: 12,
+        borderRadius: 14,
         minHeight: 120,
         textAlignVertical: "top",
         fontFamily: "Lexend_400Regular",
-        color: "#111111",
+        color: COLORS.black,
+        borderWidth: 1,
+        borderColor: COLORS.border,
     },
 
     dropdown: {
-        backgroundColor: "#F4F6FA",
-        borderRadius: 12,
+        backgroundColor: COLORS.softBg,
+        borderRadius: 14,
         overflow: "hidden",
+        borderWidth: 1,
+        borderColor: COLORS.border,
     },
 
     reviewCard: {
-        backgroundColor: "#F8FAFC",
-        borderRadius: 14,
+        backgroundColor: COLORS.pinkTint,
+        borderRadius: 16,
         padding: 14,
         gap: 6,
+        borderWidth: 1,
+        borderColor: COLORS.border,
     },
 
     reviewTitle: {
         fontSize: 15,
         fontFamily: "Lexend_400Regular",
-        color: "#111111",
+        color: COLORS.black,
     },
 
     reviewText: {
         fontSize: 13,
         fontFamily: "Lexend_400Regular",
-        color: "#4B5563",
+        color: COLORS.subtext,
+        lineHeight: 19,
     },
 
     footer: {
@@ -188,28 +233,41 @@ export const styles = StyleSheet.create({
 
     secondaryButton: {
         flex: 1,
-        backgroundColor: "#EEF2F7",
+        backgroundColor: COLORS.softBg,
         paddingVertical: 15,
-        borderRadius: 14,
+        borderRadius: 16,
         alignItems: "center",
+        borderWidth: 1,
+        borderColor: COLORS.border,
     },
 
     secondaryButtonText: {
-        color: "#1F2937",
+        color: COLORS.primaryDark,
         fontSize: 15,
         fontFamily: "Lexend_400Regular",
     },
 
     submitButton: {
         flex: 1,
-        backgroundColor: "#276389",
+        backgroundColor: COLORS.pink,
         paddingVertical: 15,
-        borderRadius: 14,
+        borderRadius: 16,
         alignItems: "center",
+        ...Platform.select({
+            ios: {
+                shadowColor: "#000",
+                shadowOpacity: 0.08,
+                shadowRadius: 10,
+                shadowOffset: { width: 0, height: 6 },
+            },
+            android: {
+                elevation: 2,
+            },
+        }),
     },
 
     submitText: {
-        color: "#FFFFFF",
+        color: COLORS.white,
         fontSize: 15,
         fontFamily: "Lexend_400Regular",
     },

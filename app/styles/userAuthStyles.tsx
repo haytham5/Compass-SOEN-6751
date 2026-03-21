@@ -1,5 +1,33 @@
 import { StyleSheet } from "react-native";
 
+const COLORS = {
+  white: "#FFFFFF",
+  black: "#111111",
+  text: "#1F1F1F",
+  subtext: "#4E4E4E",
+  muted: "#6B7280",
+
+  primary: "#56bab8",
+  primaryDark: "#5a8c8b",
+  pink: "#e7548b",
+  lavender: "#9796b8",
+  softPink: "#d6b1c3",
+
+  border: "#E7E7EC",
+  softBg: "#F9FAFB",
+  tealTint: "#EEF9F8",
+  pinkTint: "#FCEAF1",
+  lavenderTint: "#F3F1FA",
+
+  errorBg: "#FFF1F4",
+  errorBorder: "#F3C7D6",
+  errorText: "#B42318",
+
+  successBg: "#EEF9F8",
+  successBorder: "#BFE8E6",
+  successText: "#2F6F6D",
+};
+
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -11,19 +39,20 @@ export const styles = StyleSheet.create({
   logoArea: {
     alignItems: "center",
     marginTop: 80,
+    marginBottom: 8,
   },
 
   title: {
     fontFamily: "Lexend_400Regular",
     fontSize: 25,
-    color: "#1A2E4A",
+    color: COLORS.black,
     marginBottom: 8,
   },
 
   tagline: {
     fontFamily: "Lexend_400Regular",
     fontSize: 14,
-    color: "#6B84A3",
+    color: COLORS.subtext,
   },
 
   buttonGroup: {
@@ -31,8 +60,8 @@ export const styles = StyleSheet.create({
   },
 
   primaryButton: {
-    backgroundColor: "#1A2E4A",
-    borderRadius: 14,
+    backgroundColor: COLORS.pink,
+    borderRadius: 16,
     paddingVertical: 15,
     alignItems: "center",
   },
@@ -40,24 +69,24 @@ export const styles = StyleSheet.create({
   primaryButtonText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 15,
-    color: "#FFFFFF",
-    letterSpacing: 0.4,
+    color: COLORS.white,
+    letterSpacing: 0.2,
   },
 
   secondaryButton: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
     paddingVertical: 15,
     alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: "#1A2E4A",
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   secondaryButtonText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 15,
-    color: "#1A2E4A",
-    letterSpacing: 0.4,
+    color: COLORS.primaryDark,
+    letterSpacing: 0.2,
   },
 
   ghostButton: {
@@ -68,61 +97,62 @@ export const styles = StyleSheet.create({
   ghostButtonText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 13,
-    color: "#6B84A3",
+    color: COLORS.subtext,
     textDecorationLine: "underline",
   },
 
   background: {
-  flex: 1,
-  backgroundColor: "#F7F9FF",
-},
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
 
-inputLabel: {
+  inputLabel: {
     fontFamily: "Lexend_400Regular",
     fontSize: 13,
-    color: "#1A2E4A",
+    color: COLORS.black,
     marginBottom: 6,
     marginTop: 4,
   },
 
   input: {
-    backgroundColor: "#F0F4FF",
-    borderRadius: 12,
+    backgroundColor: COLORS.softBg,
+    borderRadius: 14,
     paddingHorizontal: 16,
     paddingVertical: 13,
     fontFamily: "Lexend_400Regular",
     fontSize: 14,
-    color: "#1A2E4A",
+    color: COLORS.black,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: "#DDE6F5",
+    borderColor: COLORS.border,
   },
 
-
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
+    backgroundColor: COLORS.white,
+    borderRadius: 24,
     paddingHorizontal: 24,
     paddingVertical: 28,
-    shadowColor: "#1A2E4A",
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.08,
-    shadowRadius: 12,
+    shadowRadius: 16,
     elevation: 4,
     marginBottom: 24,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   cardTitle: {
     fontFamily: "Lexend_400Regular",
     fontSize: 22,
-    color: "#1A2E4A",
+    color: COLORS.black,
     marginBottom: 4,
   },
 
   cardSubtitle: {
     fontFamily: "Lexend_400Regular",
     fontSize: 13,
-    color: "#6B84A3",
+    color: COLORS.subtext,
     marginBottom: 24,
   },
 
@@ -146,43 +176,37 @@ inputLabel: {
   showHideText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 13,
-    color: "#4A7FC1",
+    color: COLORS.primaryDark,
   },
 
-   appTitle: {
+  appTitle: {
     fontFamily: "Lexend_400Regular",
     fontSize: 36,
-    color: "#1A2E4A",
+    color: COLORS.black,
     marginBottom: 6,
+    letterSpacing: -0.5,
   },
 
   errorBox: {
-    backgroundColor: "#FFF0F0",
-    borderRadius: 10,
+    backgroundColor: COLORS.errorBg,
+    borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 10,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#FFCCCC",
+    borderColor: COLORS.errorBorder,
   },
 
   errorText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 13,
-    color: "#C0392B",
+    color: COLORS.errorText,
   },
 
   keyboardView: {
     flex: 1,
   },
 
-  // scrollableContent: {
-  //   flexGrow: 1,
-  //   justifyContent: "center",
-  //   paddingHorizontal: 24,
-  //   paddingTop: 70,
-  //   paddingBottom: 24,
-  // },
   scrollableContent: {
     flexGrow: 1,
     paddingHorizontal: 24,
@@ -199,31 +223,32 @@ inputLabel: {
   footerText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 13,
-    color: "#6B84A3",
+    color: COLORS.subtext,
   },
 
   footerLink: {
     fontFamily: "Lexend_400Regular",
     fontSize: 13,
-    color: "#4A7FC1",
+    color: COLORS.primaryDark,
     fontWeight: "600",
   },
 
   successBox: {
-  backgroundColor: "#F0FFF4",
-  borderRadius: 10,
-  paddingHorizontal: 14,
-  paddingVertical: 10,
-  marginTop: 12,
-  borderWidth: 1,
-  borderColor: "#C3E6CB",
-},
+    backgroundColor: COLORS.successBg,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: COLORS.successBorder,
+  },
 
-successText: {
-  fontFamily: "Lexend_400Regular",
-  fontSize: 13,
-  color: "#276749",
-},
+  successText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 13,
+    color: COLORS.successText,
+  },
+
   topRow: {
     width: "100%",
     marginBottom: 8,
@@ -232,19 +257,9 @@ successText: {
   backLink: {
     fontFamily: "Lexend_400Regular",
     fontSize: 15,
-    color: "#4D6A85",
+    color: COLORS.primaryDark,
   },
 
-  // topBackButton: {
-  //   position: "absolute",
-  //   top: 0,
-  //   left: 0,
-  //   zIndex: 20,
-  //   paddingTop: 8,
-  //   paddingLeft: 12,
-  //   paddingRight: 12,
-  //   paddingBottom: 8,
-  // },
   topBackButton: {
     position: "absolute",
     left: 12,
@@ -256,7 +271,7 @@ successText: {
   topBackText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 16,
-    color: "#4D6A85",
+    color: COLORS.primaryDark,
   },
 
   guestLinkWrapper: {
@@ -267,7 +282,7 @@ successText: {
   guestLink: {
     fontFamily: "Lexend_400Regular",
     fontSize: 14,
-    color: "#6D86A0",
+    color: COLORS.primaryDark,
     textDecorationLine: "underline",
   },
 
@@ -279,30 +294,26 @@ successText: {
 
   roleButton: {
     flex: 1,
-    backgroundColor: "#EEF3FB",
+    backgroundColor: COLORS.softBg,
     borderWidth: 1,
-    borderColor: "#D7E3F1",
+    borderColor: COLORS.border,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: "center",
   },
 
   roleButtonActive: {
-    backgroundColor: "#1F365C",
-    borderColor: "#1F365C",
+    backgroundColor: COLORS.tealTint,
+    borderColor: COLORS.primary,
   },
 
   roleButtonText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 14,
-    color: "#6D86A0",
+    color: COLORS.subtext,
   },
 
   roleButtonTextActive: {
-    color: "#FFFFFF",
+    color: COLORS.primaryDark,
   },
-
-
-
-
 });
