@@ -66,14 +66,14 @@ export default function Settings() {
             <Switch
                 value={value}
                 onValueChange={onChange}
-                trackColor={{ false: "#D8E1EC", true: "#9FB7D5" }}
+                trackColor={{ false: "#E7E7EC", true: "#56bab8" }}
                 thumbColor="#FFFFFF"
             />
         </View>
     );
 
     useEffect(() => {
-        NavigationBar.setBackgroundColorAsync("#F7F9FF");
+        NavigationBar.setBackgroundColorAsync("#FFFFFF");
         NavigationBar.setButtonStyleAsync("dark");
         NavigationBar.setBehaviorAsync("overlay-swipe");
     }, []);
@@ -242,7 +242,7 @@ export default function Settings() {
                                             value={editedFirstName}
                                             onChangeText={setEditedFirstName}
                                             placeholder="First name"
-                                            placeholderTextColor="#AABCD4"
+                                            placeholderTextColor="#8E8E98"
                                         />
 
                                         <Text style={styles.profileLabel}>Last Name</Text>
@@ -251,7 +251,7 @@ export default function Settings() {
                                             value={editedLastName}
                                             onChangeText={setEditedLastName}
                                             placeholder="Last name"
-                                            placeholderTextColor="#AABCD4"
+                                            placeholderTextColor="#8E8E98"
                                         />
 
                                         <Text style={styles.profileLabel}>Account Type</Text>
@@ -272,7 +272,7 @@ export default function Settings() {
                                             value={editedPhone}
                                             onChangeText={setEditedPhone}
                                             placeholder="Phone"
-                                            placeholderTextColor="#AABCD4"
+                                            placeholderTextColor="#8E8E98"
                                             keyboardType="phone-pad"
                                         />
 
@@ -282,7 +282,7 @@ export default function Settings() {
                                             value={editedEmail}
                                             onChangeText={setEditedEmail}
                                             placeholder="Email"
-                                            placeholderTextColor="#AABCD4"
+                                            placeholderTextColor="#8E8E98"
                                             autoCapitalize="none"
                                             keyboardType="email-address"
                                         />
@@ -497,18 +497,6 @@ export default function Settings() {
                             />
                         </View>
 
-                        {/*<TouchableOpacity style={styles.dangerButton} onPress={handleLogout}>*/}
-                        {/*    <Text style={styles.dangerButtonText}>Log Out</Text>*/}
-                        {/*</TouchableOpacity>*/}
-
-                        {/*<TouchableOpacity*/}
-                        {/*    style={styles.dangerButtonSecondary}*/}
-                        {/*    onPress={() => deleteAllReports()}*/}
-                        {/*>*/}
-                        {/*    <Text style={styles.dangerButtonSecondaryText}>*/}
-                        {/*        Clear Reports*/}
-                        {/*    </Text>*/}
-                        {/*</TouchableOpacity>*/}
                         {isGuestUser ? (
                             <TouchableOpacity
                                 style={styles.primaryProfileButtonFull}
@@ -572,59 +560,75 @@ const localStyles = StyleSheet.create({
         marginTop: 4,
         marginBottom: 12,
     },
+
     prefCard: {
-        backgroundColor: "#F9FBFD",
+        backgroundColor: "#FFFFFF",
         borderWidth: 1,
-        borderColor: "#E7EEF7",
-        borderRadius: 16,
+        borderColor: "#E7E7EC",
+        borderRadius: 18,
         padding: 14,
         marginTop: 10,
     },
+
     prefHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
         marginBottom: 8,
     },
+
     prefTitle: {
         fontSize: 15,
-        fontWeight: "700",
-        color: "#243447",
+        fontFamily: "Lexend_400Regular",
+        color: "#111111",
         flex: 1,
         marginRight: 10,
     },
+
     prefBadge: {
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 999,
     },
+
     prefBadgeActive: {
-        backgroundColor: "#E6F4EA",
+        backgroundColor: "#EEF9F8",
+        borderWidth: 1,
+        borderColor: "#56bab8",
     },
+
     prefBadgeInactive: {
-        backgroundColor: "#F3F4F6",
+        backgroundColor: "#F9FAFB",
+        borderWidth: 1,
+        borderColor: "#E7E7EC",
     },
+
     prefBadgeText: {
         fontSize: 11,
-        fontWeight: "700",
+        fontFamily: "Lexend_400Regular",
     },
+
     prefBadgeTextActive: {
-        color: "#2E7D32",
+        color: "#5a8c8b",
     },
+
     prefBadgeTextInactive: {
-        color: "#7A8794",
+        color: "#6B7280",
     },
+
     prefMeta: {
         fontSize: 13,
-        color: "#5C6C7A",
+        fontFamily: "Lexend_400Regular",
+        color: "#4E4E4E",
         marginBottom: 4,
         lineHeight: 18,
     },
+
     emptyPrefText: {
         fontSize: 13,
-        color: "#7A8794",
+        fontFamily: "Lexend_400Regular",
+        color: "#6B7280",
         marginTop: 8,
         marginBottom: 6,
     },
-
 });

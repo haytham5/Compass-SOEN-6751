@@ -181,8 +181,7 @@ export default function ReportFormModal({
                             placeholder="Floor"
                             value={floor}
                             onChangeText={setFloor}
-                            placeholderTextColor="#777"
-                        />
+                            placeholderTextColor="#8E8E98"                        />
                     </View>
                 );
 
@@ -196,7 +195,7 @@ export default function ReportFormModal({
                             placeholder="Report name"
                             value={name}
                             onChangeText={setName}
-                            placeholderTextColor="#777"
+                            placeholderTextColor="#8E8E98"
                         />
 
                         <TextInput
@@ -206,7 +205,7 @@ export default function ReportFormModal({
                             numberOfLines={5}
                             value={description}
                             onChangeText={setDescription}
-                            placeholderTextColor="#777"
+                            placeholderTextColor="#8E8E98"
                         />
                     </View>
                 );
@@ -267,7 +266,7 @@ export default function ReportFormModal({
                         </View>
 
                         <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-                            <X size={22} color="#111111" />
+                            <X size={22} color="#5a8c8b" />
                         </TouchableOpacity>
                     </View>
 

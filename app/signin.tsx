@@ -40,7 +40,7 @@ export default function Signin() {
 
     useEffect(() => {
         if (Platform.OS === "android") {
-            NavigationBar.setBackgroundColorAsync("#F7F9FF");
+            NavigationBar.setBackgroundColorAsync("#FFFFFF");
             NavigationBar.setButtonStyleAsync("dark");
             NavigationBar.setBehaviorAsync("overlay-swipe");
         }
@@ -97,7 +97,7 @@ export default function Signin() {
 
     return (
         <SafeAreaView style={styles.background}>
-            <StatusBar backgroundColor="#F7F9FF" barStyle="dark-content" />
+            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
             <TouchableOpacity
                 style={[styles.topBackButton, { top: insets.top + 6 }]}
@@ -117,7 +117,7 @@ export default function Signin() {
                     showsVerticalScrollIndicator={false}
                 >
                     <View style={styles.logoArea}>
-                        <Text style={styles.appTitle}>App Name</Text>
+                        <Text style={styles.appTitle}>Compass</Text>
                     </View>
 
                     <View style={styles.card}>
@@ -127,8 +127,7 @@ export default function Signin() {
                         <TextInput
                             style={styles.input}
                             placeholder="you@university.ca"
-                            placeholderTextColor="#AABCD4"
-                            keyboardType="email-address"
+                            placeholderTextColor="#8E8E98"                            keyboardType="email-address"
                             autoCapitalize="none"
                             autoCorrect={false}
                             value={email}
@@ -144,8 +143,7 @@ export default function Signin() {
                             <TextInput
                                 style={[styles.input, styles.passwordInput]}
                                 placeholder="Enter password"
-                                placeholderTextColor="#AABCD4"
-                                secureTextEntry={!showPassword}
+                                placeholderTextColor="#8E8E98"                                secureTextEntry={!showPassword}
                                 autoCapitalize="none"
                                 value={password}
                                 onChangeText={(text) => {

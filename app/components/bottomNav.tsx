@@ -43,7 +43,7 @@ export default function BottomNav({ onPressAdd }: BottomNavProps) {
         <>
             <View style={styles.wrapper}>
                 <LinearGradient
-                    colors={["#F7F9FF", "#FFFFFF", "#FFFFFF"]}
+                    colors={["#FFFFFF", "#FFFFFF", "#F9FAFB"]}
                     style={styles.bottomNav}
                 >
                     {navItems.map((item) => {
@@ -51,21 +51,31 @@ export default function BottomNav({ onPressAdd }: BottomNavProps) {
                         const isActive = !isCreate && pathname === item.route;
                         const Icon = item.icon;
 
+                        if (isCreate) {
+                            return (
+                                <TouchableOpacity
+                                    key={item.key}
+                                    style={styles.createNavItem}
+                                    onPress={handleCreatePress}
+                                    activeOpacity={0.85}
+                                >
+                                    <View style={styles.createButton}>
+                                        <Plus size={28} color="#FFFFFF" strokeWidth={2.5} />
+                                    </View>
+                                </TouchableOpacity>
+                            );
+                        }
+
                         return (
                             <TouchableOpacity
                                 key={item.key}
                                 style={[styles.navItem, isActive && styles.activeNavItem]}
-                                onPress={() => {
-                                    if (isCreate) {
-                                        handleCreatePress();
-                                    } else {
-                                        router.replace(item.route as any);
-                                    }
-                                }}
+                                onPress={() => router.replace(item.route as any)}
+                                activeOpacity={0.85}
                             >
                                 <Icon
                                     size={26}
-                                    color={isActive ? "#1B1B1B" : "#A0A0A0"}
+                                    color={isActive ? "#111111" : "#8E8E98"}
                                     strokeWidth={2}
                                 />
                             </TouchableOpacity>

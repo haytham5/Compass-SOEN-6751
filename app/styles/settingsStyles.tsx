@@ -1,9 +1,29 @@
 import { StyleSheet } from "react-native";
 
+const COLORS = {
+  white: "#FFFFFF",
+  black: "#111111",
+  text: "#1F1F1F",
+  subtext: "#4E4E4E",
+  muted: "#6B7280",
+
+  primary: "#56bab8",
+  primaryDark: "#5a8c8b",
+  pink: "#e7548b",
+  lavender: "#9796b8",
+  softPink: "#d6b1c3",
+
+  border: "#E7E7EC",
+  softBg: "#F9FAFB",
+  tealTint: "#EEF9F8",
+  pinkTint: "#FCEAF1",
+  lavenderTint: "#F3F1FA",
+};
+
 export const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
     justifyContent: "space-between",
   },
 
@@ -22,63 +42,68 @@ export const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 25,
+    fontSize: 27,
     fontFamily: "Lexend_400Regular",
-    color: "#223A5E",
+    color: COLORS.black,
+    letterSpacing: -0.4,
   },
 
   tabContainer: {
     flexDirection: "row",
-    backgroundColor: "#EEF3FB",
+    backgroundColor: COLORS.softBg,
     marginHorizontal: 20,
-    marginTop: 10,
-    marginBottom: 10,
-    borderRadius: 16,
+    marginTop: 12,
+    marginBottom: 12,
+    borderRadius: 18,
     padding: 4,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   tabButton: {
     flex: 1,
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
   },
 
   activeTabButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.pinkTint,
+    borderWidth: 1,
+    borderColor: COLORS.softPink,
   },
 
   tabButtonText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 14,
-    color: "#6D86A0",
+    color: COLORS.subtext,
   },
 
   activeTabButtonText: {
-    color: "#223A5E",
+    color: COLORS.black,
   },
 
   profileCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.white,
     borderRadius: 24,
   },
 
   profileHero: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F7F9FF",
-    borderRadius: 20,
+    backgroundColor: COLORS.tealTint,
+    borderRadius: 22,
     padding: 16,
     marginBottom: 18,
     borderWidth: 1,
-    borderColor: "#E6EDF6",
+    borderColor: COLORS.border,
   },
 
   avatarCircle: {
     width: 68,
     height: 68,
     borderRadius: 34,
-    backgroundColor: "#223A5E",
+    backgroundColor: COLORS.primary,
     alignItems: "center",
     justifyContent: "center",
     marginRight: 14,
@@ -87,7 +112,7 @@ export const styles = StyleSheet.create({
   avatarText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 24,
-    color: "#FFFFFF",
+    color: COLORS.white,
   },
 
   profileHeroText: {
@@ -97,29 +122,31 @@ export const styles = StyleSheet.create({
   profileName: {
     fontFamily: "Lexend_400Regular",
     fontSize: 22,
-    color: "#223A5E",
+    color: COLORS.black,
   },
 
   roleBadge: {
     alignSelf: "flex-start",
-    backgroundColor: "#EAF1FB",
+    backgroundColor: COLORS.white,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 999,
     marginTop: 6,
     marginBottom: 6,
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   roleBadgeText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 12,
-    color: "#223A5E",
+    color: COLORS.primaryDark,
   },
 
   profileSubText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 13,
-    color: "#7A90A8",
+    color: COLORS.subtext,
   },
 
   sectionBlock: {
@@ -130,22 +157,22 @@ export const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: "Lexend_400Regular",
     fontSize: 16,
-    color: "#223A5E",
+    color: COLORS.black,
     marginBottom: 10,
   },
 
   infoCard: {
-    backgroundColor: "#F9FBFD",
+    backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: "#E7EEF7",
+    borderColor: COLORS.border,
     borderRadius: 18,
     padding: 14,
   },
 
   formCard: {
-    backgroundColor: "#F9FBFD",
+    backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: "#E7EEF7",
+    borderColor: COLORS.border,
     borderRadius: 18,
     padding: 14,
   },
@@ -156,40 +183,40 @@ export const styles = StyleSheet.create({
 
   infoDivider: {
     height: 1,
-    backgroundColor: "#EEF3FB",
+    backgroundColor: COLORS.border,
     marginVertical: 8,
   },
 
   profileLabel: {
     fontFamily: "Lexend_400Regular",
     fontSize: 13,
-    color: "#7A90A8",
+    color: COLORS.muted,
     marginBottom: 4,
   },
 
   profileValue: {
     fontFamily: "Lexend_400Regular",
     fontSize: 16,
-    color: "#223A5E",
+    color: COLORS.black,
   },
 
   profileInput: {
-    backgroundColor: "#F7F9FF",
+    backgroundColor: COLORS.softBg,
     borderWidth: 1,
-    borderColor: "#D7E3F1",
+    borderColor: COLORS.border,
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 12,
     marginBottom: 14,
     fontFamily: "Lexend_400Regular",
     fontSize: 15,
-    color: "#223A5E",
+    color: COLORS.black,
   },
 
   profileReadOnlyBox: {
-    backgroundColor: "#EEF3FB",
+    backgroundColor: COLORS.softBg,
     borderWidth: 1,
-    borderColor: "#D7E3F1",
+    borderColor: COLORS.border,
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -199,13 +226,13 @@ export const styles = StyleSheet.create({
   profileReadOnlyText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 15,
-    color: "#6D86A0",
+    color: COLORS.subtext,
   },
 
   primaryProfileButtonFull: {
-    backgroundColor: "#223A5E",
-    paddingVertical: 13,
-    borderRadius: 14,
+    backgroundColor: COLORS.pink,
+    paddingVertical: 14,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 18,
@@ -214,9 +241,9 @@ export const styles = StyleSheet.create({
 
   primaryProfileButton: {
     flex: 1,
-    backgroundColor: "#223A5E",
-    paddingVertical: 13,
-    borderRadius: 14,
+    backgroundColor: COLORS.pink,
+    paddingVertical: 14,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -224,22 +251,24 @@ export const styles = StyleSheet.create({
   primaryProfileButtonText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 14,
-    color: "#FFFFFF",
+    color: COLORS.white,
   },
 
   secondaryProfileButton: {
     flex: 1,
-    backgroundColor: "#EEF3FB",
-    paddingVertical: 13,
-    borderRadius: 14,
+    backgroundColor: COLORS.softBg,
+    paddingVertical: 14,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: COLORS.border,
   },
 
   secondaryProfileButtonText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 14,
-    color: "#223A5E",
+    color: COLORS.primaryDark,
   },
 
   editActionsRow: {
@@ -250,9 +279,9 @@ export const styles = StyleSheet.create({
   },
 
   settingsCard: {
-    backgroundColor: "#F9FBFD",
+    backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: "#E7EEF7",
+    borderColor: COLORS.border,
     borderRadius: 18,
     overflow: "hidden",
     marginBottom: 18,
@@ -269,47 +298,51 @@ export const styles = StyleSheet.create({
   settingLabel: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-    color: "#223A5E",
+    color: COLORS.black,
   },
 
   settingsDivider: {
     height: 1,
-    backgroundColor: "#EEF3FB",
+    backgroundColor: COLORS.border,
     marginHorizontal: 16,
   },
 
   dangerButton: {
-    backgroundColor: "#FCEBEC",
-    borderRadius: 14,
+    backgroundColor: COLORS.pinkTint,
+    borderRadius: 16,
     paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#F4C9D9",
   },
 
   dangerButtonText: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-    color: "#C94B56",
+    color: COLORS.pink,
   },
 
   dangerButtonSecondary: {
-    backgroundColor: "#FFF6F6",
-    borderRadius: 14,
+    backgroundColor: COLORS.lavenderTint,
+    borderRadius: 16,
     paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#DDDCEF",
   },
 
   dangerButtonSecondaryText: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-    color: "#D86A6A",
+    color: COLORS.lavender,
   },
 
   preferencesModalScreen: {
     flex: 1,
-    backgroundColor: "#F7F9FF",
+    backgroundColor: COLORS.white,
     paddingHorizontal: 16,
     paddingTop: 8,
   },
