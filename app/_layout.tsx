@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Location from "expo-location";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { testReports } from "./data/notificationData";
@@ -56,7 +57,21 @@ export default function RootLayout() {
         console.log("dates:", after.map(r => r.date));
     };
 
+      // Location access
+    const requestPermissions = async () => {
+      const { status: foreground } = await Location.requestForegroundPermissionsAsync();
+      if (foreground !== "granted") {
+        console.log("Foreground location permission denied");
+        return;
+      }
+      const { status: background } = await Location.requestBackgroundPermissionsAsync();
+      if (background !== "granted") {
+        console.log("Background location permission denied");
+      }
+    };
+
     const setup = async () => {
+      await requestPermissions();
       await seedAdminUser();
       await seedSecurityUser(); 
       await seedTestReports();
