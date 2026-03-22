@@ -3,7 +3,7 @@ import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as NavigationBar from "expo-navigation-bar";
 import { useFocusEffect } from "expo-router";
-import { CheckCircle, ThumbsUp, TriangleAlert } from "lucide-react-native";
+import { Building2, CheckCircle, Clock, ThumbsUp, TriangleAlert } from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { initialSubscriptions } from "./data/notificationData";
 import {
@@ -322,11 +322,18 @@ export default function Notifications() {
                               </Text>
                           )}
 
-                          <Text style={styles.updateMeta}>{report.time}</Text>
-
                           <View style={styles.updateTypeRow}>
                             <Icon name={typeIcon} size={16} color="#5a8c8b" />
                             <Text style={styles.updateTypeLabel}>{typeLabel}</Text>
+                          </View>
+
+                          <View style={styles.updateMetaRow}>
+                            <Clock size={13} color="#5A6B80" />
+                            <Text style={styles.updateMeta}>{report.time}</Text>
+                          </View>
+                          <View style={styles.updateMetaRow}>
+                            <Building2 size={13} color="#5A6B80" />
+                            <Text style={styles.updateMeta}>{report.building} · Floor {report.floor}</Text>
                           </View>
 
                           <View style={styles.updateReporterRow}>
@@ -345,59 +352,50 @@ export default function Notifications() {
 
                         <View style={styles.updateCardActions}>
                           <TouchableOpacity
-                              style={[
-                                styles.actionButton,
-                                (hasUpvoted || isDisabled) &&
-                                styles.actionButtonDisabled,
-                              ]}
-                              onPress={() => handleUpvote(report.id)}
-                              disabled={hasUpvoted || isDisabled}
+                            style={[
+                              styles.actionButton,
+                              isDisabled && styles.actionButtonDisabled,      // disabled if guest
+                              hasUpvoted && styles.actionButtonUpvoted,       // highlighted if upvoted
+                            ]}
+                            onPress={() => handleUpvote(report.id)}
+                            disabled={isDisabled}  // ← only disabled for guests, not for having upvoted
                           >
                             <ThumbsUp
-                                size={18}
-                                color={
-                                  hasUpvoted || isDisabled ? "#B8BDC7" : "#56bab8"
-                                }
+                              size={18}
+                              color={isDisabled ? "#aaa" : hasUpvoted ? "#276389" : "#276389"}
                             />
-                            <Text
-                                style={[
-                                  styles.actionCount,
-                                  (hasUpvoted || isDisabled) &&
-                                  styles.actionCountDisabled,
-                                ]}
-                            >
+                            <Text style={[
+                              styles.actionCount,
+                              isDisabled && styles.actionCountDisabled,
+                            ]}>
                               {report.upvotedBy?.length ?? 0}
                             </Text>
                           </TouchableOpacity>
 
+                            {/* Resolved button */}
                           <TouchableOpacity
-                              style={[
-                                styles.actionButton,
-                                (isResolved || isDisabled) &&
-                                styles.actionButtonDisabled,
-                              ]}
-                              onPress={() => handleResolve(report.id)}
-                              disabled={isResolved || isDisabled}
+                            style={[
+                              styles.actionButton,
+                              isDisabled && styles.actionButtonDisabled,
+                              (report.resolvedBy ?? []).includes(currentUserRole ?? "") && styles.actionButtonUpvoted,
+                            ]}
+                            onPress={() => handleResolve(report.id)}
+                            disabled={isDisabled}
                           >
                             <CheckCircle
-                                size={18}
-                                color={
-                                  isResolved || isDisabled ? "#B8BDC7" : "#56bab8"
-                                }
+                              size={18}
+                              color={isDisabled ? "#aaa" : "#276389"}
                             />
-                            <Text
-                                style={[
-                                  styles.actionCount,
-                                  (isResolved || isDisabled) &&
-                                  styles.actionCountDisabled,
-                                ]}
-                            >
-                              {isResolved ? "✓" : "0"}
+                            <Text style={[
+                              styles.actionCount,
+                              isDisabled && styles.actionCountDisabled,
+                            ]}>
+                              {report.resolvedBy?.length ?? 0}
                             </Text>
                           </TouchableOpacity>
                         </View>
                       </View>
-
+                            {/* See more button */}
                       <TouchableOpacity
                           style={styles.chevronButton}
                           onPress={() => setSelectedReport(report)}
@@ -435,9 +433,12 @@ export default function Notifications() {
                       </TouchableOpacity>
                     </View>
 
-                    <Text style={styles.modalBuilding}>
-                      {selectedReport.building} · Floor {selectedReport.floor}
-                    </Text>
+                    <View style={styles.updateMetaRow}>
+                      <Building2 size={18} color="#444" />
+                      <Text style={styles.modalBuilding}>
+                        {selectedReport.building} · Floor {selectedReport.floor}
+                      </Text>
+                    </View>
 
                     {selectedReport.isSevere && (
                         <View style={styles.severeIndicator}>
@@ -450,7 +451,6 @@ export default function Notifications() {
 
                     {selectedReport.description ? (
                         <>
-                          <Text style={styles.modalSectionTitle}>Description</Text>
                           <Text style={styles.modalDescription}>
                             {selectedReport.description}
                           </Text>
