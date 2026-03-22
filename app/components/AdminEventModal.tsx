@@ -3,16 +3,19 @@ import { Picker } from "@react-native-picker/picker";
 import { X } from "lucide-react-native";
 import { useState } from "react";
 import {
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  useColorScheme,
+  View,
 } from "react-native";
 import { saveNewReport } from "../data/reportSH";
+import { ThemeType } from "../data/themeProvider";
+import { Themes } from "../styles/Themes";
 import { getCurrentUser } from "../utils/authStorage";
 
 interface AdminEventModalProps {
@@ -26,6 +29,9 @@ export default function AdminEventModal({
   onClose,
   onSubmitSuccess,
 }: AdminEventModalProps) {
+  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const styles = adminEventStyles(scheme);
+
   const [name, setName] = useState("");
   const [building, setBuilding] = useState("EV");
   const [description, setDescription] = useState("");
@@ -192,7 +198,7 @@ export default function AdminEventModal({
                     updated.setFullYear(
                       date.getFullYear(),
                       date.getMonth(),
-                      date.getDate()
+                      date.getDate(),
                     );
                     setEventStartDate(updated);
                   }
@@ -250,7 +256,7 @@ export default function AdminEventModal({
                     updated.setFullYear(
                       date.getFullYear(),
                       date.getMonth(),
-                      date.getDate()
+                      date.getDate(),
                     );
                     setEventEndDate(updated);
                   }
@@ -283,10 +289,7 @@ export default function AdminEventModal({
 
           {/* Footer */}
           <View style={styles.footer}>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={handleClose}
-            >
+            <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -302,121 +305,122 @@ export default function AdminEventModal({
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "flex-end",
-  },
-  modalCard: {
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    maxHeight: "90%",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontFamily: "Pacifico_400Regular",
-    color: "#276389",
-  },
-  label: {
-    fontSize: 14,
-    fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
-    marginBottom: 6,
-    marginTop: 12,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#DDE3EA",
-    borderRadius: 10,
-    padding: 12,
-    fontFamily: "Lexend_400Regular",
-    fontSize: 14,
-    color: "#1F1F1F",
-  },
-  description: {
-    borderWidth: 1,
-    borderColor: "#DDE3EA",
-    borderRadius: 10,
-    padding: 12,
-    fontFamily: "Lexend_400Regular",
-    fontSize: 14,
-    color: "#1F1F1F",
-    height: 100,
-    textAlignVertical: "top",
-  },
-  dropdown: {
-    borderWidth: 1,
-    borderColor: "#DDE3EA",
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  dateRow: {
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 4,
-  },
-  dateButton: {
-    flex: 1,
-    backgroundColor: "#F0F4FF",
-    borderRadius: 8,
-    padding: 10,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#DDE3EA",
-  },
-  dateButtonText: {
-    fontSize: 13,
-    fontFamily: "Lexend_400Regular",
-    color: "#276389",
-  },
-  errorBox: {
-    backgroundColor: "#FEE2E2",
-    borderRadius: 8,
-    padding: 10,
-    marginTop: 12,
-  },
-  errorText: {
-    color: "#DC2626",
-    fontSize: 13,
-    fontFamily: "Lexend_400Regular",
-  },
-  footer: {
-    flexDirection: "row",
-    gap: 10,
-    marginTop: 16,
-  },
-  cancelButton: {
-    flex: 1,
-    padding: 14,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#DDE3EA",
-    alignItems: "center",
-  },
-  cancelText: {
-    fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
-    fontSize: 15,
-  },
-  submitButton: {
-    flex: 1,
-    padding: 14,
-    borderRadius: 10,
-    backgroundColor: "#276389",
-    alignItems: "center",
-  },
-  submitText: {
-    fontFamily: "Lexend_400Regular",
-    color: "#FFFFFF",
-    fontSize: 15,
-  },
-});
+const adminEventStyles = (COLORS: ThemeType) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.4)",
+      justifyContent: "flex-end",
+    },
+    modalCard: {
+      backgroundColor: "#FFFFFF",
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      padding: 20,
+      maxHeight: "90%",
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 16,
+    },
+    title: {
+      fontSize: 20,
+      fontFamily: "Pacifico_400Regular",
+      color: "#276389",
+    },
+    label: {
+      fontSize: 14,
+      fontFamily: "Lexend_400Regular",
+      color: "#1F1F1F",
+      marginBottom: 6,
+      marginTop: 12,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: "#DDE3EA",
+      borderRadius: 10,
+      padding: 12,
+      fontFamily: "Lexend_400Regular",
+      fontSize: 14,
+      color: "#1F1F1F",
+    },
+    description: {
+      borderWidth: 1,
+      borderColor: "#DDE3EA",
+      borderRadius: 10,
+      padding: 12,
+      fontFamily: "Lexend_400Regular",
+      fontSize: 14,
+      color: "#1F1F1F",
+      height: 100,
+      textAlignVertical: "top",
+    },
+    dropdown: {
+      borderWidth: 1,
+      borderColor: "#DDE3EA",
+      borderRadius: 10,
+      overflow: "hidden",
+    },
+    dateRow: {
+      flexDirection: "row",
+      gap: 8,
+      marginBottom: 4,
+    },
+    dateButton: {
+      flex: 1,
+      backgroundColor: "#F0F4FF",
+      borderRadius: 8,
+      padding: 10,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: "#DDE3EA",
+    },
+    dateButtonText: {
+      fontSize: 13,
+      fontFamily: "Lexend_400Regular",
+      color: "#276389",
+    },
+    errorBox: {
+      backgroundColor: "#FEE2E2",
+      borderRadius: 8,
+      padding: 10,
+      marginTop: 12,
+    },
+    errorText: {
+      color: "#DC2626",
+      fontSize: 13,
+      fontFamily: "Lexend_400Regular",
+    },
+    footer: {
+      flexDirection: "row",
+      gap: 10,
+      marginTop: 16,
+    },
+    cancelButton: {
+      flex: 1,
+      padding: 14,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: "#DDE3EA",
+      alignItems: "center",
+    },
+    cancelText: {
+      fontFamily: "Lexend_400Regular",
+      color: "#5A6B80",
+      fontSize: 15,
+    },
+    submitButton: {
+      flex: 1,
+      padding: 14,
+      borderRadius: 10,
+      backgroundColor: "#276389",
+      alignItems: "center",
+    },
+    submitText: {
+      fontFamily: "Lexend_400Regular",
+      color: "#FFFFFF",
+      fontSize: 15,
+    },
+  });

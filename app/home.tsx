@@ -208,7 +208,7 @@ export default function Home() {
   }, [loadCurrentUserState]);
 
   useEffect(() => {
-    NavigationBar.setBackgroundColorAsync(scheme.surface);
+    NavigationBar.setBackgroundColorAsync(scheme.white);
     NavigationBar.setButtonStyleAsync("dark");
     NavigationBar.setBehaviorAsync("overlay-swipe");
   }, []);
@@ -468,7 +468,7 @@ export default function Home() {
           ))}
         </View>
 
-        <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+        <StatusBar backgroundColor={scheme.white} barStyle="dark-content" />
 
         <View style={styles.header}>
           <TouchableOpacity

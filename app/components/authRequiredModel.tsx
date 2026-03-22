@@ -1,12 +1,12 @@
 import { router } from "expo-router";
 import React from "react";
 import {
-    Modal,
-    Pressable,
-    Text,
-    TouchableOpacity,
-    View,
-    useColorScheme,
+  Modal,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+  useColorScheme,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { bottomNavStyles as importStyles } from "../styles/bottomNavStyles";

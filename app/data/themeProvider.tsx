@@ -30,56 +30,34 @@ export const getTheme = async (): Promise<Scheme> => {
 };
 
 export type ThemeType = {
-  primary?: string; //"#006A68";
-  surfaceTint?: string; //"#006A68";
-  onPrimary?: string; //"#FFFFFF";
-  primaryContainer?: string; //"#56BAB8";
-  onPrimaryContainer?: string; //"#004746";
-  secondary?: string; //"#316463";
-  onSecondary?: string; //"#FFFFFF";
-  secondaryContainer?: string; //"#4B7D7C";
-  onSecondaryContainer?: string; //"#F3FFFE";
-  tertiary?: string; //"#5C5C7B";
-  onTertiary?: string; //"#FFFFFF";
-  tertiaryContainer?: string; //"#9796B8";
-  onTertiaryContainer?: string; //"#2E2E4B";
-  error?: string; //"#AB235D";
-  onError?: string; //"#FFFFFF";
-  errorContainer?: string; //"#CC3F76";
-  onErrorContainer?: string; //"#FFFBFF";
-  background?: string; //"#F6FAF9";
-  onBackground?: string; //"#181C1C";
-  surface?: string; //"#F6FAF9";
-  onSurface?: string; //"#181C1C";
-  surfaceVariant?: string; //"#D9E5E4";
-  onSurfaceVariant?: string; //"#3E4948";
-  outline?: string; //"#6E7979";
-  outlineVariant?: string; //"#BDC9C8";
-  shadow?: string; //"#000000";
-  scrim?: string; //"#000000";
-  inverseSurface?: string; //"#2C3131";
-  inverseOnSurface?: string; //"#EDF2F1";
-  inversePrimary?: string; //"#74D6D4";
-  primaryFixed?: string; //"#91F3F0";
-  onPrimaryFixed?: string; //"#00201F";
-  primaryFixedDim?: string; //"#74D6D4";
-  onPrimaryFixedVariant?: string; //"#00504F";
-  secondaryFixed?: string; //"#B8ECEB";
-  onSecondaryFixed?: string; //"#002020";
-  secondaryFixedDim?: string; //"#9CD0CF";
-  onSecondaryFixedVariant?: string; //"#194E4E";
-  tertiaryFixed?: string; //"#E2DFFF";
-  onTertiaryFixed?: string; //"#181934";
-  tertiaryFixedDim?: string; //"#C5C3E7";
-  onTertiaryFixedVariant?: string; //"#444462";
-  surfaceDim?: string; //"#D6DBDA";
-  surfaceBright?: string; //"#F6FAF9";
-  surfaceContainerLowest?: string; //"#FFFFFF";
-  surfaceContainerLow?: string; //"#F0F4F3";
-  surfaceContainer?: string; //"#EAEFEE";
-  surfaceContainerHigh?: string; //"#E5E9E8";
-  surfaceContainerHighest?: string; //"#DFE3E2";
-  onSurface70?: string; //"#333",
-  onSurface50?: string; //"#888",
-  onSurface30?: string;
+  white: any; //#FFFFFF",
+  black: any; //#111111",
+  text: any; //#1F1F1F",
+  subtext: any; //#4E4E4E",
+  muted: any; //#6B7280",
+
+  primary: any; //#56bab8",
+  primaryDark: any; //#5a8c8b",
+  pink: any; //#e7548b",
+  lavender: any; //#9796b8",
+  softPink: any; //#d6b1c3",
+  cardBg: any;
+  success: any;
+  disabled: any; //"#B8BDC7",
+  warning: any; //"#D98B1F",
+
+  border: any; //#E7E7EC",
+  softBg: any; //#F9FAFB",
+  tealTint: any; //#EEF9F8",
+  pinkTint: any; //#FCEAF1",
+  lavenderTint: any; //#F3F1FA",
+
+  errorBg: any; //#FFF1F4",
+  errorBorder: any; //#F3C7D6",
+  errorText: any; //#B42318",
+
+  successBg: any; //#EEF9F8",
+  successBorder: any; //#BFE8E6",
+  successText: any; //#2F6F6D",
+  iconInactive: any;
 };
