@@ -11,8 +11,7 @@ import {
   StatusBar,
   Text,
   TouchableOpacity,
-  useColorScheme,
-  View,
+  View
 } from "react-native";
 
 import { Calendar } from "react-native-calendars";
@@ -23,8 +22,8 @@ import BottomNav from "./components/bottomNav";
 import OfflineBanner from "./components/offlineBanner";
 import ReportFormModal from "./components/ReportFormModal";
 import { getReports, Report } from "./data/reportSH";
+import { useTheme } from "./data/themeProvider";
 import { styles as importStyles } from "./styles/eventsStyles";
-import { Themes } from "./styles/Themes";
 import { getCurrentUser } from "./utils/authStorage";
 
 type Event = {
@@ -63,7 +62,8 @@ const buildingColorMap: Record<string, string> = {
 };
 
 export default function Events() {
-  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const { theme } = useTheme();
+  const scheme = theme;
   const styles = importStyles(scheme);
 
   const [reports, setReports] = useState<Report[]>([]);

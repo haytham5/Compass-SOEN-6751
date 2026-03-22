@@ -12,19 +12,19 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  useColorScheme,
-  View,
+  View
 } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Themes } from "./styles/Themes";
+import { useTheme } from "./data/themeProvider";
 import { styles as importStyles } from "./styles/userAuthStyles";
 import { findUserByCredentials, setCurrentUser } from "./utils/authStorage";
 
 export default function Signin() {
-  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const { theme } = useTheme();
+  const scheme = theme;
   const styles = importStyles(scheme);
 
   const [fontsLoaded] = useFonts({

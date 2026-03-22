@@ -1,33 +1,33 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useContext, useState } from "react";
+import { useColorScheme } from "react-native";
+import { Themes } from "../styles/Themes";
 
-export type Scheme = {
-  type: "light" | "dark";
+type Scheme = "light" | "dark";
+
+const ThemeContext = createContext({
+  theme: Themes.light,
+  mode: "light" as Scheme,
+  toggleTheme: () => {},
+});
+
+export const ThemeProvider = ({ children }: any) => {
+  const systemScheme = useColorScheme();
+  const [mode, setMode] = useState<Scheme>(systemScheme || "light");
+
+  const toggleTheme = () => {
+    setMode((prev) => (prev === "light" ? "dark" : "light"));
+  };
+
+  const theme = mode === "dark" ? Themes.dark : Themes.light;
+
+  return (
+    <ThemeContext.Provider value={{ theme, mode, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 };
 
-export const switchTheme = async () => {
-  try {
-    const themeSetting = JSON.parse(
-      (await AsyncStorage.getItem("colorScheme")) || "light",
-    );
-    const newScheme = themeSetting === "light" ? "dark" : "light";
-    await AsyncStorage.setItem("colorScheme", JSON.stringify(newScheme));
-    console.log("Theme switched successfully");
-  } catch (error) {
-    console.error("Error switching theme:", error);
-  }
-};
-
-export const getTheme = async (): Promise<Scheme> => {
-  try {
-    const themeSetting = JSON.parse(
-      (await AsyncStorage.getItem("colorScheme")) || "light",
-    );
-    return { type: themeSetting };
-  } catch (error) {
-    console.error("Error getting theme:", error);
-    return { type: "light" };
-  }
-};
+export const useTheme = () => useContext(ThemeContext);
 
 export type ThemeType = {
   white: any; //#FFFFFF",

@@ -1,13 +1,13 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { usePathname, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { TouchableOpacity, useColorScheme, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { bottomNavStyles as importStyles } from "../styles/bottomNavStyles";
 import { getCurrentUser } from "../utils/authStorage";
 import AuthRequiredModal from "./authRequiredModel";
 
 import { Bell, Calendar, House, Plus, User } from "lucide-react-native";
-import { Themes } from "../styles/Themes";
+import { useTheme } from "../data/themeProvider";
 
 interface BottomNavProps {
   onPressAdd?: () => void;
@@ -22,7 +22,8 @@ const navItems = [
 ];
 
 export default function BottomNav({ onPressAdd }: BottomNavProps) {
-  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const { theme } = useTheme();
+  const scheme = theme;
   const styles = importStyles(scheme);
 
   const router = useRouter();

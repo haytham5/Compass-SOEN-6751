@@ -15,12 +15,10 @@ import {
   Switch,
   Text,
   TouchableOpacity,
-  useColorScheme,
-  View,
+  View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ThemeType } from "../data/themeProvider";
-import { Themes } from "../styles/Themes";
+import { ThemeType, useTheme } from "../data/themeProvider";
 import type {
   BuildingPreference,
   DayKey,
@@ -210,7 +208,8 @@ export default function BuildingPreferencesWizard({
   title = "Building Preferences",
   showTopHeader = false,
 }: BuildingPreferencesWizardProps) {
-  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const { theme } = useTheme();
+  const scheme = theme;
   const styles = buildingStyles(scheme);
 
   const insets = useSafeAreaInsets();

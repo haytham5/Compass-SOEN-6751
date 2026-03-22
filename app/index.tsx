@@ -8,18 +8,17 @@ import {
   StatusBar,
   Text,
   TouchableOpacity,
-  View,
-  useColorScheme,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Themes } from "./styles/Themes";
 import { styles as importStyles } from "./styles/userAuthStyles";
 import { clearCurrentUser } from "./utils/authStorage";
 
+import { useTheme } from "./data/themeProvider";
+
 export default function Welcome() {
-  const styles = importStyles(
-    useColorScheme() === "dark" ? Themes.dark : Themes.light,
-  );
+  const { theme } = useTheme();
+  const styles = importStyles(theme);
 
   let [fontsLoaded] = useFonts({
     Pacifico_400Regular,

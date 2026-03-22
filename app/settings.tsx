@@ -12,7 +12,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  useColorScheme,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,9 +21,8 @@ import BuildingPreferencesWizard from "./components/buildingPreferences";
 import OfflineBanner from "./components/offlineBanner";
 import ReportFormModal from "./components/ReportFormModal";
 import { deleteAllReports } from "./data/reportSH";
-import { ThemeType } from "./data/themeProvider";
+import { ThemeType, useTheme } from "./data/themeProvider";
 import { styles as importStyles } from "./styles/settingsStyles";
-import { Themes } from "./styles/Themes";
 import {
   clearCurrentUser,
   getCurrentUser,
@@ -41,8 +39,13 @@ interface RowProps {
 type ActiveTab = "profile" | "settings";
 
 export default function Settings() {
-  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const { mode, toggleTheme } = useTheme();
+  const { theme } = useTheme();
+  const scheme = theme;
   const styles = importStyles(scheme);
+
+  // const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  // const styles = importStyles(scheme);
   const localStyles = importLocalStyles(scheme);
 
   const [fontsLoaded] = useFonts({
@@ -50,7 +53,7 @@ export default function Settings() {
     Lexend_400Regular,
   });
 
-  const [lightMode, setLightMode] = useState(true);
+  // const [lightMode, setLightMode] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const [accessibility, setAccessibility] = useState(true);
   const [activeTab, setActiveTab] = useState<ActiveTab>("profile");
@@ -491,8 +494,8 @@ export default function Settings() {
             <View style={styles.settingsCard}>
               <SettingRow
                 label="Light Mode"
-                value={lightMode}
-                onChange={setLightMode}
+                value={mode === "light"}
+                onChange={toggleTheme}
               />
               <View style={styles.settingsDivider} />
 

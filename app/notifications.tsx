@@ -22,8 +22,7 @@ import {
   StatusBar,
   Text,
   TouchableOpacity,
-  useColorScheme,
-  View,
+  View
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -31,8 +30,8 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import BottomNav from "./components/bottomNav";
 import OfflineBanner from "./components/offlineBanner";
 import ReportFormModal from "./components/ReportFormModal";
+import { useTheme } from "./data/themeProvider";
 import { styles as importStyles } from "./styles/notificationsStyles";
-import { Themes } from "./styles/Themes";
 
 const buildingColorMap: Record<string, string> = {
   EV: "#56bab8",
@@ -45,7 +44,8 @@ const buildingColorMap: Record<string, string> = {
 const today = new Date().toISOString().split("T")[0];
 
 export default function Notifications() {
-  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const { theme } = useTheme();
+  const scheme = theme;
   const styles = importStyles(scheme);
 
   const [fontsLoaded] = useFonts({

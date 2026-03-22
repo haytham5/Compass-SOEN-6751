@@ -3,6 +3,7 @@ import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { testReports } from "./data/notificationData";
 import { getReports, saveNewReport } from "./data/reportSH";
+import { ThemeProvider } from "./data/themeProvider";
 import { addUser, getUsers } from "./utils/authStorage";
 import { startLocationTracking } from "./utils/backgroundLocation";
 
@@ -72,5 +73,9 @@ export default function RootLayout() {
     startLocationTracking();
   }, []);
 
-  return <Stack screenOptions={{ headerShown: false, animation: "fade" }} />;
+  return (
+    <ThemeProvider>
+      <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
+    </ThemeProvider>
+  );
 }

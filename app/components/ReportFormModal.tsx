@@ -10,12 +10,11 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  useColorScheme,
   View,
 } from "react-native";
 import { AccessibilitySubtype, saveNewReport } from "../data/reportSH";
+import { useTheme } from "../data/themeProvider";
 import { styles as importStyles } from "../styles/reportFormModalStyles";
-import { Themes } from "../styles/Themes";
 import { getCurrentUser, type UserRole } from "../utils/authStorage";
 
 interface ReportFormModalProps {
@@ -31,7 +30,8 @@ export default function ReportFormModal({
   onClose,
   onSubmitSuccess,
 }: ReportFormModalProps) {
-  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const { theme } = useTheme();
+  const scheme = theme;
   const styles = importStyles(scheme);
 
   const [step, setStep] = useState(1);

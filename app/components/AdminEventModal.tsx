@@ -10,12 +10,10 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  useColorScheme,
-  View,
+  View
 } from "react-native";
 import { saveNewReport } from "../data/reportSH";
-import { ThemeType } from "../data/themeProvider";
-import { Themes } from "../styles/Themes";
+import { ThemeType, useTheme } from "../data/themeProvider";
 import { getCurrentUser } from "../utils/authStorage";
 
 interface AdminEventModalProps {
@@ -29,7 +27,8 @@ export default function AdminEventModal({
   onClose,
   onSubmitSuccess,
 }: AdminEventModalProps) {
-  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const { theme } = useTheme();
+  const scheme = theme;
   const styles = adminEventStyles(scheme);
 
   const [name, setName] = useState("");

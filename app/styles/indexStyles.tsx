@@ -928,4 +928,13 @@ export const styles = (COLORS: ThemeType) =>
     reportModeButtonTextDisabled: {
       color: COLORS.black,
     },
+
+    expandCircle: {
+      position: "absolute",
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      backgroundColor: COLORS.white,
+      zIndex: 999,
+    },
   });

@@ -19,8 +19,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  useColorScheme,
-  View,
+  View
 } from "react-native";
 import {
   SafeAreaView,
@@ -28,7 +27,7 @@ import {
 } from "react-native-safe-area-context";
 
 import BuildingPreferencesWizard from "./components/buildingPreferences";
-import { Themes } from "./styles/Themes";
+import { useTheme } from "./data/themeProvider";
 import { styles as importStyles } from "./styles/userAuthStyles";
 import {
   addUser,
@@ -40,7 +39,8 @@ import {
 type SignUpStep = "account" | "preferences";
 
 export default function SignUp() {
-  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const { theme } = useTheme();
+  const scheme = theme;
   const styles = importStyles(scheme);
 
   const [fontsLoaded] = useFonts({

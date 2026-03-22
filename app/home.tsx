@@ -2,7 +2,7 @@ import { Lexend_400Regular, useFonts } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as NavigationBar from "expo-navigation-bar";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { CheckCircle, ThumbsUp, TriangleAlert } from "lucide-react-native";
 import React, {
   useCallback,
@@ -12,7 +12,10 @@ import React, {
   useState,
 } from "react";
 import {
+  Animated,
+  Dimensions,
   Image,
+  LayoutRectangle,
   Modal,
   Platform,
   Pressable,
@@ -20,7 +23,6 @@ import {
   StatusBar,
   Text,
   TouchableOpacity,
-  useColorScheme,
   View,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
@@ -42,8 +44,8 @@ import {
   upvoteReport,
   verifyReport,
 } from "./data/reportSH";
+import { useTheme } from "./data/themeProvider";
 import { styles as importStyles } from "./styles/indexStyles";
-import { Themes } from "./styles/Themes";
 import { getCurrentUser } from "./utils/authStorage";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
 
@@ -141,7 +143,10 @@ function extractPreferredBuildings(user: any): string[] {
 }
 
 export default function Home() {
-  const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  const router = useRouter();
+
+  const { theme } = useTheme();
+  const scheme = theme;
   const styles = importStyles(scheme);
 
   const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
@@ -403,10 +408,6 @@ export default function Home() {
     Lexend_400Regular,
   });
 
-  if (!fontsLoaded || loadingReports) {
-    return null;
-  }
-
   const mapRegion = {
     latitude: 45.4973,
     longitude: -73.579,
@@ -447,6 +448,31 @@ export default function Home() {
     );
   };
 
+  const [calmMode, setCalmMode] = useState(false);
+  const [buttonLayout, setButtonLayout] = useState<LayoutRectangle | null>(
+    null,
+  );
+
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+
+  const { width, height } = Dimensions.get("window");
+
+  const handleCalmMode = () => {
+    if (!buttonLayout) return;
+
+    scaleAnim.setValue(0);
+
+    Animated.timing(scaleAnim, {
+      toValue: 20,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => router.replace("./calm"));
+  };
+
+  if (!fontsLoaded || loadingReports) {
+    return null;
+  }
+
   return (
     <SafeAreaView style={styles.background}>
       <OfflineBanner />
@@ -481,6 +507,27 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
+        {!calmMode && buttonLayout && (
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.expandCircle,
+              {
+                top: buttonLayout.y + 60,
+                left: buttonLayout.x + 15,
+                transform: [
+                  {
+                    scale: scaleAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 1],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          />
+        )}
+
         <View style={styles.mapPreviewWrapper}>
           {renderMap(previewMapRef)}
 
@@ -503,7 +550,11 @@ export default function Home() {
             <Icon name="filter-alt" size={24} color="#276389" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.relaxMode}>
+          <TouchableOpacity
+            style={styles.relaxMode}
+            onLayout={(e) => setButtonLayout(e.nativeEvent.layout)}
+            onPress={handleCalmMode}
+          >
             <Icon name="bedtime" size={24} color="#276389" />
           </TouchableOpacity>
         </View>
@@ -1049,7 +1100,7 @@ export default function Home() {
         </Pressable>
       </Modal>
 
-      <BottomNav onPressAdd={handleOpenReportFlow} />
+      {!calmMode && <BottomNav onPressAdd={handleOpenReportFlow} />}
     </SafeAreaView>
   );
 }
