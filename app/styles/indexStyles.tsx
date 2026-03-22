@@ -574,7 +574,6 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "Lexend_400Regular",
     color: COLORS.subtext,
-    marginBottom: 10,
   },
 
   modalBadgeRow: {
@@ -589,7 +588,6 @@ export const styles = StyleSheet.create({
     fontFamily: "Lexend_400Regular",
     color: COLORS.muted,
     fontStyle: "italic",
-    marginBottom: 12,
   },
 
   modalSectionTitle: {
@@ -929,5 +927,12 @@ export const styles = StyleSheet.create({
   actionButtonUpvoted: {
     backgroundColor: "#E8F0F7",
     borderColor: "#276389",
+  },
+
+  updateMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginBottom: 2,
   },
 });

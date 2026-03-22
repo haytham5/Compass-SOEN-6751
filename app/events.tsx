@@ -2,6 +2,7 @@ import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
 import { useFocusEffect } from "expo-router";
+import { Building2, Clock } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     FlatList,
@@ -279,20 +280,29 @@ export default function Events() {
                             { borderLeftColor: buildingColorMap[item.location] ?? "#E7E7EC" },
                         ]}
                     >
+
+
                         <View style={styles.updateCardInner}>
                             <View style={styles.updateCardLeft}>
                                 <Text style={styles.updateEventTitle}>{item.title}</Text>
-                                <Text style={styles.updateMeta}>{item.time}</Text>
 
                                 <View style={styles.updateTypeRow}>
                                     <Icon name="event" size={16} color="#5a8c8b" />
                                     <Text style={styles.updateTypeLabel}>{item.type}</Text>
                                 </View>
 
-                                <Text style={styles.updateMeta}>
-                                    {buildingNameMap[item.location] ?? item.location}
-                                    {item.floor ? ` · Floor ${item.floor}` : ""}
-                                </Text>
+                                <View style={styles.updateMetaRow}>
+                                    <Clock size={13} color="#5A6B80" />
+                                    <Text style={styles.updateMeta}>{item.time}</Text>
+                                </View>
+
+                                <View style={styles.updateMetaRow}>
+                                    <Building2 size={13} color="#5A6B80" />
+                                    <Text style={styles.updateMeta}>
+                                        {buildingNameMap[item.location] ?? item.location}
+                                        {item.floor ? ` · Floor ${item.floor}` : ""}
+                                    </Text>
+                                </View>
                             </View>
                         </View>
 
@@ -341,15 +351,27 @@ export default function Events() {
                                     </TouchableOpacity>
                                 </View>
 
-                                <Text style={styles.modalBuilding}>
-                                    {buildingNameMap[selectedEvent.location] ??
-                                        selectedEvent.location}
-                                    {selectedEvent.floor ? ` — Floor ${selectedEvent.floor}` : ""}
-                                </Text>
+                                <View style={styles.updateMetaRow}>
+                                    <Building2 size={18} color="#444" />
+                                    <Text style={styles.modalBuilding}>
+                                        {buildingNameMap[selectedEvent.location] ?? selectedEvent.location}
+                                        {selectedEvent.floor ? ` — Floor ${selectedEvent.floor}` : ""}
+                                    </Text>
+                                    </View>
 
-                                <Text style={styles.modalTime}>
-                                    {selectedEvent.date} · {selectedEvent.time}
-                                </Text>
+                                    <View style={styles.updateMetaRow}>
+                                        <Icon name="event" size={16} color="#888" />
+                                    <Text style={styles.modalTime}>
+                                        {selectedEvent.date}
+                                    </Text>
+                                    </View>
+
+                                    <View style={styles.updateMetaRow}>
+                                    <Clock size={16} color="#888" />
+                                    <Text style={styles.modalTime}>
+                                        {selectedEvent.time}
+                                    </Text>
+                                    </View>
 
                                 <Text style={styles.modalDescription}>
                                     {selectedEvent.description || "No description provided."}

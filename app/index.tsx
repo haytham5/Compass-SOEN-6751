@@ -37,7 +37,6 @@ export default function Welcome() {
               resizeMode="contain"
             />
           <Text style={styles.title}>Compass</Text>
-          <Text style={styles.tagline}>Calm Navigation at Concordia University</Text>
         </View>
 
         <View style={styles.buttonGroup}>

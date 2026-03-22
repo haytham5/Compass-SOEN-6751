@@ -3,7 +3,7 @@ import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as NavigationBar from "expo-navigation-bar";
 import { useFocusEffect } from "expo-router";
-import { CheckCircle, ThumbsUp, TriangleAlert } from "lucide-react-native";
+import { Building2, CheckCircle, Clock, ThumbsUp, TriangleAlert } from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { initialSubscriptions } from "./data/notificationData";
 import {
@@ -322,11 +322,18 @@ export default function Notifications() {
                               </Text>
                           )}
 
-                          <Text style={styles.updateMeta}>{report.time}</Text>
-
                           <View style={styles.updateTypeRow}>
                             <Icon name={typeIcon} size={16} color="#5a8c8b" />
                             <Text style={styles.updateTypeLabel}>{typeLabel}</Text>
+                          </View>
+
+                          <View style={styles.updateMetaRow}>
+                            <Clock size={13} color="#5A6B80" />
+                            <Text style={styles.updateMeta}>{report.time}</Text>
+                          </View>
+                          <View style={styles.updateMetaRow}>
+                            <Building2 size={13} color="#5A6B80" />
+                            <Text style={styles.updateMeta}>{report.building} · Floor {report.floor}</Text>
                           </View>
 
                           <View style={styles.updateReporterRow}>
@@ -426,9 +433,12 @@ export default function Notifications() {
                       </TouchableOpacity>
                     </View>
 
-                    <Text style={styles.modalBuilding}>
-                      {selectedReport.building} · Floor {selectedReport.floor}
-                    </Text>
+                    <View style={styles.updateMetaRow}>
+                      <Building2 size={18} color="#444" />
+                      <Text style={styles.modalBuilding}>
+                        {selectedReport.building} · Floor {selectedReport.floor}
+                      </Text>
+                    </View>
 
                     {selectedReport.isSevere && (
                         <View style={styles.severeIndicator}>
@@ -441,7 +451,6 @@ export default function Notifications() {
 
                     {selectedReport.description ? (
                         <>
-                          <Text style={styles.modalSectionTitle}>Description</Text>
                           <Text style={styles.modalDescription}>
                             {selectedReport.description}
                           </Text>

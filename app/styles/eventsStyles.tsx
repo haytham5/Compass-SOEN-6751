@@ -185,7 +185,6 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
     color: COLORS.subtext,
-    marginBottom: 6,
   },
 
   modalTime: {
@@ -193,7 +192,6 @@ export const styles = StyleSheet.create({
     fontFamily: "Lexend_400Regular",
     color: COLORS.muted,
     fontStyle: "italic",
-    marginBottom: 12,
   },
 
   modalDescription: {
@@ -448,5 +446,12 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 4,
     paddingBottom: 0,
+  },
+
+  updateMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginBottom: 2,
   },
 });
