@@ -1,416 +1,452 @@
 import { Platform, StyleSheet } from "react-native";
-import { ThemeType } from "../data/themeProvider";
 
-export const styles = (theme: ThemeType) =>
-  StyleSheet.create({
-    background: {
-      flex: 1,
-      backgroundColor: theme.background,
-    },
+const COLORS = {
+  white: "#FFFFFF",
+  black: "#111111",
+  text: "#1F1F1F",
+  subtext: "#4E4E4E",
+  muted: "#6B7280",
 
-    scrollableContent: {
-      paddingHorizontal: 20,
-      paddingBottom: 20,
-    },
+  primary: "#56bab8",
+  primaryDark: "#5a8c8b",
+  pink: "#e7548b",
+  lavender: "#9796b8",
+  softPink: "#d6b1c3",
 
-    scrollableContentHorizontal: {
-      padding: 0,
-    },
+  border: "#E7E7EC",
+  softBg: "#F9FAFB",
+  tealTint: "#EEF9F8",
+  pinkTint: "#FCEAF1",
+  lavenderTint: "#F3F1FA",
+};
 
-    header: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingHorizontal: 0,
-      paddingVertical: 10,
-    },
+export const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
 
-    title: {
-      fontSize: 25,
-      fontFamily: "Lexend_400Regular",
-    },
+  scrollableContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
 
-    body: {
-      fontSize: 18,
-      fontFamily: "Lexend_400Regular",
-    },
+  scrollableContentHorizontal: {
+    padding: 0,
+  },
 
-    eventLegends: {
-      flexDirection: "row",
-      gap: 0,
-      marginBottom: 30,
-    },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 0,
+    paddingVertical: 10,
+  },
 
-    subCard: {
-      width: 65,
-      height: 65,
-      justifyContent: "center",
-      alignItems: "center",
-      marginRight: 10,
+  title: {
+    fontSize: 25,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.black,
+  },
 
-      borderRadius: 8,
-      ...Platform.select({
-        ios: {
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.8,
-          shadowRadius: 1,
-        },
-        android: {
-          elevation: 1,
-          shadowColor: "#000",
-        },
-      }),
-    },
+  body: {
+    fontSize: 18,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.text,
+  },
 
-    eventCard: {
-      marginHorizontal: 15,
-      marginVertical: 6,
-      padding: 14,
-      borderRadius: 10,
-    },
+  eventLegends: {
+    flexDirection: "row",
+    gap: 0,
+    marginBottom: 30,
+  },
 
-    eventText: {
-      color: theme.on_background,
-      fontWeight: "700",
-    },
+  subCard: {
+    width: 68,
+    height: 68,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.06,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 2,
+        shadowColor: "#000",
+      },
+    }),
+  },
 
-    subBody: {
-      fontSize: 24,
-      fontWeight: "bold",
-      fontFamily: "Lexend_400Regular",
-      color: theme.on_background,
-    },
+  eventCard: {
+    marginHorizontal: 15,
+    marginVertical: 6,
+    padding: 14,
+    borderRadius: 10,
+  },
 
-    eventLegend: {
-      padding: 16,
-      marginBottom: 15,
-      borderRadius: 8,
-    },
+  eventText: {
+    color: COLORS.white,
+    fontWeight: "700",
+    fontFamily: "Lexend_400Regular",
+  },
 
-    notification: {
-      padding: 16,
-      marginBottom: 15,
-      borderRadius: 8,
-    },
+  subBody: {
+    fontSize: 22,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.black,
+  },
 
-    notificationBody: {
-      color: theme.on_background,
-      fontSize: 18,
-      fontFamily: "Lexend_400Regular",
-    },
+  eventLegend: {
+    padding: 16,
+    marginBottom: 15,
+    borderRadius: 8,
+  },
 
-    bold: {
-      fontWeight: "700",
-    },
+  notification: {
+    padding: 16,
+    marginBottom: 15,
+    borderRadius: 8,
+  },
 
-    red: {
-      backgroundColor: theme.evBuilding,
-    },
+  notificationBody: {
+    color: COLORS.white,
+    fontSize: 18,
+    fontFamily: "Lexend_400Regular",
+  },
 
-    green: {
-      backgroundColor: theme.fbBuilding,
-    },
+  bold: {
+    fontWeight: "700",
+  },
 
-    unsubbed: {
-      backgroundColor: theme.surface_dim,
-      opacity: 0.7,
-    },
+  red: {
+    backgroundColor: COLORS.pinkTint,
+  },
 
-    modalOverlay: {
-      flex: 1,
-      backgroundColor: "rgba(0, 0, 0, 0.4)",
-      justifyContent: "center",
-      alignItems: "center",
-      paddingHorizontal: 20,
-    },
-    modalCard: {
-      backgroundColor: "#FFFFFF",
-      borderRadius: 12,
-      padding: 20,
-      width: "100%",
-      ...Platform.select({
-        ios: {
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.2,
-          shadowRadius: 4,
-        },
-        android: {
-          elevation: 5,
-          shadowColor: "#000",
-        },
-      }),
-    },
-    modalHeader: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: 10,
-    },
-    modalTitle: {
-      fontSize: 20,
-      fontFamily: "Lexend_400Regular",
-      color: "#276389",
-      flex: 1,
-    },
-    modalBuilding: {
-      fontSize: 16,
-      fontFamily: "Lexend_400Regular",
-      color: "#444",
-      marginBottom: 6,
-    },
-    modalTime: {
-      fontSize: 13,
-      fontFamily: "Lexend_400Regular",
-      color: "#888",
-      fontStyle: "italic",
-      marginBottom: 12,
-    },
-    modalDescription: {
-      fontSize: 15,
-      fontFamily: "Lexend_400Regular",
-      color: "#333",
-    },
-    closeButton: {
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-    },
-    closeButtonText: {
-      fontSize: 28,
-      color: "#276389",
-      lineHeight: 28,
-    },
+  green: {
+    backgroundColor: COLORS.tealTint,
+  },
 
-    notificationCard: {
-      padding: 16,
-      marginBottom: 12,
-      borderRadius: 20,
-      borderWidth: 1,
-      borderColor: "#DDE3EA",
-      borderLeftWidth: 5,
-      backgroundColor: "#F5F8F4",
-    },
+  unsubbed: {
+    backgroundColor: COLORS.softBg,
+    opacity: 1,
+  },
 
-    notificationCardRed: {
-      backgroundColor: "#FBE4E4",
-    },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(17, 17, 17, 0.35)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
 
-    notificationCardGreen: {
-      backgroundColor: "#E6F6EA",
-    },
+  modalCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 22,
+    padding: 20,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.12,
+        shadowRadius: 20,
+      },
+      android: {
+        elevation: 6,
+        shadowColor: "#000",
+      },
+    }),
+  },
 
-    notificationTopRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
 
-    notificationTitle: {
-      flex: 1,
-      fontSize: 16,
-      fontFamily: "Lexend_400Regular",
-      color: "#1B1B1B",
-      marginRight: 10,
-    },
+  modalTitle: {
+    fontSize: 20,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.black,
+    flex: 1,
+  },
 
-    notificationBuilding: {
-      marginTop: 8,
-      fontSize: 14,
-      fontFamily: "Lexend_400Regular",
-      color: "#3A3A3A",
-    },
+  modalBuilding: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.subtext,
+    marginBottom: 6,
+  },
 
-    notificationMeta: {
-      marginTop: 4,
-      fontSize: 12,
-      fontFamily: "Lexend_400Regular",
-      color: "#6B7280",
-    },
+  modalTime: {
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.muted,
+    fontStyle: "italic",
+    marginBottom: 12,
+  },
 
-    badge: {
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-      borderRadius: 999,
-    },
+  modalDescription: {
+    fontSize: 15,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.text,
+    lineHeight: 22,
+  },
 
-    badgeRed: {
-      backgroundColor: "#F4B5B5",
-    },
+  closeButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
 
-    badgeGreen: {
-      backgroundColor: "#BFE7C8",
-    },
+  closeButtonText: {
+    fontSize: 28,
+    color: COLORS.primaryDark,
+    lineHeight: 28,
+  },
 
-    badgeText: {
-      fontSize: 12,
-      fontFamily: "Lexend_400Regular",
-      color: "#1B1B1B",
-    },
+  notificationCard: {
+    padding: 16,
+    marginBottom: 12,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderLeftWidth: 5,
+    backgroundColor: COLORS.white,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.04,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 1,
+      },
+    }),
+  },
 
-    // notificationCard: {
-    //   padding: 18,
-    //   marginBottom: 15,
-    //   borderRadius: 20,
-    //   borderWidth: 1.5,
-    //   backgroundColor: "#F5F8F4",
-    // },
+  notificationCardRed: {
+    backgroundColor: COLORS.pinkTint,
+  },
 
-    notificationRed: {
-      borderColor: "#E98A8A",
-    },
+  notificationCardGreen: {
+    backgroundColor: COLORS.tealTint,
+  },
 
-    notificationGreen: {
-      borderColor: "#9FD8AE",
-    },
+  notificationTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
 
-    // notificationTopRow: {
-    //   flexDirection: "row",
-    //   justifyContent: "space-between",
-    //   alignItems: "center",
-    //   marginBottom: 10,
-    //   gap: 12,
-    // },
-    //
-    // notificationTitle: {
-    //   flex: 1,
-    //   fontSize: 20,
-    //   fontFamily: "Lexend_400Regular",
-    //   color: "#1F1F1F",
-    // },
+  notificationTitle: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.black,
+    marginRight: 10,
+  },
 
-    notificationMetaRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 14,
-      marginTop: 10,
-      flexWrap: "wrap",
-    },
-    modalSectionTitle: {
-      fontSize: 16,
-      fontFamily: "Lexend_400Regular",
-      color: "#1F1F1F",
-      marginBottom: 8,
-    },
-    modalBadgeRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 12,
-      marginBottom: 18,
-    },
+  notificationBuilding: {
+    marginTop: 8,
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.subtext,
+  },
 
-    subscriptions: {
-      flexDirection: "row",
-      gap: 0,
-      marginBottom: 30,
-    },
+  notificationMeta: {
+    marginTop: 4,
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.muted,
+  },
 
-    subCardActive: {
-      borderWidth: 2,
-      borderColor: "#276389",
-      transform: [{ scale: 1.02 }],
-      margin: 2,
-    },
+  badge: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+  },
 
-    subCardInactive: {
-      opacity: 0.7,
-      marginTop: 2,
-    },
+  badgeRed: {
+    backgroundColor: COLORS.softPink,
+  },
 
-    subLabel: {
-      marginTop: 4,
-      fontSize: 12,
-      fontFamily: "Lexend_400Regular",
-      color: "rgba(255, 255, 255, 0.9)",
-    },
+  badgeGreen: {
+    backgroundColor: COLORS.tealTint,
+  },
 
-    emptyState: {
-      paddingVertical: 24,
-      paddingHorizontal: 16,
-      alignItems: "center",
-    },
+  badgeText: {
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.black,
+  },
 
-    emptyStateTitle: {
-      fontSize: 16,
-      fontFamily: "Lexend_400Regular",
-      fontWeight: "600",
-      color: "#276389",
-      marginBottom: 4,
-    },
+  notificationRed: {
+    borderColor: COLORS.softPink,
+  },
 
-    emptyStateBody: {
-      fontSize: 14,
-      fontFamily: "Lexend_400Regular",
-      color: "#5A6B80",
-      textAlign: "center",
-    },
+  notificationGreen: {
+    borderColor: COLORS.primary,
+  },
 
-    calendarCard: {
-      backgroundColor: "#FFFFFF",
-      borderRadius: 20,
-      padding: 10,
-      marginTop: 8,
-      marginBottom: 20,
-      borderWidth: 1,
-      borderColor: "#E5EAF0",
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.06,
-      shadowRadius: 8,
-      elevation: 2,
-    },
+  notificationMetaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    marginTop: 10,
+    flexWrap: "wrap",
+  },
 
-    calendar: {
-      borderRadius: 16,
-    },
-    sectionDescription: {
-      fontSize: 14,
-      fontFamily: "Lexend_400Regular",
-      color: "#5A6B80",
-      marginBottom: 10,
-    },
+  modalSectionTitle: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.black,
+    marginBottom: 8,
+  },
 
-    adminButton: {
-      backgroundColor: "#276389",
-      paddingHorizontal: 14,
-      paddingVertical: 8,
-      borderRadius: 8,
-    },
-    adminButtonText: {
-      color: "white",
-      fontSize: 13,
-      fontFamily: "Lexend_400Regular",
-    },
+  modalBadgeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 18,
+  },
 
-    updateCardInner: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "flex-start",
-    },
-    updateCardLeft: { flex: 1, paddingRight: 10 },
-    updateEventTitle: {
-      fontSize: 17,
-      fontFamily: "Lexend_400Regular",
-      color: "#1F1F1F",
-      marginBottom: 2,
-    },
-    updateMeta: {
-      fontSize: 13,
-      fontFamily: "Lexend_400Regular",
-      color: "#5A6B80",
-    },
-    updateTypeRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 5,
-      marginTop: 4,
-      marginBottom: 4,
-    },
-    updateTypeLabel: {
-      fontSize: 13,
-      fontFamily: "Lexend_400Regular",
-      color: "#276389",
-      textTransform: "capitalize",
-    },
-    chevronButton: { alignItems: "center", paddingTop: 4, paddingBottom: 0 },
-  });
+  subscriptions: {
+    flexDirection: "row",
+    gap: 0,
+    marginBottom: 26,
+  },
+
+  subCardActive: {
+    borderWidth: 1.5,
+    borderColor: COLORS.primary,
+    transform: [{ scale: 1.02 }],
+    margin: 2,
+  },
+
+  subCardInactive: {
+    opacity: 0.9,
+    marginTop: 2,
+  },
+
+  subLabel: {
+    marginTop: 4,
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.subtext,
+  },
+
+  emptyState: {
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    alignItems: "center",
+  },
+
+  emptyStateTitle: {
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.black,
+    marginBottom: 4,
+  },
+
+  emptyStateBody: {
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.subtext,
+    textAlign: "center",
+  },
+
+  calendarCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 22,
+    padding: 10,
+    marginTop: 8,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+
+  calendar: {
+    borderRadius: 16,
+  },
+
+  sectionDescription: {
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.subtext,
+    marginBottom: 10,
+  },
+
+  adminButton: {
+    backgroundColor: COLORS.pink,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+  },
+
+  adminButtonText: {
+    color: COLORS.white,
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+  },
+
+  updateCardInner: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+
+  updateCardLeft: {
+    flex: 1,
+    paddingRight: 10,
+  },
+
+  updateEventTitle: {
+    fontSize: 17,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.black,
+    marginBottom: 2,
+  },
+
+  updateMeta: {
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.subtext,
+  },
+
+  updateTypeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginTop: 4,
+    marginBottom: 4,
+  },
+
+  updateTypeLabel: {
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.primaryDark,
+    textTransform: "capitalize",
+  },
+
+  chevronButton: {
+    alignItems: "center",
+    paddingTop: 4,
+    paddingBottom: 0,
+  },
+});

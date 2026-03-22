@@ -1,308 +1,319 @@
 import { StyleSheet } from "react-native";
-import { ThemeType } from "../data/themeProvider";
 
-export const styles = (theme: ThemeType) =>
-  StyleSheet.create({
-    container: {
-      flex: 2,
-      justifyContent: "space-around",
-      paddingHorizontal: 24,
-      paddingBottom: 48,
-    },
+const COLORS = {
+  white: "#FFFFFF",
+  black: "#111111",
+  text: "#1F1F1F",
+  subtext: "#4E4E4E",
+  muted: "#6B7280",
 
-    buttonGroupings: {},
+  primary: "#56bab8",
+  primaryDark: "#5a8c8b",
+  pink: "#e7548b",
+  lavender: "#9796b8",
+  softPink: "#d6b1c3",
 
-    logoArea: {
-      alignItems: "center",
-      marginTop: 80,
-    },
+  border: "#E7E7EC",
+  softBg: "#F9FAFB",
+  tealTint: "#EEF9F8",
+  pinkTint: "#FCEAF1",
+  lavenderTint: "#F3F1FA",
 
-    title: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 25,
-      color: theme.onSurface,
-      marginBottom: 8,
-    },
+  errorBg: "#FFF1F4",
+  errorBorder: "#F3C7D6",
+  errorText: "#B42318",
 
-    tagline: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 14,
-      color: theme.surfaceTint,
-    },
+  successBg: "#EEF9F8",
+  successBorder: "#BFE8E6",
+  successText: "#2F6F6D",
+};
 
-    buttonGroup: {
-      gap: 24,
-    },
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+    paddingHorizontal: 24,
+    paddingBottom: 48,
+  },
 
-    primaryButton: {
-      backgroundColor: theme.primary,
-      borderRadius: 14,
-      paddingVertical: 15,
-      alignItems: "center",
-    },
+  logoArea: {
+    alignItems: "center",
+    marginTop: 80,
+    marginBottom: 8,
+  },
 
-    primaryButtonText: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 15,
-      color: theme.onPrimary,
-      letterSpacing: 0.4,
-    },
+  title: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 25,
+    color: COLORS.black,
+    marginBottom: 8,
+  },
 
-    secondaryButton: {
-      backgroundColor: theme.surfaceContainerLowest,
-      borderRadius: 14,
-      paddingVertical: 15,
-      alignItems: "center",
-      borderWidth: 1.5,
-      borderColor: theme.outline,
-    },
+  tagline: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 14,
+    color: COLORS.subtext,
+  },
 
-    secondaryButtonText: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 15,
-      color: theme.onSurface,
-      letterSpacing: 0.4,
-    },
+  buttonGroup: {
+    gap: 12,
+  },
 
-    ghostButton: {
-      alignItems: "center",
-      paddingVertical: 12,
-      marginTop: 24,
-    },
+  primaryButton: {
+    backgroundColor: COLORS.pink,
+    borderRadius: 16,
+    paddingVertical: 15,
+    alignItems: "center",
+  },
 
-    ghostButtonText: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 13,
-      color: theme.tertiary,
-      textDecorationLine: "underline",
-    },
+  primaryButtonText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 15,
+    color: COLORS.white,
+    letterSpacing: 0.2,
+  },
 
-    background: {
-      flex: 1,
-      backgroundColor: theme.background,
-    },
+  secondaryButton: {
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    paddingVertical: 15,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
 
-    inputLabel: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 13,
-      color: theme.onSurface,
-      marginBottom: 6,
-      marginTop: 4,
-    },
+  secondaryButtonText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 15,
+    color: COLORS.primaryDark,
+    letterSpacing: 0.2,
+  },
 
-    input: {
-      backgroundColor: theme.surfaceBright,
-      borderRadius: 12,
-      paddingHorizontal: 16,
-      paddingVertical: 13,
-      fontFamily: "Lexend_400Regular",
-      fontSize: 14,
-      color: theme.onSurface,
-      marginBottom: 14,
-      borderWidth: 1,
-      borderColor: theme.outline,
-    },
+  ghostButton: {
+    alignItems: "center",
+    paddingVertical: 12,
+  },
 
-    card: {
-      backgroundColor: theme.background,
-      borderRadius: 20,
-      paddingHorizontal: 24,
-      paddingVertical: 28,
-      shadowColor: theme.onSurface,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.08,
-      shadowRadius: 12,
-      elevation: 4,
-      marginBottom: 24,
-    },
+  ghostButtonText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 13,
+    color: COLORS.subtext,
+    textDecorationLine: "underline",
+  },
 
-    cardTitle: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 22,
-      color: theme.onSurface,
-      marginBottom: 4,
-    },
+  background: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
 
-    // cardSubtitle: {
-    //   fontFamily: "Lexend_400Regular",
-    //   fontSize: 13,
-    //   color: "#6B84A3",
-    //   marginBottom: 24,
-    // },
+  inputLabel: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 13,
+    color: COLORS.black,
+    marginBottom: 6,
+    marginTop: 4,
+  },
 
-    passwordRow: {
-      position: "relative",
-      justifyContent: "center",
-      marginBottom: 0,
-    },
+  input: {
+    backgroundColor: COLORS.softBg,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
+    fontFamily: "Lexend_400Regular",
+    fontSize: 14,
+    color: COLORS.black,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
 
-    passwordInput: {
-      marginBottom: 14,
-      paddingRight: 72,
-    },
+  card: {
+    backgroundColor: COLORS.white,
+    borderRadius: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 28,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
 
-    showHideButton: {
-      position: "absolute",
-      right: 16,
-      top: 13,
-    },
+  cardTitle: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 22,
+    color: COLORS.black,
+    marginBottom: 4,
+  },
 
-    // showHideText: {
-    //   fontFamily: "Lexend_400Regular",
-    //   fontSize: 13,
-    //   color: theme.onPrimaryContainer,
-    // },
+  cardSubtitle: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 13,
+    color: COLORS.subtext,
+    marginBottom: 24,
+  },
 
-    appTitle: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 36,
-      color: theme.onSurface,
-      marginBottom: 6,
-    },
+  passwordRow: {
+    position: "relative",
+    justifyContent: "center",
+    marginBottom: 0,
+  },
 
-    errorBox: {
-      backgroundColor: theme.errorContainer,
-      borderRadius: 10,
-      paddingHorizontal: 14,
-      paddingVertical: 10,
-      marginBottom: 16,
-      borderWidth: 1,
-      borderColor: "#FFCCCC",
-    },
+  passwordInput: {
+    marginBottom: 14,
+    paddingRight: 72,
+  },
 
-    errorText: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 13,
-      color: theme.onErrorContainer,
-    },
+  showHideButton: {
+    position: "absolute",
+    right: 16,
+    top: 13,
+  },
 
-    keyboardView: {
-      flex: 1,
-    },
+  showHideText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 13,
+    color: COLORS.primaryDark,
+  },
 
-    // scrollableContent: {
-    //   flexGrow: 1,
-    //   justifyContent: "center",
-    //   paddingHorizontal: 24,
-    //   paddingTop: 70,
-    //   paddingBottom: 24,
-    // },
-    scrollableContent: {
-      flexGrow: 1,
-      paddingHorizontal: 24,
-      paddingTop: 80,
-      paddingBottom: 40,
-    },
+  appTitle: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 36,
+    color: COLORS.black,
+    marginBottom: 6,
+    letterSpacing: -0.5,
+  },
 
-    footerRow: {
-      flexDirection: "row",
-      justifyContent: "center",
-      alignItems: "center",
-    },
+  errorBox: {
+    backgroundColor: COLORS.errorBg,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: COLORS.errorBorder,
+  },
 
-    footerText: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 13,
-      color: theme.tertiary,
-    },
+  errorText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 13,
+    color: COLORS.errorText,
+  },
 
-    footerLink: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 13,
-      color: theme.secondary,
-      fontWeight: "600",
-    },
+  keyboardView: {
+    flex: 1,
+  },
 
-    successBox: {
-      backgroundColor: "#F0FFF4",
-      borderRadius: 10,
-      paddingHorizontal: 14,
-      paddingVertical: 10,
-      marginTop: 12,
-      borderWidth: 1,
-      borderColor: "#C3E6CB",
-    },
+  scrollableContent: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingTop: 80,
+    paddingBottom: 40,
+  },
 
-    successText: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 13,
-      color: "#276749",
-    },
-    topRow: {
-      width: "100%",
-      marginBottom: 8,
-    },
+  footerRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
-    // backLink: {
-    //   fontFamily: "Lexend_400Regular",
-    //   fontSize: 15,
-    //   color: "#4D6A85",
-    // },
+  footerText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 13,
+    color: COLORS.subtext,
+  },
 
-    // topBackButton: {
-    //   position: "absolute",
-    //   top: 0,
-    //   left: 0,
-    //   zIndex: 20,
-    //   paddingTop: 8,
-    //   paddingLeft: 12,
-    //   paddingRight: 12,
-    //   paddingBottom: 8,
-    // },
-    topBackButton: {
-      position: "absolute",
-      left: 12,
-      zIndex: 20,
-      paddingVertical: 8,
-      paddingHorizontal: 8,
-    },
+  footerLink: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 13,
+    color: COLORS.primaryDark,
+    fontWeight: "600",
+  },
 
-    topBackText: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 16,
-      color: theme.tertiary,
-    },
+  successBox: {
+    backgroundColor: COLORS.successBg,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: COLORS.successBorder,
+  },
 
-    guestLinkWrapper: {
-      marginTop: 14,
-      alignItems: "center",
-    },
+  successText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 13,
+    color: COLORS.successText,
+  },
 
-    guestLink: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 14,
-      color: theme.tertiary,
-      textDecorationLine: "underline",
-    },
+  topRow: {
+    width: "100%",
+    marginBottom: 8,
+  },
 
-    roleRow: {
-      flexDirection: "row",
-      gap: 10,
-      marginBottom: 18,
-    },
+  backLink: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 15,
+    color: COLORS.primaryDark,
+  },
 
-    roleButton: {
-      flex: 1,
-      backgroundColor: theme.surfaceBright,
-      borderWidth: 1,
-      borderColor: theme.outline,
-      borderRadius: 14,
-      paddingVertical: 14,
-      alignItems: "center",
-    },
+  topBackButton: {
+    position: "absolute",
+    left: 12,
+    zIndex: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+  },
 
-    roleButtonActive: {
-      backgroundColor: theme.primary,
-      borderColor: theme.outline,
-    },
+  topBackText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 16,
+    color: COLORS.primaryDark,
+  },
 
-    roleButtonText: {
-      fontFamily: "Lexend_400Regular",
-      fontSize: 14,
-      color: theme.onSurfaceVariant,
-    },
+  guestLinkWrapper: {
+    marginTop: 14,
+    alignItems: "center",
+  },
 
-    roleButtonTextActive: {
-      color: theme.onPrimary,
-    },
-  });
+  guestLink: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 14,
+    color: COLORS.primaryDark,
+    textDecorationLine: "underline",
+  },
+
+  roleRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 18,
+  },
+
+  roleButton: {
+    flex: 1,
+    backgroundColor: COLORS.softBg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+
+  roleButtonActive: {
+    backgroundColor: COLORS.tealTint,
+    borderColor: COLORS.primary,
+  },
+
+  roleButtonText: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 14,
+    color: COLORS.subtext,
+  },
+
+  roleButtonTextActive: {
+    color: COLORS.primaryDark,
+  },
+});

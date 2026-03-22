@@ -47,12 +47,19 @@ import { Themes } from "./styles/Themes";
 import { getCurrentUser } from "./utils/authStorage";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
 
+// const buildingColorMap: Record<string, string> = {
+//   EV: "#FF9898",
+//   H: "#4CAF50",
+//   FB: "#9C6ADE",
+//   LB: "#FFC107",
+//   JMSB: "#2196F3",
+// };
 const buildingColorMap: Record<string, string> = {
-  EV: "#FF9898",
-  H: "#4CAF50",
-  FB: "#9C6ADE",
-  LB: "#FFC107",
-  JMSB: "#2196F3",
+  EV: "#56bab8",
+  H: "#5a8c8b",
+  FB: "#d6b1c3",
+  LB: "#9796b8",
+  JMSB: "#e7548b",
 };
 
 const today = new Date().toISOString().split("T")[0];
