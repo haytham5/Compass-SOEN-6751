@@ -33,6 +33,7 @@ type Event = {
     type: "protest" | "event" | "accessibility" | "maintenance";
     date: string;
     floor: string;
+    room?: string;
     location: string;
     time: string;
     description?: string;
@@ -61,6 +62,21 @@ const buildingColorMap: Record<string, string> = {
     FB: "#d6b1c3",
 };
 
+const formatEventType = (type: Event["type"]) => {
+    switch (type) {
+        case "event":
+            return "Event";
+        case "protest":
+            return "Protest";
+        case "accessibility":
+            return "Accessibility";
+        case "maintenance":
+            return "Maintenance";
+        default:
+            return type;
+    }
+};
+
 export default function Events() {
     const [reports, setReports] = useState<Report[]>([]);
     const [loadingReports, setLoading] = useState(true);
@@ -69,12 +85,12 @@ export default function Events() {
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
     const [isReportModalVisible, setIsReportModalVisible] = useState(false);
 
-    const [isAdmin, setIsAdmin] = useState(false);
+    const [canAddEvents, setCanAddEvents] = useState(false);
     const [showAdminEventModal, setShowAdminEventModal] = useState(false);
 
     useEffect(() => {
         getCurrentUser().then((user) => {
-            setIsAdmin(user?.role === "admin");
+            setCanAddEvents(user?.role === "admin");
         });
     }, []);
 
@@ -114,6 +130,10 @@ export default function Events() {
         }, [loadReports])
     );
 
+    const openAdminEventModal = () => {
+        setShowAdminEventModal(true);
+    };
+
     const reportEventsByDate = useMemo(() => {
         const grouped: Record<string, Event[]> = {};
 
@@ -128,9 +148,10 @@ export default function Events() {
                     id: `report-${report.id}`,
                     title: report.name || report.type,
                     acc: report.building,
-                    type: report.type,
+                    type: report.type as Event["type"],
                     date: report.date,
                     floor: report.floor,
+                    room: (report as any).room,
                     location: report.building,
                     time: report.time,
                     description: report.description || "No description provided.",
@@ -140,37 +161,49 @@ export default function Events() {
         return grouped;
     }, [reports]);
 
-    const allEvents = reportEventsByDate;
+    const filteredEventsByDate = useMemo(() => {
+        if (selectedBuildings.length === 0) {
+            return reportEventsByDate;
+        }
+
+        const filtered: Record<string, Event[]> = {};
+
+        Object.entries(reportEventsByDate).forEach(([date, events]) => {
+            const matchingEvents = events.filter((event) =>
+                selectedBuildings.includes(event.location)
+            );
+
+            if (matchingEvents.length > 0) {
+                filtered[date] = matchingEvents;
+            }
+        });
+
+        return filtered;
+    }, [reportEventsByDate, selectedBuildings]);
 
     const markedDates = useMemo(() => {
         const marks: Record<string, any> = {};
 
-        Object.keys(allEvents).forEach((date) => {
+        Object.keys(filteredEventsByDate).forEach((date) => {
             marks[date] = {
                 marked: true,
-                dots: allEvents[date].map((event) => ({
+                dots: filteredEventsByDate[date].map((event) => ({
                     key: event.id,
                     color: typeDotColorMap[event.type] || "#56bab8",
                 })),
             };
         });
 
-        if (selectedDate) {
-            marks[selectedDate] = {
-                ...marks[selectedDate],
-                selected: true,
-                selectedColor: "#56bab8",
-            };
-        }
+        marks[selectedDate] = {
+            ...(marks[selectedDate] ?? {}),
+            selected: true,
+            selectedColor: "#56bab8",
+        };
 
         return marks;
-    }, [allEvents, selectedDate]);
+    }, [filteredEventsByDate, selectedDate]);
 
-    const selectedEvents = (allEvents[selectedDate] || []).filter((event) =>
-        selectedBuildings.length > 0
-            ? selectedBuildings.includes(event.location)
-            : true
-    );
+    const selectedEvents = filteredEventsByDate[selectedDate] || [];
 
     const buildingFilters = ["EV", "LB", "H", "JMSB", "FB"];
 
@@ -191,10 +224,10 @@ export default function Events() {
                     <>
                         <View style={styles.header}>
                             <Text style={styles.title}>Your Events</Text>
-                            {isAdmin && (
+                            {canAddEvents && (
                                 <TouchableOpacity
                                     style={styles.adminButton}
-                                    onPress={() => setShowAdminEventModal(true)}
+                                    onPress={openAdminEventModal}
                                 >
                                     <Text style={styles.adminButtonText}>+ Add Event</Text>
                                 </TouchableOpacity>
@@ -229,7 +262,9 @@ export default function Events() {
                                             style={[
                                                 styles.subCard,
                                                 isActive ? styles.green : styles.unsubbed,
-                                                isActive ? styles.subCardActive : styles.subCardInactive,
+                                                isActive
+                                                    ? styles.subCardActive
+                                                    : styles.subCardInactive,
                                             ]}
                                         >
                                             <Text style={styles.subBody}>{building}</Text>
@@ -273,47 +308,63 @@ export default function Events() {
                         </View>
                     </>
                 }
-                renderItem={({ item }) => (
-                    <View
-                        style={[
-                            styles.notificationCard,
-                            { borderLeftColor: buildingColorMap[item.location] ?? "#E7E7EC" },
-                        ]}
-                    >
+                renderItem={({ item }) => {
+                    const typeLabel = formatEventType(item.type);
 
+                    return (
+                        <View
+                            style={[
+                                styles.notificationCard,
+                                {
+                                    borderLeftColor:
+                                        buildingColorMap[item.location] ?? "#E7E7EC",
+                                },
+                            ]}
+                        >
+                            <View style={styles.updateCardInner}>
+                                <View style={styles.updateCardLeft}>
+                                    <Text style={styles.updateEventTitle}>{item.title}</Text>
 
-                        <View style={styles.updateCardInner}>
-                            <View style={styles.updateCardLeft}>
-                                <Text style={styles.updateEventTitle}>{item.title}</Text>
+                                    <View style={styles.updateTypeRow}>
+                                        <Icon
+                                            name={item.type === "event" ? "event" : "campaign"}
+                                            size={16}
+                                            color="#5a8c8b"
+                                        />
+                                        <Text style={styles.updateTypeLabel}>{typeLabel}</Text>
+                                    </View>
 
-                                <View style={styles.updateTypeRow}>
-                                    <Icon name="event" size={16} color="#5a8c8b" />
-                                    <Text style={styles.updateTypeLabel}>{item.type}</Text>
-                                </View>
+                                    <View style={styles.updateMetaRow}>
+                                        <Clock size={13} color="#5A6B80" />
+                                        <Text style={styles.updateMeta}>{item.time}</Text>
+                                    </View>
 
-                                <View style={styles.updateMetaRow}>
-                                    <Clock size={13} color="#5A6B80" />
-                                    <Text style={styles.updateMeta}>{item.time}</Text>
-                                </View>
+                                    <View style={styles.updateMetaRow}>
+                                        <Building2 size={13} color="#5A6B80" />
+                                        <Text style={styles.updateMeta}>
+                                            {buildingNameMap[item.location] ?? item.location}
+                                            {item.floor ? ` · Floor ${item.floor}` : ""}
+                                            {item.room ? ` · Room ${item.room}` : ""}
+                                        </Text>
+                                    </View>
 
-                                <View style={styles.updateMetaRow}>
-                                    <Building2 size={13} color="#5A6B80" />
-                                    <Text style={styles.updateMeta}>
-                                        {buildingNameMap[item.location] ?? item.location}
-                                        {item.floor ? ` · Floor ${item.floor}` : ""}
-                                    </Text>
+                                    {!!item.description && (
+                                        <Text style={styles.eventPreviewText} numberOfLines={2}>
+                                            {item.description}
+                                        </Text>
+                                    )}
                                 </View>
                             </View>
-                        </View>
 
-                        <TouchableOpacity
-                            style={styles.chevronButton}
-                            onPress={() => setSelectedEvent(item)}
-                        >
-                            <Icon name="expand-more" size={24} color="#5a8c8b" />
-                        </TouchableOpacity>
-                    </View>
-                )}
+                            <TouchableOpacity
+                                style={styles.chevronButton}
+                                onPress={() => setSelectedEvent(item)}
+                            >
+                                <Icon name="expand-more" size={24} color="#5a8c8b" />
+                            </TouchableOpacity>
+                        </View>
+                    );
+                }}
                 ListEmptyComponent={
                     <View style={styles.emptyState}>
                         <Text style={styles.emptyStateTitle}>No events for this date</Text>
@@ -354,24 +405,24 @@ export default function Events() {
                                 <View style={styles.updateMetaRow}>
                                     <Building2 size={18} color="#444" />
                                     <Text style={styles.modalBuilding}>
-                                        {buildingNameMap[selectedEvent.location] ?? selectedEvent.location}
-                                        {selectedEvent.floor ? ` — Floor ${selectedEvent.floor}` : ""}
+                                        {buildingNameMap[selectedEvent.location] ??
+                                            selectedEvent.location}
+                                        {selectedEvent.floor
+                                            ? ` — Floor ${selectedEvent.floor}`
+                                            : ""}
+                                        {selectedEvent.room ? ` — Room ${selectedEvent.room}` : ""}
                                     </Text>
-                                    </View>
+                                </View>
 
-                                    <View style={styles.updateMetaRow}>
-                                        <Icon name="event" size={16} color="#888" />
-                                    <Text style={styles.modalTime}>
-                                        {selectedEvent.date}
-                                    </Text>
-                                    </View>
+                                <View style={styles.updateMetaRow}>
+                                    <Icon name="event" size={16} color="#888" />
+                                    <Text style={styles.modalTime}>{selectedEvent.date}</Text>
+                                </View>
 
-                                    <View style={styles.updateMetaRow}>
+                                <View style={styles.updateMetaRow}>
                                     <Clock size={16} color="#888" />
-                                    <Text style={styles.modalTime}>
-                                        {selectedEvent.time}
-                                    </Text>
-                                    </View>
+                                    <Text style={styles.modalTime}>{selectedEvent.time}</Text>
+                                </View>
 
                                 <Text style={styles.modalDescription}>
                                     {selectedEvent.description || "No description provided."}

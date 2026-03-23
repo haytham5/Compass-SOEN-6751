@@ -24,7 +24,8 @@ export type AccessibilitySubtype =
     | "escalator"
     | "elevator"
     | "ramp"
-    | "foot_traffic";
+    | "foot_traffic"
+    | "other";
 
 export type ReportType = "protest" | "event" | "accessibility";
 
@@ -37,6 +38,7 @@ export type Report = {
   type: ReportType;
   building: string;
   floor: string;
+  room?: string;
   image?: string;
   date: string;
   time: string;

@@ -271,4 +271,70 @@ export const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: "Lexend_400Regular",
     },
+
+    stepHelper: {
+        fontSize: 13,
+        color: "#6B7280",
+        marginTop: -4,
+        marginBottom: 12,
+        lineHeight: 18,
+    },
+
+    floorHeaderRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginTop: 8,
+    },
+
+    requiredTag: {
+        fontSize: 11,
+        color: "#FFFFFF",
+        backgroundColor: "#E7548B",
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 999,
+        overflow: "hidden",
+        fontFamily: "Lexend_400Regular",
+    },
+
+    choiceGroup: {
+        gap: 10,
+        marginTop: 8,
+    },
+
+    choiceCard: {
+        borderWidth: 1,
+        borderColor: "#D9E1EA",
+        borderRadius: 14,
+        paddingVertical: 12,
+        paddingHorizontal: 14,
+        backgroundColor: "#FFFFFF",
+    },
+
+    choiceCardSelected: {
+        borderColor: "#56BAB8",
+        backgroundColor: "#EEF9F8",
+    },
+
+    choiceTitle: {
+        fontSize: 15,
+        color: "#1F2937",
+        fontFamily: "Lexend_400Regular",
+        marginBottom: 4,
+    },
+
+    choiceTitleSelected: {
+        color: "#276389",
+    },
+
+    choiceHelper: {
+        fontSize: 12,
+        color: "#6B7280",
+        lineHeight: 17,
+    },
+
+    choiceHelperSelected: {
+        color: "#4B6475",
+    },
 });
