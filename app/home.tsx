@@ -45,7 +45,10 @@ import {
   verifyReport,
 } from "./data/reportSH";
 import { useTheme } from "./data/themeProvider";
+import darkMapTheme from "./styles/darkMapTheme.json";
 import { styles as importStyles } from "./styles/indexStyles";
+import lightMapTheme from "./styles/lightMapTheme.json";
+import { Themes } from "./styles/Themes";
 import { getCurrentUser } from "./utils/authStorage";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
 
@@ -433,6 +436,7 @@ export default function Home() {
         maxZoomLevel={18}
         ref={mapRef}
         onMapReady={() => onMapReady(mapRef.current)}
+        customMapStyle={scheme === Themes.dark ? darkMapTheme : lightMapTheme}
       >
         {Object.keys(buildings).map((b) => {
           const coord = buildings[b];
