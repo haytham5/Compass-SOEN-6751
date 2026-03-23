@@ -9,23 +9,23 @@ const REPORTS_STORAGE_KEY = "reports";
 // };
 export type TimelineEvent = {
   action:
-      | "reported"
-      | "upvoted"
-      | "verified"
-      | "unverified"
-      | "resolved"
-      | "severe"
-      | "unsevere";
+    | "reported"
+    | "upvoted"
+    | "verified"
+    | "unverified"
+    | "resolved"
+    | "severe"
+    | "unsevere";
   by: string;
   time: string;
 };
 
 export type AccessibilitySubtype =
-    | "escalator"
-    | "elevator"
-    | "ramp"
-    | "foot_traffic"
-    | "other";
+  | "escalator"
+  | "elevator"
+  | "ramp"
+  | "foot_traffic"
+  | "other";
 
 export type ReportType = "protest" | "event" | "accessibility";
 
@@ -57,10 +57,7 @@ export type Report = {
   timeline: TimelineEvent[];
 };
 
-export type NewReportInput = Omit<
-    Report,
-    "isVerifiedBySecurity" | "timeline"
->;
+export type NewReportInput = Omit<Report, "isVerifiedBySecurity" | "timeline">;
 
 const parseReports = async (): Promise<Report[]> => {
   try {
@@ -80,8 +77,8 @@ export const saveNewReport = async (report: NewReportInput): Promise<void> => {
       ...report,
       isVerifiedBySecurity: report.submittedBy === "security",
 
-      verifiedBy: [],     // ← always empty at start
-      severeBy: [],       // ← always empty at start
+      verifiedBy: [], // ← always empty at start
+      severeBy: [], // ← always empty at start
 
       timeline: [
         {
@@ -100,8 +97,8 @@ export const saveNewReport = async (report: NewReportInput): Promise<void> => {
 };
 
 export const verifyReport = async (
-    reportId: string,
-    verifiedBy: string
+  reportId: string,
+  verifiedBy: string,
 ): Promise<void> => {
   try {
     const reports = await parseReports();
@@ -117,7 +114,7 @@ export const verifyReport = async (
 
       if (hasVerified) {
         const newVerifiedBy = (r.verifiedBy ?? []).filter(
-            (id) => id !== verifiedBy
+          (id) => id !== verifiedBy,
         );
 
         return {
@@ -171,7 +168,7 @@ export const getReports = async (): Promise<Report[]> => {
 };
 
 export const getReportsByBuilding = async (
-    buildingId: string
+  buildingId: string,
 ): Promise<Report[]> => {
   const reports = await getReports();
   return reports.filter((report) => report.building === buildingId);
@@ -188,8 +185,8 @@ export const getActiveReports = async (): Promise<Report[]> => {
 };
 
 export const upvoteReport = async (
-    reportId: string,
-    userId: string
+  reportId: string,
+  userId: string,
 ): Promise<void> => {
   try {
     const reports = await parseReports();
@@ -208,7 +205,7 @@ export const upvoteReport = async (
           ...r,
           upvotedBy: (r.upvotedBy ?? []).filter((id) => id !== userId),
           timeline: (r.timeline ?? []).filter(
-              (e) => !(e.action === "upvoted" && e.by === userId)
+            (e) => !(e.action === "upvoted" && e.by === userId),
           ),
         };
       }
@@ -234,8 +231,8 @@ export const upvoteReport = async (
 };
 
 export const markReportResolved = async (
-    reportId: string,
-    resolvedBy: string
+  reportId: string,
+  resolvedBy: string,
 ): Promise<void> => {
   try {
     const reports = await parseReports();
@@ -251,7 +248,7 @@ export const markReportResolved = async (
 
       if (hasResolved) {
         const newResolvedBy = (r.resolvedBy ?? []).filter(
-            (id) => id !== resolvedBy
+          (id) => id !== resolvedBy,
         );
 
         return {
@@ -259,7 +256,7 @@ export const markReportResolved = async (
           resolvedBy: newResolvedBy,
           isResolved: newResolvedBy.length > 0,
           timeline: (r.timeline ?? []).filter(
-              (e) => !(e.action === "resolved" && e.by === resolvedBy)
+            (e) => !(e.action === "resolved" && e.by === resolvedBy),
           ),
         };
       }
@@ -286,8 +283,8 @@ export const markReportResolved = async (
 };
 
 export const markReportSevere = async (
-    reportId: string,
-    markedBy: string
+  reportId: string,
+  markedBy: string,
 ): Promise<void> => {
   try {
     const reports = await parseReports();
@@ -354,8 +351,8 @@ export const markReportSevere = async (
       };
 
       await AsyncStorage.setItem(
-          "nearBuilding",
-          JSON.stringify(nearBuildingData)
+        "nearBuilding",
+        JSON.stringify(nearBuildingData),
       );
     }
   } catch (error) {

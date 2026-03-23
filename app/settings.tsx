@@ -4,15 +4,15 @@ import * as NavigationBar from "expo-navigation-bar";
 import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-    Modal,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Switch,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Modal,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -21,614 +21,636 @@ import BuildingPreferencesWizard from "./components/buildingPreferences";
 import OfflineBanner from "./components/offlineBanner";
 import ReportFormModal from "./components/ReportFormModal";
 import { deleteAllReports } from "./data/reportSH";
-import { styles } from "./styles/settingsStyles";
+import { ThemeType, useTheme } from "./data/themeProvider";
+import { styles as importStyles } from "./styles/settingsStyles";
 import {
-    clearCurrentUser,
-    getCurrentUser,
-    updateCurrentUser,
-    type CurrentUser,
+  clearCurrentUser,
+  getCurrentUser,
+  updateCurrentUser,
+  type CurrentUser,
 } from "./utils/authStorage";
 
 interface RowProps {
-    label: string;
-    value: boolean | undefined;
-    onChange: ((value: boolean) => void | Promise<void>) | null | undefined;
+  label: string;
+  value: boolean | undefined;
+  onChange: ((value: boolean) => void | Promise<void>) | null | undefined;
 }
 
 type ActiveTab = "profile" | "settings";
 
 export default function Settings() {
-    const [fontsLoaded] = useFonts({
-        Pacifico_400Regular,
-        Lexend_400Regular,
+  const { mode, toggleTheme } = useTheme();
+  const { theme } = useTheme();
+  const scheme = theme;
+  const styles = importStyles(scheme);
+
+  // const scheme = useColorScheme() === "dark" ? Themes.dark : Themes.light;
+  // const styles = importStyles(scheme);
+  const localStyles = importLocalStyles(scheme);
+
+  const [fontsLoaded] = useFonts({
+    Pacifico_400Regular,
+    Lexend_400Regular,
+  });
+
+  // const [lightMode, setLightMode] = useState(true);
+  const [notifications, setNotifications] = useState(true);
+  const [accessibility, setAccessibility] = useState(true);
+  const [activeTab, setActiveTab] = useState<ActiveTab>("profile");
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editedFirstName, setEditedFirstName] = useState("");
+  const [editedLastName, setEditedLastName] = useState("");
+  const [editedPhone, setEditedPhone] = useState("");
+  const [editedEmail, setEditedEmail] = useState("");
+  const [isReportModalVisible, setIsReportModalVisible] = useState(false);
+  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
+  const isGuestUser = currentUser?.isGuest ?? true;
+
+  const SettingRow = ({ label, value, onChange }: RowProps) => (
+    <View style={styles.settingRow}>
+      <View>
+        <Text style={styles.settingLabel}>{label}</Text>
+      </View>
+
+      <Switch
+        value={value}
+        onValueChange={onChange}
+        trackColor={{ false: scheme.border, true: scheme.primary }}
+        thumbColor={scheme.white}
+      />
+    </View>
+  );
+
+  useEffect(() => {
+    NavigationBar.setBackgroundColorAsync(scheme.softBg);
+    NavigationBar.setButtonStyleAsync("dark");
+    NavigationBar.setBehaviorAsync("overlay-swipe");
+  }, []);
+
+  const loadUser = useCallback(async () => {
+    const user = await getCurrentUser();
+    setCurrentUser(user);
+
+    if (user) {
+      setEditedFirstName(user.firstName || "");
+      setEditedLastName(user.lastName || "");
+      setEditedPhone(user.phone || "");
+      setEditedEmail(user.email || "");
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadUser();
+    }, [loadUser]),
+  );
+
+  const handleSaveProfile = async () => {
+    if (!currentUser) return;
+
+    await updateCurrentUser({
+      firstName: editedFirstName,
+      lastName: editedLastName,
+      phone: editedPhone,
+      email: editedEmail,
     });
 
-    const [lightMode, setLightMode] = useState(true);
-    const [notifications, setNotifications] = useState(true);
-    const [accessibility, setAccessibility] = useState(true);
-    const [activeTab, setActiveTab] = useState<ActiveTab>("profile");
-    const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-    const [isEditingProfile, setIsEditingProfile] = useState(false);
-    const [editedFirstName, setEditedFirstName] = useState("");
-    const [editedLastName, setEditedLastName] = useState("");
-    const [editedPhone, setEditedPhone] = useState("");
-    const [editedEmail, setEditedEmail] = useState("");
-    const [isReportModalVisible, setIsReportModalVisible] = useState(false);
-    const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
-    const isGuestUser = currentUser?.isGuest ?? true;
+    await loadUser();
+    setIsEditingProfile(false);
+  };
 
-    const SettingRow = ({ label, value, onChange }: RowProps) => (
-        <View style={styles.settingRow}>
-            <View>
-                <Text style={styles.settingLabel}>{label}</Text>
+  const handleCancelEdit = () => {
+    setEditedFirstName(currentUser?.firstName || "");
+    setEditedLastName(currentUser?.lastName || "");
+    setEditedPhone(currentUser?.phone || "");
+    setEditedEmail(currentUser?.email || "");
+    setIsEditingProfile(false);
+  };
+
+  const handleLogout = async () => {
+    await clearCurrentUser();
+    router.replace("/");
+  };
+
+  const roleLabel = useMemo(() => {
+    if (currentUser?.isGuest) return "Guest";
+    if (currentUser?.role === "security") return "Security";
+    if (currentUser?.role === "admin") return "Admin";
+    return "Student";
+  }, [currentUser]);
+
+  const fullName = useMemo(() => {
+    if (currentUser?.isGuest) return "Guest User";
+
+    const name = `${currentUser?.firstName ?? ""} ${
+      currentUser?.lastName ?? ""
+    }`.trim();
+
+    return name || "Guest User";
+  }, [currentUser]);
+
+  const initials = useMemo(() => {
+    if (currentUser?.isGuest) return "G";
+
+    const first = currentUser?.firstName?.[0] ?? "";
+    const last = currentUser?.lastName?.[0] ?? "";
+    const value = `${first}${last}`.toUpperCase();
+
+    return value || "U";
+  }, [currentUser]);
+
+  if (!fontsLoaded) return null;
+
+  return (
+    <SafeAreaView style={styles.background}>
+      <OfflineBanner />
+      <StatusBar backgroundColor={scheme.white} barStyle="dark-content" />
+
+      <View style={styles.header}>
+        <Text style={styles.title}>Your Account</Text>
+      </View>
+
+      <View style={styles.tabContainer}>
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            activeTab === "profile" && styles.activeTabButton,
+          ]}
+          onPress={() => setActiveTab("profile")}
+        >
+          <Text
+            style={[
+              styles.tabButtonText,
+              activeTab === "profile" && styles.activeTabButtonText,
+            ]}
+          >
+            Profile
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            activeTab === "settings" && styles.activeTabButton,
+          ]}
+          onPress={() => {
+            setActiveTab("settings");
+            setIsEditingProfile(false);
+          }}
+        >
+          <Text
+            style={[
+              styles.tabButtonText,
+              activeTab === "settings" && styles.activeTabButtonText,
+            ]}
+          >
+            Settings
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView
+        contentContainerStyle={styles.scrollableContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {activeTab === "profile" ? (
+          <View style={styles.profileCard}>
+            <View style={styles.profileHero}>
+              {!isGuestUser && (
+                <Text style={styles.profileSubText}>
+                  {/*Student ID: {currentUser?.idNumber || "-"}*/}
+                </Text>
+              )}
+
+              <View style={styles.avatarCircle}>
+                <Text style={styles.avatarText}>{initials}</Text>
+              </View>
+
+              <View style={styles.profileHeroText}>
+                <Text style={styles.profileName}>{fullName}</Text>
+
+                <View style={styles.roleBadge}>
+                  <Text style={styles.roleBadgeText}>{roleLabel}</Text>
+                </View>
+
+                <Text style={styles.profileSubText}>
+                  Student ID: {currentUser?.idNumber || "-"}
+                </Text>
+              </View>
             </View>
 
-            <Switch
-                value={value}
-                onValueChange={onChange}
-                trackColor={{ false: "#E7E7EC", true: "#56bab8" }}
-                thumbColor="#FFFFFF"
-            />
-        </View>
-    );
+            {isEditingProfile ? (
+              <>
+                <View style={styles.sectionBlock}>
+                  <Text style={styles.sectionTitle}>Edit Profile</Text>
 
-    useEffect(() => {
-        NavigationBar.setBackgroundColorAsync("#FFFFFF");
-        NavigationBar.setButtonStyleAsync("dark");
-        NavigationBar.setBehaviorAsync("overlay-swipe");
-    }, []);
-
-    const loadUser = useCallback(async () => {
-        const user = await getCurrentUser();
-        setCurrentUser(user);
-
-        if (user) {
-            setEditedFirstName(user.firstName || "");
-            setEditedLastName(user.lastName || "");
-            setEditedPhone(user.phone || "");
-            setEditedEmail(user.email || "");
-        }
-    }, []);
-
-    useFocusEffect(
-        useCallback(() => {
-            loadUser();
-        }, [loadUser])
-    );
-
-    const handleSaveProfile = async () => {
-        if (!currentUser) return;
-
-        await updateCurrentUser({
-            firstName: editedFirstName,
-            lastName: editedLastName,
-            phone: editedPhone,
-            email: editedEmail,
-        });
-
-        await loadUser();
-        setIsEditingProfile(false);
-    };
-
-    const handleCancelEdit = () => {
-        setEditedFirstName(currentUser?.firstName || "");
-        setEditedLastName(currentUser?.lastName || "");
-        setEditedPhone(currentUser?.phone || "");
-        setEditedEmail(currentUser?.email || "");
-        setIsEditingProfile(false);
-    };
-
-    const handleLogout = async () => {
-        await clearCurrentUser();
-        router.replace("/");
-    };
-
-    const roleLabel = useMemo(() => {
-        if (currentUser?.isGuest) return "Guest";
-        if (currentUser?.role === "security") return "Security";
-        if (currentUser?.role === "admin") return "Admin";
-        return "Student";
-    }, [currentUser]);
-
-    const fullName = useMemo(() => {
-        if (currentUser?.isGuest) return "Guest User";
-
-        const name = `${currentUser?.firstName ?? ""} ${
-            currentUser?.lastName ?? ""
-        }`.trim();
-
-        return name || "Guest User";
-    }, [currentUser]);
-
-    const initials = useMemo(() => {
-        if (currentUser?.isGuest) return "G";
-
-        const first = currentUser?.firstName?.[0] ?? "";
-        const last = currentUser?.lastName?.[0] ?? "";
-        const value = `${first}${last}`.toUpperCase();
-
-        return value || "U";
-    }, [currentUser]);
-
-    if (!fontsLoaded) return null;
-
-    return (
-        <SafeAreaView style={styles.background}>
-            <OfflineBanner />
-            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-
-            <View style={styles.header}>
-                <Text style={styles.title}>Your Account</Text>
-            </View>
-
-            <View style={styles.tabContainer}>
-                <TouchableOpacity
-                    style={[
-                        styles.tabButton,
-                        activeTab === "profile" && styles.activeTabButton,
-                    ]}
-                    onPress={() => setActiveTab("profile")}
-                >
-                    <Text
-                        style={[
-                            styles.tabButtonText,
-                            activeTab === "profile" && styles.activeTabButtonText,
-                        ]}
-                    >
-                        Profile
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={[
-                        styles.tabButton,
-                        activeTab === "settings" && styles.activeTabButton,
-                    ]}
-                    onPress={() => {
-                        setActiveTab("settings");
-                        setIsEditingProfile(false);
-                    }}
-                >
-                    <Text
-                        style={[
-                            styles.tabButtonText,
-                            activeTab === "settings" && styles.activeTabButtonText,
-                        ]}
-                    >
-                        Settings
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
-            <ScrollView
-                contentContainerStyle={styles.scrollableContent}
-                showsVerticalScrollIndicator={false}
-            >
-                {activeTab === "profile" ? (
-                    <View style={styles.profileCard}>
-                        <View style={styles.profileHero}>
-                            {!isGuestUser && (
-                                <Text style={styles.profileSubText}>
-                                    {/*Student ID: {currentUser?.idNumber || "-"}*/}
-                                </Text>
-                            )}
-
-                            <View style={styles.avatarCircle}>
-                                <Text style={styles.avatarText}>{initials}</Text>
-                            </View>
-
-                            <View style={styles.profileHeroText}>
-                                <Text style={styles.profileName}>{fullName}</Text>
-
-                                <View style={styles.roleBadge}>
-                                    <Text style={styles.roleBadgeText}>{roleLabel}</Text>
-                                </View>
-
-                                <Text style={styles.profileSubText}>
-                                    Student ID: {currentUser?.idNumber || "-"}
-                                </Text>
-                            </View>
-                        </View>
-
-                        {isEditingProfile ? (
-                            <>
-                                <View style={styles.sectionBlock}>
-                                    <Text style={styles.sectionTitle}>Edit Profile</Text>
-
-                                    <View style={styles.formCard}>
-                                        <Text style={styles.profileLabel}>First Name</Text>
-                                        <TextInput
-                                            style={styles.profileInput}
-                                            value={editedFirstName}
-                                            onChangeText={setEditedFirstName}
-                                            placeholder="First name"
-                                            placeholderTextColor="#8E8E98"
-                                        />
-
-                                        <Text style={styles.profileLabel}>Last Name</Text>
-                                        <TextInput
-                                            style={styles.profileInput}
-                                            value={editedLastName}
-                                            onChangeText={setEditedLastName}
-                                            placeholder="Last name"
-                                            placeholderTextColor="#8E8E98"
-                                        />
-
-                                        <Text style={styles.profileLabel}>Account Type</Text>
-                                        <View style={styles.profileReadOnlyBox}>
-                                            <Text style={styles.profileReadOnlyText}>{roleLabel}</Text>
-                                        </View>
-
-                                        <Text style={styles.profileLabel}>Student ID</Text>
-                                        <View style={styles.profileReadOnlyBox}>
-                                            <Text style={styles.profileReadOnlyText}>
-                                                {currentUser?.idNumber || "-"}
-                                            </Text>
-                                        </View>
-
-                                        <Text style={styles.profileLabel}>Phone</Text>
-                                        <TextInput
-                                            style={styles.profileInput}
-                                            value={editedPhone}
-                                            onChangeText={setEditedPhone}
-                                            placeholder="Phone"
-                                            placeholderTextColor="#8E8E98"
-                                            keyboardType="phone-pad"
-                                        />
-
-                                        <Text style={styles.profileLabel}>Email</Text>
-                                        <TextInput
-                                            style={styles.profileInput}
-                                            value={editedEmail}
-                                            onChangeText={setEditedEmail}
-                                            placeholder="Email"
-                                            placeholderTextColor="#8E8E98"
-                                            autoCapitalize="none"
-                                            keyboardType="email-address"
-                                        />
-                                    </View>
-                                </View>
-
-                                <View style={styles.editActionsRow}>
-                                    <TouchableOpacity
-                                        style={styles.secondaryProfileButton}
-                                        onPress={handleCancelEdit}
-                                    >
-                                        <Text style={styles.secondaryProfileButtonText}>
-                                            Cancel
-                                        </Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity
-                                        style={styles.primaryProfileButton}
-                                        onPress={handleSaveProfile}
-                                    >
-                                        <Text style={styles.primaryProfileButtonText}>
-                                            Save Changes
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </>
-                        ) : (
-                            <>
-
-                                {isGuestUser ? (
-                                    <TouchableOpacity
-                                        style={styles.primaryProfileButtonFull}
-                                        onPress={() => router.replace("/")}
-                                    >
-                                        <Text style={styles.primaryProfileButtonText}>Log In / Sign Up</Text>
-                                    </TouchableOpacity>
-                                ) : (
-                                    <TouchableOpacity
-                                        style={styles.primaryProfileButtonFull}
-                                        onPress={() => setIsEditingProfile(true)}
-                                    >
-                                        <Text style={styles.primaryProfileButtonText}>
-                                            Edit Profile
-                                        </Text>
-                                    </TouchableOpacity>
-                                )}
-
-                                <View style={styles.sectionBlock}>
-                                    <Text style={styles.sectionTitle}>Personal Information</Text>
-
-                                    <View style={styles.infoCard}>
-                                        <View style={styles.infoRow}>
-                                            <Text style={styles.profileLabel}>First Name</Text>
-                                            <Text style={styles.profileValue}>
-                                                {currentUser?.firstName || "-"}
-                                            </Text>
-                                        </View>
-
-                                        <View style={styles.infoDivider} />
-
-                                        <View style={styles.infoRow}>
-                                            <Text style={styles.profileLabel}>Last Name</Text>
-                                            <Text style={styles.profileValue}>
-                                                {currentUser?.lastName || "-"}
-                                            </Text>
-                                        </View>
-
-                                        <View style={styles.infoDivider} />
-
-                                        <View style={styles.infoRow}>
-                                            <Text style={styles.profileLabel}>Account Type</Text>
-                                            <Text style={styles.profileValue}>{roleLabel}</Text>
-                                        </View>
-
-                                        <View style={styles.infoDivider} />
-
-                                        <View style={styles.infoRow}>
-                                            <Text style={styles.profileLabel}>Student ID</Text>
-                                            <Text style={styles.profileValue}>
-                                                {currentUser?.idNumber || "-"}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </View>
-
-                                <View style={styles.sectionBlock}>
-                                    <Text style={styles.sectionTitle}>Contact Information</Text>
-
-                                    <View style={styles.infoCard}>
-                                        <View style={styles.infoRow}>
-                                            <Text style={styles.profileLabel}>Phone</Text>
-                                            <Text style={styles.profileValue}>
-                                                {currentUser?.phone || "-"}
-                                            </Text>
-                                        </View>
-
-                                        <View style={styles.infoDivider} />
-
-                                        <View style={styles.infoRow}>
-                                            <Text style={styles.profileLabel}>Email</Text>
-                                            <Text style={styles.profileValue}>
-                                                {currentUser?.email || "-"}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                </View>
-
-                                <View style={localStyles.preferencesSection}>
-                                    <Text style={styles.sectionTitle}>Building Preferences</Text>
-
-                                    {currentUser?.buildingPreferences?.length ? (
-                                        currentUser.buildingPreferences.map((pref) => {
-                                            const enabledDays = pref.dayPreferences.filter(
-                                                (d) => d.enabled
-                                            );
-
-                                            return (
-                                                <View key={pref.buildingId} style={localStyles.prefCard}>
-                                                    <View style={localStyles.prefHeader}>
-                                                        <Text style={localStyles.prefTitle}>
-                                                            {pref.buildingName}
-                                                        </Text>
-
-                                                        <View
-                                                            style={[
-                                                                localStyles.prefBadge,
-                                                                pref.subscribed
-                                                                    ? localStyles.prefBadgeActive
-                                                                    : localStyles.prefBadgeInactive,
-                                                            ]}
-                                                        >
-                                                            <Text
-                                                                style={[
-                                                                    localStyles.prefBadgeText,
-                                                                    pref.subscribed
-                                                                        ? localStyles.prefBadgeTextActive
-                                                                        : localStyles.prefBadgeTextInactive,
-                                                                ]}
-                                                            >
-                                                                {pref.subscribed
-                                                                    ? "Subscribed"
-                                                                    : "Not subscribed"}
-                                                            </Text>
-                                                        </View>
-                                                    </View>
-
-                                                    {pref.subscribed ? (
-                                                        enabledDays.length ? (
-                                                            enabledDays.map((day) => (
-                                                                <Text
-                                                                    key={day.day}
-                                                                    style={localStyles.prefMeta}
-                                                                >
-                                                                    {day.day}:{" "}
-                                                                    {day.allDay
-                                                                        ? "All day"
-                                                                        : `${day.startTime} - ${day.endTime}`}
-                                                                </Text>
-                                                            ))
-                                                        ) : (
-                                                            <Text style={localStyles.prefMeta}>
-                                                                No day selected yet
-                                                            </Text>
-                                                        )
-                                                    ) : (
-                                                        <Text style={localStyles.prefMeta}>
-                                                            Alerts are turned off for this building
-                                                        </Text>
-                                                    )}
-                                                </View>
-                                            );
-                                        })
-                                    ) : (
-                                        <Text style={localStyles.emptyPrefText}>
-                                            No building preferences saved yet.
-                                        </Text>
-                                    )}
-
-                                    <TouchableOpacity
-                                        style={styles.primaryProfileButtonFull}
-                                        onPress={() => setIsPreferencesOpen(true)}
-                                    >
-                                        <Text style={styles.primaryProfileButtonText}>
-                                            Edit Building Preferences
-                                        </Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </>
-                        )}
-                    </View>
-                ) : (
-                    <>
-                        <View style={styles.settingsCard}>
-                            <SettingRow
-                                label="Light Mode"
-                                value={lightMode}
-                                onChange={setLightMode}
-                            />
-                            <View style={styles.settingsDivider} />
-
-                            <SettingRow
-                                label="Notifications"
-                                value={notifications}
-                                onChange={setNotifications}
-                            />
-                            <View style={styles.settingsDivider} />
-
-                            <SettingRow
-                                label="Accessibility"
-                                value={accessibility}
-                                onChange={setAccessibility}
-                            />
-                        </View>
-
-                        {isGuestUser ? (
-                            <TouchableOpacity
-                                style={styles.primaryProfileButtonFull}
-                                onPress={() => router.replace("/")}
-                            >
-                                <Text style={styles.primaryProfileButtonText}>Log In / Sign Up</Text>
-                            </TouchableOpacity>
-                        ) : (
-                            <>
-                                <TouchableOpacity style={styles.dangerButton} onPress={handleLogout}>
-                                    <Text style={styles.dangerButtonText}>Log Out</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={styles.dangerButtonSecondary}
-                                    onPress={() => deleteAllReports()}
-                                >
-                                    <Text style={styles.dangerButtonSecondaryText}>
-                                        Clear Reports
-                                    </Text>
-                                </TouchableOpacity>
-                            </>
-                        )}
-                    </>
-                )}
-            </ScrollView>
-
-            <Modal visible={isPreferencesOpen} animationType="slide">
-                <SafeAreaView style={styles.preferencesModalScreen}>
-                    <BuildingPreferencesWizard
-                        showIntro={false}
-                        allowSkip={false}
-                        showTopHeader
-                        title="Edit Preferences"
-                        initialPreferences={currentUser?.buildingPreferences ?? []}
-                        onCancel={() => setIsPreferencesOpen(false)}
-                        onSave={async (prefs) => {
-                            await updateCurrentUser({ buildingPreferences: prefs });
-                            const refreshedUser = await getCurrentUser();
-                            setCurrentUser(refreshedUser);
-                            setIsPreferencesOpen(false);
-                        }}
-                        saveButtonLabel="Save Changes"
+                  <View style={styles.formCard}>
+                    <Text style={styles.profileLabel}>First Name</Text>
+                    <TextInput
+                      style={styles.profileInput}
+                      value={editedFirstName}
+                      onChangeText={setEditedFirstName}
+                      placeholder="First name"
+                      placeholderTextColor="#8E8E98"
                     />
-                </SafeAreaView>
-            </Modal>
 
-            <ReportFormModal
-                visible={isReportModalVisible}
-                onClose={() => setIsReportModalVisible(false)}
-                onSubmitSuccess={() => {}}
-            />
+                    <Text style={styles.profileLabel}>Last Name</Text>
+                    <TextInput
+                      style={styles.profileInput}
+                      value={editedLastName}
+                      onChangeText={setEditedLastName}
+                      placeholder="Last name"
+                      placeholderTextColor="#8E8E98"
+                    />
 
-            <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />
+                    <Text style={styles.profileLabel}>Account Type</Text>
+                    <View style={styles.profileReadOnlyBox}>
+                      <Text style={styles.profileReadOnlyText}>
+                        {roleLabel}
+                      </Text>
+                    </View>
+
+                    <Text style={styles.profileLabel}>Student ID</Text>
+                    <View style={styles.profileReadOnlyBox}>
+                      <Text style={styles.profileReadOnlyText}>
+                        {currentUser?.idNumber || "-"}
+                      </Text>
+                    </View>
+
+                    <Text style={styles.profileLabel}>Phone</Text>
+                    <TextInput
+                      style={styles.profileInput}
+                      value={editedPhone}
+                      onChangeText={setEditedPhone}
+                      placeholder="Phone"
+                      placeholderTextColor="#8E8E98"
+                      keyboardType="phone-pad"
+                    />
+
+                    <Text style={styles.profileLabel}>Email</Text>
+                    <TextInput
+                      style={styles.profileInput}
+                      value={editedEmail}
+                      onChangeText={setEditedEmail}
+                      placeholder="Email"
+                      placeholderTextColor="#8E8E98"
+                      autoCapitalize="none"
+                      keyboardType="email-address"
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.editActionsRow}>
+                  <TouchableOpacity
+                    style={styles.secondaryProfileButton}
+                    onPress={handleCancelEdit}
+                  >
+                    <Text style={styles.secondaryProfileButtonText}>
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.primaryProfileButton}
+                    onPress={handleSaveProfile}
+                  >
+                    <Text style={styles.primaryProfileButtonText}>
+                      Save Changes
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : (
+              <>
+                {isGuestUser ? (
+                  <TouchableOpacity
+                    style={styles.primaryProfileButtonFull}
+                    onPress={() => router.replace("/")}
+                  >
+                    <Text style={styles.primaryProfileButtonText}>
+                      Log In / Sign Up
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.primaryProfileButtonFull}
+                    onPress={() => setIsEditingProfile(true)}
+                  >
+                    <Text style={styles.primaryProfileButtonText}>
+                      Edit Profile
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
+                <View style={styles.sectionBlock}>
+                  <Text style={styles.sectionTitle}>Personal Information</Text>
+
+                  <View style={styles.infoCard}>
+                    <View style={styles.infoRow}>
+                      <Text style={styles.profileLabel}>First Name</Text>
+                      <Text style={styles.profileValue}>
+                        {currentUser?.firstName || "-"}
+                      </Text>
+                    </View>
+
+                    <View style={styles.infoDivider} />
+
+                    <View style={styles.infoRow}>
+                      <Text style={styles.profileLabel}>Last Name</Text>
+                      <Text style={styles.profileValue}>
+                        {currentUser?.lastName || "-"}
+                      </Text>
+                    </View>
+
+                    <View style={styles.infoDivider} />
+
+                    <View style={styles.infoRow}>
+                      <Text style={styles.profileLabel}>Account Type</Text>
+                      <Text style={styles.profileValue}>{roleLabel}</Text>
+                    </View>
+
+                    <View style={styles.infoDivider} />
+
+                    <View style={styles.infoRow}>
+                      <Text style={styles.profileLabel}>Student ID</Text>
+                      <Text style={styles.profileValue}>
+                        {currentUser?.idNumber || "-"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                <View style={styles.sectionBlock}>
+                  <Text style={styles.sectionTitle}>Contact Information</Text>
+
+                  <View style={styles.infoCard}>
+                    <View style={styles.infoRow}>
+                      <Text style={styles.profileLabel}>Phone</Text>
+                      <Text style={styles.profileValue}>
+                        {currentUser?.phone || "-"}
+                      </Text>
+                    </View>
+
+                    <View style={styles.infoDivider} />
+
+                    <View style={styles.infoRow}>
+                      <Text style={styles.profileLabel}>Email</Text>
+                      <Text style={styles.profileValue}>
+                        {currentUser?.email || "-"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                <View style={localStyles.preferencesSection}>
+                  <Text style={styles.sectionTitle}>Building Preferences</Text>
+
+                  {currentUser?.buildingPreferences?.length ? (
+                    currentUser.buildingPreferences.map((pref) => {
+                      const enabledDays = pref.dayPreferences.filter(
+                        (d) => d.enabled,
+                      );
+
+                      return (
+                        <View
+                          key={pref.buildingId}
+                          style={localStyles.prefCard}
+                        >
+                          <View style={localStyles.prefHeader}>
+                            <Text style={localStyles.prefTitle}>
+                              {pref.buildingName}
+                            </Text>
+
+                            <View
+                              style={[
+                                localStyles.prefBadge,
+                                pref.subscribed
+                                  ? localStyles.prefBadgeActive
+                                  : localStyles.prefBadgeInactive,
+                              ]}
+                            >
+                              <Text
+                                style={[
+                                  localStyles.prefBadgeText,
+                                  pref.subscribed
+                                    ? localStyles.prefBadgeTextActive
+                                    : localStyles.prefBadgeTextInactive,
+                                ]}
+                              >
+                                {pref.subscribed
+                                  ? "Subscribed"
+                                  : "Not subscribed"}
+                              </Text>
+                            </View>
+                          </View>
+
+                          {pref.subscribed ? (
+                            enabledDays.length ? (
+                              enabledDays.map((day) => (
+                                <Text
+                                  key={day.day}
+                                  style={localStyles.prefMeta}
+                                >
+                                  {day.day}:{" "}
+                                  {day.allDay
+                                    ? "All day"
+                                    : `${day.startTime} - ${day.endTime}`}
+                                </Text>
+                              ))
+                            ) : (
+                              <Text style={localStyles.prefMeta}>
+                                No day selected yet
+                              </Text>
+                            )
+                          ) : (
+                            <Text style={localStyles.prefMeta}>
+                              Alerts are turned off for this building
+                            </Text>
+                          )}
+                        </View>
+                      );
+                    })
+                  ) : (
+                    <Text style={localStyles.emptyPrefText}>
+                      No building preferences saved yet.
+                    </Text>
+                  )}
+
+                  <TouchableOpacity
+                    style={styles.primaryProfileButtonFull}
+                    onPress={() => setIsPreferencesOpen(true)}
+                  >
+                    <Text style={styles.primaryProfileButtonText}>
+                      Edit Building Preferences
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+          </View>
+        ) : (
+          <>
+            <View style={styles.settingsCard}>
+              <SettingRow
+                label="Light Mode"
+                value={mode === "light"}
+                onChange={toggleTheme}
+              />
+              <View style={styles.settingsDivider} />
+
+              <SettingRow
+                label="Notifications"
+                value={notifications}
+                onChange={setNotifications}
+              />
+              <View style={styles.settingsDivider} />
+
+              <SettingRow
+                label="Accessibility"
+                value={accessibility}
+                onChange={setAccessibility}
+              />
+            </View>
+
+            {isGuestUser ? (
+              <TouchableOpacity
+                style={styles.primaryProfileButtonFull}
+                onPress={() => router.replace("/")}
+              >
+                <Text style={styles.primaryProfileButtonText}>
+                  Log In / Sign Up
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={styles.dangerButton}
+                  onPress={handleLogout}
+                >
+                  <Text style={styles.dangerButtonText}>Log Out</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.dangerButtonSecondary}
+                  onPress={() => deleteAllReports()}
+                >
+                  <Text style={styles.dangerButtonSecondaryText}>
+                    Clear Reports
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </>
+        )}
+      </ScrollView>
+
+      <Modal visible={isPreferencesOpen} animationType="slide">
+        <SafeAreaView style={styles.preferencesModalScreen}>
+          <BuildingPreferencesWizard
+            showIntro={false}
+            allowSkip={false}
+            showTopHeader
+            title="Edit Preferences"
+            initialPreferences={currentUser?.buildingPreferences ?? []}
+            onCancel={() => setIsPreferencesOpen(false)}
+            onSave={async (prefs) => {
+              await updateCurrentUser({ buildingPreferences: prefs });
+              const refreshedUser = await getCurrentUser();
+              setCurrentUser(refreshedUser);
+              setIsPreferencesOpen(false);
+            }}
+            saveButtonLabel="Save Changes"
+          />
         </SafeAreaView>
-    );
+      </Modal>
+
+      <ReportFormModal
+        visible={isReportModalVisible}
+        onClose={() => setIsReportModalVisible(false)}
+        onSubmitSuccess={() => {}}
+      />
+
+      <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />
+    </SafeAreaView>
+  );
 }
 
-const localStyles = StyleSheet.create({
+const importLocalStyles = (COLORS: ThemeType) =>
+  StyleSheet.create({
     preferencesSection: {
-        marginTop: 4,
-        marginBottom: 12,
+      marginTop: 4,
+      marginBottom: 12,
     },
 
     prefCard: {
-        backgroundColor: "#FFFFFF",
-        borderWidth: 1,
-        borderColor: "#E7E7EC",
-        borderRadius: 18,
-        padding: 14,
-        marginTop: 10,
+      backgroundColor: COLORS.white,
+      borderWidth: 1,
+      borderColor: COLORS.border,
+      borderRadius: 18,
+      padding: 14,
+      marginTop: 10,
     },
 
     prefHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 8,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 8,
     },
 
     prefTitle: {
-        fontSize: 15,
-        fontFamily: "Lexend_400Regular",
-        color: "#111111",
-        flex: 1,
-        marginRight: 10,
+      fontSize: 15,
+      fontFamily: "Lexend_400Regular",
+      color: COLORS.black,
+      flex: 1,
+      marginRight: 10,
     },
 
     prefBadge: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 999,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: 999,
     },
 
     prefBadgeActive: {
-        backgroundColor: "#EEF9F8",
-        borderWidth: 1,
-        borderColor: "#56bab8",
+      backgroundColor: COLORS.tealTint,
+      borderWidth: 1,
+      borderColor: COLORS.primary,
     },
 
     prefBadgeInactive: {
-        backgroundColor: "#F9FAFB",
-        borderWidth: 1,
-        borderColor: "#E7E7EC",
+      backgroundColor: COLORS.softBg,
+      borderWidth: 1,
+      borderColor: COLORS.border,
     },
 
     prefBadgeText: {
-        fontSize: 11,
-        fontFamily: "Lexend_400Regular",
+      fontSize: 11,
+      fontFamily: "Lexend_400Regular",
     },
 
     prefBadgeTextActive: {
-        color: "#5a8c8b",
+      color: COLORS.primary,
     },
 
     prefBadgeTextInactive: {
-        color: "#6B7280",
+      color: COLORS.muted,
     },
 
     prefMeta: {
-        fontSize: 13,
-        fontFamily: "Lexend_400Regular",
-        color: "#4E4E4E",
-        marginBottom: 4,
-        lineHeight: 18,
+      fontSize: 13,
+      fontFamily: "Lexend_400Regular",
+      color: COLORS.subtext,
+      marginBottom: 4,
+      lineHeight: 18,
     },
 
     emptyPrefText: {
-        fontSize: 13,
-        fontFamily: "Lexend_400Regular",
-        color: "#6B7280",
-        marginTop: 8,
-        marginBottom: 6,
+      fontSize: 13,
+      fontFamily: "Lexend_400Regular",
+      color: COLORS.muted,
+      marginTop: 8,
+      marginBottom: 6,
     },
-});
+  });

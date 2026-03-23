@@ -1,9 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Location from "expo-location";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { testReports } from "./data/notificationData";
 import { getReports, saveNewReport } from "./data/reportSH";
+import { ThemeProvider } from "./data/themeProvider";
 import { addUser, getUsers } from "./utils/authStorage";
 import { startLocationTracking } from "./utils/backgroundLocation";
 
@@ -27,7 +27,9 @@ export default function RootLayout() {
 
     const seedSecurityUser = async () => {
       const users = await getUsers();
-      const securityExists = users.some((u) => u.email === "security@concordia.ca");
+      const securityExists = users.some(
+        (u) => u.email === "security@concordia.ca",
+      );
       if (!securityExists) {
         await addUser({
           firstName: "Security",
@@ -52,30 +54,19 @@ export default function RootLayout() {
         await saveNewReport(report);
       }
 
-        const after = await getReports();
-        console.log("reports after seeding:", after.length);
-        console.log("dates:", after.map(r => r.date));
-    };
-
-      // Location access
-    const requestPermissions = async () => {
-      const { status: foreground } = await Location.requestForegroundPermissionsAsync();
-      if (foreground !== "granted") {
-        console.log("Foreground location permission denied");
-        return;
-      }
-      const { status: background } = await Location.requestBackgroundPermissionsAsync();
-      if (background !== "granted") {
-        console.log("Background location permission denied");
-      }
+      const after = await getReports();
+      console.log("reports after seeding:", after.length);
+      console.log(
+        "dates:",
+        after.map((r) => r.date),
+      );
     };
 
     const setup = async () => {
-      await requestPermissions();
       await seedAdminUser();
-      await seedSecurityUser(); 
+      await seedSecurityUser();
       await seedTestReports();
-      await AsyncStorage.setItem("seeded", "true"); 
+      await AsyncStorage.setItem("seeded", "true");
     };
 
     setup();
@@ -83,6 +74,8 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <Stack screenOptions={{ headerShown: false }} />
+    <ThemeProvider>
+      <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
+    </ThemeProvider>
   );
 }

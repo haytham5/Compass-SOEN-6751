@@ -4,222 +4,221 @@ import * as NavigationBar from "expo-navigation-bar";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StatusBar,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import {
-    SafeAreaView,
-    useSafeAreaInsets,
+  SafeAreaView,
+  useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { styles } from "./styles/userAuthStyles";
-import {
-    findUserByCredentials,
-    setCurrentUser,
-} from "./utils/authStorage";
+import { useTheme } from "./data/themeProvider";
+import { styles as importStyles } from "./styles/userAuthStyles";
+import { findUserByCredentials, setCurrentUser } from "./utils/authStorage";
 
 export default function Signin() {
-    const [fontsLoaded] = useFonts({
-        Pacifico_400Regular,
-        Lexend_400Regular,
-    });
+  const { theme } = useTheme();
+  const scheme = theme;
+  const styles = importStyles(scheme);
 
-    const insets = useSafeAreaInsets();
+  const [fontsLoaded] = useFonts({
+    Pacifico_400Regular,
+    Lexend_400Regular,
+  });
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [message, setMessage] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
 
-    useEffect(() => {
-        if (Platform.OS === "android") {
-            NavigationBar.setBackgroundColorAsync("#FFFFFF");
-            NavigationBar.setButtonStyleAsync("dark");
-            NavigationBar.setBehaviorAsync("overlay-swipe");
-        }
-    }, []);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
-    if (!fontsLoaded) {
-        return null;
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      NavigationBar.setBackgroundColorAsync(scheme.softBg);
+      NavigationBar.setButtonStyleAsync("dark");
+      NavigationBar.setBehaviorAsync("overlay-swipe");
+    }
+  }, []);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      setError("Please fill in all fields.");
+      return;
     }
 
-    const handleSignIn = async () => {
-        if (!email || !password) {
-            setError("Please fill in all fields.");
-            return;
-        }
+    const user = await findUserByCredentials(email.trim(), password);
 
-        const user = await findUserByCredentials(email.trim(), password);
+    if (!user) {
+      setError("Incorrect email or password.");
+      return;
+    }
 
-        if (!user) {
-            setError("Incorrect email or password.");
-            return;
-        }
+    await setCurrentUser({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      idNumber: user.idNumber,
+      phone: user.phone,
+      email: user.email,
+      isGuest: false,
+    });
 
-        await setCurrentUser({
-            firstName: user.firstName,
-            lastName: user.lastName,
-            role: user.role,
-            idNumber: user.idNumber,
-            phone: user.phone,
-            email: user.email,
-            isGuest: false,
-        });
+    setError(null);
+    setMessage(null);
+    router.push("/home");
+  };
 
-        setError(null);
-        setMessage(null);
-        router.push("/home");
-    };
+  const handleContinueAsGuest = async () => {
+    setError(null);
+    setMessage(null);
 
-    const handleContinueAsGuest = async () => {
-        setError(null);
-        setMessage(null);
+    await setCurrentUser({
+      firstName: "Guest",
+      lastName: "",
+      role: "concordian",
+      idNumber: "",
+      phone: "",
+      email: "",
+      isGuest: true,
+    });
 
-        await setCurrentUser({
-            firstName: "Guest",
-            lastName: "",
-            role: "concordian",
-            idNumber: "",
-            phone: "",
-            email: "",
-            isGuest: true,
-        });
+    router.push("/home");
+  };
 
-        router.push("/home");
-    };
+  return (
+    <SafeAreaView style={styles.background}>
+      <StatusBar backgroundColor={scheme.white} barStyle="dark-content" />
 
-    return (
-        <SafeAreaView style={styles.background}>
-            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-            <TouchableOpacity
-                style={[styles.topBackButton, { top: insets.top + 6 }]}
-                onPress={() => router.back()}
+      <TouchableOpacity
+        style={[styles.topBackButton, { top: insets.top + 6 }]}
+        onPress={() => router.back()}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.topBackText}>← Back</Text>
+      </TouchableOpacity>
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollableContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.logoArea}>
+            <Text style={styles.appTitle}>Compass</Text>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Log in to account</Text>
+
+            <Text style={styles.inputLabel}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="you@university.ca"
+              placeholderTextColor="#8E8E98"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={email}
+              onChangeText={(text) => {
+                setEmail(text);
+                setError(null);
+                setMessage(null);
+              }}
+            />
+
+            <Text style={styles.inputLabel}>Password</Text>
+            <View style={styles.passwordRow}>
+              <TextInput
+                style={[styles.input, styles.passwordInput]}
+                placeholder="Enter password"
+                placeholderTextColor="#8E8E98"
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                value={password}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  setError(null);
+                  setMessage(null);
+                }}
+              />
+              <TouchableOpacity
+                style={styles.showHideButton}
+                onPress={() => setShowPassword((v) => !v)}
                 activeOpacity={0.7}
-            >
-                <Text style={styles.topBackText}>← Back</Text>
-            </TouchableOpacity>
-
-            <View style={styles.logoArea}>
+              >
                 <Image
-                    source={require('../assets/images/logo.png')}
-                    style={styles.logoBig}
-                    resizeMode="contain"
-                    />
-                <Text style={styles.title}>Compass</Text>
+                  source={
+                    showPassword
+                      ? require("../assets/images/iconmonstr-eye-off-thin-240.png")
+                      : require("../assets/images/iconmonstr-eye-thin-240.png")
+                  }
+                  style={{ width: 24, height: 24 }}
+                />
+              </TouchableOpacity>
             </View>
 
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                style={styles.keyboardView}
+            {error && (
+              <View style={styles.errorBox}>
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            )}
+
+            <TouchableOpacity
+              style={styles.primaryButton}
+              activeOpacity={0.85}
+              onPress={handleSignIn}
             >
-                <ScrollView
-                    contentContainerStyle={styles.scrollableContent}
-                    keyboardShouldPersistTaps="handled"
-                    showsVerticalScrollIndicator={false}
-                >
+              <Text style={styles.primaryButtonText}>Login</Text>
+            </TouchableOpacity>
 
-                    <View style={styles.card}>
-                        <Text style={styles.cardTitle}>Log in to account</Text>
+            <TouchableOpacity
+              style={styles.guestLinkWrapper}
+              activeOpacity={0.7}
+              onPress={handleContinueAsGuest}
+            >
+              <Text style={styles.guestLink}>Continue without account</Text>
+            </TouchableOpacity>
+          </View>
 
-                        <Text style={styles.inputLabel}>Email</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="you@university.ca"
-                            placeholderTextColor="#8E8E98"                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            value={email}
-                            onChangeText={(text) => {
-                                setEmail(text);
-                                setError(null);
-                                setMessage(null);
-                            }}
-                        />
+          <View style={styles.footerRow}>
+            <Text style={styles.footerText}>Forgot password? </Text>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                if (!email) {
+                  setError("Please enter your email first.");
+                  return;
+                }
+                setError(null);
+                setMessage("If that email exists, a reset link has been sent.");
+              }}
+            >
+              <Text style={styles.footerLink}>Reset it</Text>
+            </TouchableOpacity>
+          </View>
 
-                        <Text style={styles.inputLabel}>Password</Text>
-                        <View style={styles.passwordRow}>
-                            <TextInput
-                                style={[styles.input, styles.passwordInput]}
-                                placeholder="Enter password"
-                                placeholderTextColor="#8E8E98"                                secureTextEntry={!showPassword}
-                                autoCapitalize="none"
-                                value={password}
-                                onChangeText={(text) => {
-                                    setPassword(text);
-                                    setError(null);
-                                    setMessage(null);
-                                }}
-                            />
-                            <TouchableOpacity
-                                style={styles.showHideButton}
-                                onPress={() => setShowPassword((v) => !v)}
-                                activeOpacity={0.7}
-                            >
-                                <Image
-                                    source={
-                                        showPassword
-                                            ? require("../assets/images/iconmonstr-eye-off-thin-240.png")
-                                            : require("../assets/images/iconmonstr-eye-thin-240.png")
-                                    }
-                                    style={{ width: 24, height: 24 }}
-                                />
-                            </TouchableOpacity>
-                        </View>
-
-                        {error && (
-                            <View style={styles.errorBox}>
-                                <Text style={styles.errorText}>{error}</Text>
-                            </View>
-                        )}
-
-                        <TouchableOpacity
-                            style={styles.primaryButton}
-                            activeOpacity={0.85}
-                            onPress={handleSignIn}
-                        >
-                            <Text style={styles.primaryButtonText}>Login</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.guestLinkWrapper}
-                            activeOpacity={0.7}
-                            onPress={handleContinueAsGuest}
-                        >
-                            <Text style={styles.guestLink}>Continue without account</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.footerRow}>
-                        <Text style={styles.footerText}>Forgot password? </Text>
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={() => {
-                                if (!email) {
-                                    setError("Please enter your email first.");
-                                    return;
-                                }
-                                setError(null);
-                                setMessage("If that email exists, a reset link has been sent.");
-                            }}
-                        >
-                            <Text style={styles.footerLink}>Reset it</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {message && (
-                        <View style={styles.successBox}>
-                            <Text style={styles.successText}>{message}</Text>
-                        </View>
-                    )}
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
-    );
+          {message && (
+            <View style={styles.successBox}>
+              <Text style={styles.successText}>{message}</Text>
+            </View>
+          )}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
 }

@@ -20,11 +20,7 @@ export async function simulateNearBuilding(buildingId: string) {
 
   // Check if there are active reports for this building
   const reports = await getReports();
-  const hasReports = reports.some((r) => 
-    r.building === buildingId && 
-    !r.isResolved && 
-    !r.isScheduledEvent
-  );
+  const hasReports = reports.some((r) => r.building === buildingId);
 
   if (!hasReports) {
     console.log(`${buildingId} has no active reports — no banner`);
