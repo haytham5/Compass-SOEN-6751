@@ -305,13 +305,13 @@ export default function Home() {
 
   const handleVerify = async (reportId: string) => {
     if (currentUserRole !== "security") return;
-    await verifyReport(reportId);
+    await verifyReport(reportId, currentUserId as string);
     await loadReports();
   };
 
   const handleMarkSevere = async (reportId: string) => {
     if (currentUserRole !== "security") return;
-    await markReportSevere(reportId);
+    await markReportSevere(reportId, currentUserId as string);
     await loadReports();
   };
 

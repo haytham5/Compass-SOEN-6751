@@ -25,6 +25,55 @@ interface ReportFormModalProps {
 
 const TOTAL_STEPS = 4;
 
+const accessibilityOptions: {
+  label: string;
+  value: AccessibilitySubtype;
+  helper: string;
+}[] = [
+  {
+    label: "Elevator",
+    value: "elevator",
+    helper: "Broken, unavailable, or not working properly",
+  },
+  {
+    label: "Escalator",
+    value: "escalator",
+    helper: "Stopped, blocked, or malfunctioning",
+  },
+  {
+    label: "Ramp",
+    value: "ramp",
+    helper: "Blocked, damaged, or difficult to use",
+  },
+  {
+    label: "Foot Traffic / Crowding",
+    value: "foot_traffic",
+    helper: "Area too crowded for easy access",
+  },
+  {
+    label: "Other",
+    value: "other",
+    helper: "Any other accessibility-related issue",
+  },
+];
+
+function formatAccessibilityLabel(value?: AccessibilitySubtype) {
+  switch (value) {
+    case "elevator":
+      return "Elevator";
+    case "escalator":
+      return "Escalator";
+    case "ramp":
+      return "Ramp";
+    case "foot_traffic":
+      return "Foot Traffic / Crowding";
+    case "other":
+      return "Other";
+    default:
+      return "—";
+  }
+}
+
 export default function ReportFormModal({
   visible,
   onClose,
@@ -46,6 +95,7 @@ export default function ReportFormModal({
   const [accessibilitySubtype, setAccessibilitySubtype] =
     useState<AccessibilitySubtype>("elevator");
   const [currentUserRole, setCurrentUserRole] = useState<UserRole | null>(null);
+
   useEffect(() => {
     if (visible) {
       getCurrentUser().then((user) => {
@@ -76,6 +126,7 @@ export default function ReportFormModal({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.8,
     });
+
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
@@ -153,20 +204,45 @@ export default function ReportFormModal({
 
             {type === "accessibility" && (
               <>
-                <Text style={styles.stepLabel}>Accessibility type:</Text>
-                <View style={styles.dropdown}>
-                  <Picker
-                    selectedValue={accessibilitySubtype}
-                    onValueChange={setAccessibilitySubtype}
-                  >
-                    <Picker.Item label="Elevator" value="elevator" />
-                    <Picker.Item label="Escalator" value="escalator" />
-                    <Picker.Item label="Ramp" value="ramp" />
-                    <Picker.Item
-                      label="Foot Traffic / Crowding"
-                      value="foot_traffic"
-                    />
-                  </Picker>
+                <Text style={styles.stepLabel}>Accessibility issue type</Text>
+                <Text style={styles.stepHelper}>
+                  Choose the option that best describes the accessibility
+                  problem.
+                </Text>
+
+                <View style={styles.choiceGroup}>
+                  {accessibilityOptions.map((option) => {
+                    const isSelected = accessibilitySubtype === option.value;
+
+                    return (
+                      <TouchableOpacity
+                        key={option.value}
+                        style={[
+                          styles.choiceCard,
+                          isSelected && styles.choiceCardSelected,
+                        ]}
+                        onPress={() => setAccessibilitySubtype(option.value)}
+                        activeOpacity={0.85}
+                      >
+                        <Text
+                          style={[
+                            styles.choiceTitle,
+                            isSelected && styles.choiceTitleSelected,
+                          ]}
+                        >
+                          {option.label}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.choiceHelper,
+                            isSelected && styles.choiceHelperSelected,
+                          ]}
+                        >
+                          {option.helper}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
               </>
             )}
@@ -194,9 +270,19 @@ export default function ReportFormModal({
               </Picker>
             </View>
 
+            <View style={styles.floorHeaderRow}>
+              <Text style={styles.stepLabel}>Floor number</Text>
+              <Text style={styles.requiredTag}>Required</Text>
+            </View>
+
+            <Text style={styles.stepHelper}>
+              Please enter the floor where the issue is happening. Example: 1,
+              2, 3, S1, basement, ground floor.
+            </Text>
+
             <TextInput
               style={styles.input}
-              placeholder="Floor"
+              placeholder="Enter floor number or level"
               value={floor}
               onChangeText={setFloor}
               placeholderTextColor="#8E8E98"
@@ -245,13 +331,16 @@ export default function ReportFormModal({
             <View style={styles.reviewCard}>
               <Text style={styles.reviewTitle}>Review</Text>
               <Text style={styles.reviewText}>Type: {type}</Text>
+
               {type === "accessibility" && (
                 <Text style={styles.reviewText}>
-                  Accessibility type: {accessibilitySubtype}
+                  Accessibility type:{" "}
+                  {formatAccessibilityLabel(accessibilitySubtype)}
                 </Text>
               )}
+
               <Text style={styles.reviewText}>Building: {building}</Text>
-              <Text style={styles.reviewText}>Floor: {floor}</Text>
+              <Text style={styles.reviewText}>Floor: {floor || "—"}</Text>
               <Text style={styles.reviewText}>Title: {name || "—"}</Text>
               <Text style={styles.reviewText}>
                 Description: {description || "—"}

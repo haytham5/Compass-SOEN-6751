@@ -1,3 +1,6 @@
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import {
   Check,
   ChevronLeft,
@@ -9,13 +12,14 @@ import {
 import React, { useMemo, useState } from "react";
 import {
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Switch,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemeType, useTheme } from "../data/themeProvider";
@@ -34,41 +38,6 @@ const DEFAULT_BUILDINGS = [
 ] as const;
 
 const DAYS: DayKey[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-const TIME_OPTIONS = [
-  "06:00",
-  "06:30",
-  "07:00",
-  "07:30",
-  "08:00",
-  "08:30",
-  "09:00",
-  "09:30",
-  "10:00",
-  "10:30",
-  "11:00",
-  "11:30",
-  "12:00",
-  "12:30",
-  "13:00",
-  "13:30",
-  "14:00",
-  "14:30",
-  "15:00",
-  "15:30",
-  "16:00",
-  "16:30",
-  "17:00",
-  "17:30",
-  "18:00",
-  "18:30",
-  "19:00",
-  "19:30",
-  "20:00",
-  "20:30",
-  "21:00",
-  "21:30",
-];
 
 type WizardStep = "intro" | number | "review";
 
@@ -109,29 +78,24 @@ function normalizeBuildingId(buildingId?: string): string {
   switch (value) {
     case "ev":
       return "EV";
-
     case "hall":
     case "hall building":
     case "h":
       return "H";
-
     case "faubourg":
     case "faubourg building":
     case "fb":
       return "FB";
-
     case "library":
     case "webster":
     case "webster library":
     case "lb":
       return "LB";
-
     case "jmsb":
     case "jm":
     case "jmsb/jm":
     case "jmsb / jm":
       return "JMSB";
-
     default:
       return buildingId ?? "";
   }
@@ -195,6 +159,19 @@ function normalizePreferences(
       }),
     };
   });
+}
+
+function parseTimeToDate(time: string): Date {
+  const [hours, minutes] = time.split(":").map(Number);
+  const date = new Date();
+  date.setHours(hours ?? 8, minutes ?? 0, 0, 0);
+  return date;
+}
+
+function formatTimeFromDate(date: Date): string {
+  const hours = `${date.getHours()}`.padStart(2, "0");
+  const minutes = `${date.getMinutes()}`.padStart(2, "0");
+  return `${hours}:${minutes}`;
 }
 
 export default function BuildingPreferencesWizard({
@@ -538,9 +515,12 @@ export default function BuildingPreferencesWizard({
                           }
                         >
                           <Clock3 size={16} color={scheme.primaryDark} />
-                          <Text style={styles.timeButtonText}>
-                            Start: {day.startTime}
-                          </Text>
+                          <View>
+                            <Text style={styles.timeButtonLabel}>Start</Text>
+                            <Text style={styles.timeButtonText}>
+                              {day.startTime}
+                            </Text>
+                          </View>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -554,9 +534,12 @@ export default function BuildingPreferencesWizard({
                           }
                         >
                           <Clock3 size={16} color={scheme.primaryDark} />
-                          <Text style={styles.timeButtonText}>
-                            End: {day.endTime}
-                          </Text>
+                          <View>
+                            <Text style={styles.timeButtonLabel}>End</Text>
+                            <Text style={styles.timeButtonText}>
+                              {day.endTime}
+                            </Text>
+                          </View>
                         </TouchableOpacity>
                       </View>
                     )}
@@ -648,52 +631,80 @@ export default function BuildingPreferencesWizard({
       (d) => d.day === timePickerState.day,
     );
 
-    return (
-      <Modal transparent animationType="fade" visible>
-        <View style={styles.modalOverlay}>
-          <Pressable
-            style={styles.modalBackdrop}
-            onPress={() => setTimePickerState(null)}
-          />
-          <View style={styles.timeModal}>
-            <View style={styles.timeModalHeader}>
-              <Text style={styles.timeModalTitle}>
-                Select {timePickerState.field === "startTime" ? "start" : "end"}{" "}
-                time
+    if (!selectedDay) return null;
+
+    const currentValue = parseTimeToDate(selectedDay[timePickerState.field]);
+
+    const handleChange = (event: DateTimePickerEvent, picked?: Date) => {
+      if (event.type === "dismissed") {
+        setTimePickerState(null);
+        return;
+      }
+
+      if (!picked) {
+        setTimePickerState(null);
+        return;
+      }
+
+      updateDay(timePickerState.buildingIndex, timePickerState.day, (d) => ({
+        ...d,
+        [timePickerState.field]: formatTimeFromDate(picked),
+      }));
+
+      if (Platform.OS !== "ios") {
+        setTimePickerState(null);
+      }
+    };
+
+    if (Platform.OS === "ios") {
+      return (
+        <Modal transparent animationType="fade" visible>
+          <View style={styles.modalOverlay}>
+            <Pressable
+              style={styles.modalBackdrop}
+              onPress={() => setTimePickerState(null)}
+            />
+            <View style={styles.timeModal}>
+              <View style={styles.timeModalHeader}>
+                <Text style={styles.timeModalTitle}>
+                  Select{" "}
+                  {timePickerState.field === "startTime" ? "start" : "end"} time
+                </Text>
+                <TouchableOpacity onPress={() => setTimePickerState(null)}>
+                  <X size={20} color={scheme.primaryDark} />
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.timeModalSubtitle}>
+                {selectedBuilding.buildingName} · {selectedDay.day}
               </Text>
-              <TouchableOpacity onPress={() => setTimePickerState(null)}>
-                <X size={20} color={scheme.primaryDark} />
+
+              <DateTimePicker
+                value={currentValue}
+                mode="time"
+                display="spinner"
+                onChange={handleChange}
+              />
+
+              <TouchableOpacity
+                style={styles.timeDoneButton}
+                onPress={() => setTimePickerState(null)}
+              >
+                <Text style={styles.timeDoneButtonText}>Done</Text>
               </TouchableOpacity>
             </View>
-
-            <Text style={styles.timeModalSubtitle}>
-              {selectedBuilding.buildingName} · {selectedDay?.day}
-            </Text>
-
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {TIME_OPTIONS.map((time) => (
-                <TouchableOpacity
-                  key={time}
-                  style={styles.timeOption}
-                  onPress={() => {
-                    updateDay(
-                      timePickerState.buildingIndex,
-                      timePickerState.day,
-                      (d) => ({
-                        ...d,
-                        [timePickerState.field]: time,
-                      }),
-                    );
-                    setTimePickerState(null);
-                  }}
-                >
-                  <Text style={styles.timeOptionText}>{time}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      );
+    }
+
+    return (
+      <DateTimePicker
+        value={currentValue}
+        mode="time"
+        display="default"
+        onChange={handleChange}
+      />
     );
   };
 
@@ -1086,11 +1097,18 @@ const buildingStyles = (COLORS: ThemeType) =>
       alignItems: "center",
       gap: 8,
       borderWidth: 1,
-      borderColor: COLORS.border,
+      borderColor: COLORS.primary,
       borderRadius: 14,
       paddingHorizontal: 12,
       paddingVertical: 12,
-      backgroundColor: COLORS.softBg,
+      backgroundColor: COLORS.tealTint,
+    },
+
+    timeButtonLabel: {
+      fontSize: 11,
+      color: COLORS.muted,
+      marginBottom: 2,
+      fontFamily: "Lexend_400Regular",
     },
 
     timeButtonText: {
@@ -1167,7 +1185,6 @@ const buildingStyles = (COLORS: ThemeType) =>
       borderTopLeftRadius: 24,
       borderTopRightRadius: 24,
       padding: 18,
-      maxHeight: "60%",
     },
 
     timeModalHeader: {
@@ -1191,16 +1208,19 @@ const buildingStyles = (COLORS: ThemeType) =>
       fontFamily: "Lexend_400Regular",
     },
 
-    timeOption: {
-      paddingVertical: 14,
-      borderBottomWidth: 1,
-      borderBottomColor: COLORS.border,
+    timeDoneButton: {
+      marginTop: 12,
+      backgroundColor: COLORS.pink,
+      borderRadius: 14,
+      paddingVertical: 12,
+      alignItems: "center",
     },
 
-    timeOptionText: {
-      fontSize: 15,
-      color: COLORS.black,
+    timeDoneButtonText: {
+      color: COLORS.white,
+      fontSize: 14,
       fontFamily: "Lexend_400Regular",
+      fontWeight: "700",
     },
 
     scrollArea: {

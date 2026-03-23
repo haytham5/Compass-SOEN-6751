@@ -273,4 +273,70 @@ export const styles = (COLORS: ThemeType) =>
       fontSize: 15,
       fontFamily: "Lexend_400Regular",
     },
+
+    stepHelper: {
+      fontSize: 13,
+      color: COLORS.muted,
+      marginTop: -4,
+      marginBottom: 12,
+      lineHeight: 18,
+    },
+
+    floorHeaderRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginTop: 8,
+    },
+
+    requiredTag: {
+      fontSize: 11,
+      color: COLORS.white,
+      backgroundColor: COLORS.pink,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 999,
+      overflow: "hidden",
+      fontFamily: "Lexend_400Regular",
+    },
+
+    choiceGroup: {
+      gap: 10,
+      marginTop: 8,
+    },
+
+    choiceCard: {
+      borderWidth: 1,
+      borderColor: COLORS.border,
+      borderRadius: 14,
+      paddingVertical: 12,
+      paddingHorizontal: 14,
+      backgroundColor: COLORS.white,
+    },
+
+    choiceCardSelected: {
+      borderColor: COLORS.muted,
+      backgroundColor: COLORS.tealTint,
+    },
+
+    choiceTitle: {
+      fontSize: 15,
+      color: COLORS.text,
+      fontFamily: "Lexend_400Regular",
+      marginBottom: 4,
+    },
+
+    choiceTitleSelected: {
+      color: "#276389",
+    },
+
+    choiceHelper: {
+      fontSize: 12,
+      color: COLORS.muted,
+      lineHeight: 17,
+    },
+
+    choiceHelperSelected: {
+      color: "#4B6475",
+    },
   });

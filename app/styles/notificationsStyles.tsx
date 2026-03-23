@@ -71,6 +71,8 @@ export const styles = (COLORS: ThemeType) =>
       alignItems: "center",
       marginRight: 10,
       borderRadius: 16,
+      borderWidth: 1,
+      borderColor: COLORS.border,
       ...Platform.select({
         ios: {
           shadowColor: "#000",
@@ -86,6 +88,8 @@ export const styles = (COLORS: ThemeType) =>
     },
 
     subCardActive: {
+      borderWidth: 1.5,
+      borderColor: COLORS.primary,
       transform: [{ scale: 1.02 }],
       margin: 2,
     },
@@ -456,6 +460,21 @@ export const styles = (COLORS: ThemeType) =>
       color: COLORS.success,
     },
 
+    // actionButton: {
+    //   alignItems: "center",
+    //   justifyContent: "center",
+    //   padding: 7,
+    //   borderRadius: 12,
+    //   borderWidth: 1,
+    //   borderColor: COLORS.primary,
+    //   minWidth: 46,
+    //   backgroundColor: COLORS.tealTint,
+    // },
+    //
+    // actionButtonDisabled: {
+    //   borderColor: COLORS.border,
+    //   backgroundColor: COLORS.softBg,
+    // },
     actionButton: {
       alignItems: "center",
       justifyContent: "center",
@@ -472,13 +491,18 @@ export const styles = (COLORS: ThemeType) =>
       backgroundColor: COLORS.softBg,
     },
 
+    // actionCount: {
+    //   fontSize: 12,
+    //   fontFamily: "Lexend_400Regular",
+    //   color: COLORS.primaryDark,
+    //   marginTop: 2,
+    // },
     actionCount: {
       fontSize: 12,
       fontFamily: "Lexend_400Regular",
       color: COLORS.primaryDark,
       marginTop: 2,
     },
-
     actionCountDisabled: {
       color: COLORS.disabled,
     },
@@ -541,5 +565,16 @@ export const styles = (COLORS: ThemeType) =>
       alignItems: "center",
       gap: 5,
       marginBottom: 2,
+    },
+
+    actionHelper: {
+      fontSize: 10,
+      fontFamily: "Lexend_400Regular",
+      color: COLORS.primaryDark,
+      marginTop: 2,
+    },
+
+    actionHelperDisabled: {
+      color: COLORS.disabled,
     },
   });

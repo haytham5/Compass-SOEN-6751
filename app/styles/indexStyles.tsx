@@ -949,4 +949,54 @@ export const styles = (COLORS: ThemeType) =>
       backgroundColor: COLORS.white,
       borderColor: COLORS.primary,
     },
+
+    securityActionsRow: {
+      flexDirection: "row",
+      gap: 8,
+      marginTop: 8,
+      flexWrap: "wrap",
+    },
+
+    securityActionButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      borderRadius: 999,
+      borderWidth: 1,
+      borderColor: COLORS.border,
+      backgroundColor: COLORS.white,
+    },
+
+    securityActionButtonActive: {
+      backgroundColor: "#1FA64A",
+      borderColor: "#1FA64A",
+    },
+
+    securitySevereButtonActive: {
+      backgroundColor: "#F59E0B",
+      borderColor: "#F59E0B",
+    },
+
+    securityActionText: {
+      fontSize: 12,
+      fontFamily: "Lexend_400Regular",
+      color: "#276389",
+    },
+
+    securityActionTextActive: {
+      color: COLORS.white,
+    },
+
+    actionHelper: {
+      fontSize: 10,
+      fontFamily: "Lexend_400Regular",
+      color: COLORS.primaryDark,
+      marginTop: 2,
+    },
+
+    actionHelperDisabled: {
+      color: COLORS.disabled,
+    },
   });

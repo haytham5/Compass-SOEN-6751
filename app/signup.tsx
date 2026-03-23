@@ -389,7 +389,7 @@ export default function SignUp() {
                   style={styles.guestLinkWrapper}
                   onPress={handleContinueAsGuest}
                 >
-                  <Text style={styles.guestLink}>Continue as guest</Text>
+                  <Text style={styles.guestLink}>Continue without account</Text>
                 </TouchableOpacity>
               </>
             ) : (

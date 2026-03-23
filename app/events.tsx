@@ -2,6 +2,7 @@ import { Lexend_400Regular } from "@expo-google-fonts/lexend";
 import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import * as NavigationBar from "expo-navigation-bar";
 import { useFocusEffect } from "expo-router";
+import { Building2, Clock } from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   FlatList,
@@ -33,6 +34,7 @@ type Event = {
   type: "protest" | "event" | "accessibility" | "maintenance";
   date: string;
   floor: string;
+  room?: string;
   location: string;
   time: string;
   description?: string;
@@ -62,6 +64,21 @@ const buildingColorMap: Record<string, string> = {
   LB: "#FFC107",
 };
 
+const formatEventType = (type: Event["type"]) => {
+  switch (type) {
+    case "event":
+      return "Event";
+    case "protest":
+      return "Protest";
+    case "accessibility":
+      return "Accessibility";
+    case "maintenance":
+      return "Maintenance";
+    default:
+      return type;
+  }
+};
+
 export default function Events() {
   const { theme } = useTheme();
   const scheme = theme;
@@ -74,12 +91,12 @@ export default function Events() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
 
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [canAddEvents, setCanAddEvents] = useState(false);
   const [showAdminEventModal, setShowAdminEventModal] = useState(false);
 
   useEffect(() => {
     getCurrentUser().then((user) => {
-      setIsAdmin(user?.role === "admin");
+      setCanAddEvents(user?.role === "admin");
     });
   }, []);
 
@@ -119,6 +136,10 @@ export default function Events() {
     }, [loadReports]),
   );
 
+  const openAdminEventModal = () => {
+    setShowAdminEventModal(true);
+  };
+
   const reportEventsByDate = useMemo(() => {
     const grouped: Record<string, Event[]> = {};
 
@@ -133,9 +154,10 @@ export default function Events() {
           id: `report-${report.id}`,
           title: report.name || report.type,
           acc: report.building,
-          type: report.type,
+          type: report.type as Event["type"],
           date: report.date,
           floor: report.floor,
+          room: (report as any).room,
           location: report.building,
           time: report.time,
           description: report.description || "No description provided.",
@@ -145,42 +167,51 @@ export default function Events() {
     return grouped;
   }, [reports]);
 
-  const allEvents = reportEventsByDate;
+  const filteredEventsByDate = useMemo(() => {
+    if (selectedBuildings.length === 0) {
+      return reportEventsByDate;
+    }
+
+    const filtered: Record<string, Event[]> = {};
+
+    Object.entries(reportEventsByDate).forEach(([date, events]) => {
+      const matchingEvents = events.filter((event) =>
+        selectedBuildings.includes(event.location),
+      );
+
+      if (matchingEvents.length > 0) {
+        filtered[date] = matchingEvents;
+      }
+    });
+
+    return filtered;
+  }, [reportEventsByDate, selectedBuildings]);
 
   const markedDates = useMemo(() => {
     const marks: Record<string, any> = {};
 
-    Object.keys(allEvents).forEach((date) => {
+    Object.keys(filteredEventsByDate).forEach((date) => {
       marks[date] = {
         marked: true,
-        dots: allEvents[date].map((event) => ({
+        dots: filteredEventsByDate[date].map((event) => ({
           key: event.id,
           color: typeDotColorMap[event.type] || "#56bab8",
         })),
       };
     });
 
-    if (selectedDate) {
-      marks[selectedDate] = {
-        ...marks[selectedDate],
-        selected: true,
-        selectedColor: "#56bab8",
-      };
-    }
+    marks[selectedDate] = {
+      ...(marks[selectedDate] ?? {}),
+      selected: true,
+      selectedColor: "#56bab8",
+    };
 
     return marks;
-  }, [allEvents, selectedDate]);
+  }, [filteredEventsByDate, selectedDate]);
 
-  const selectedEvents = (allEvents[selectedDate] || []).filter((event) =>
-    selectedBuildings.length > 0
-      ? selectedBuildings.some(
-          (b) =>
-            b === event.location || (b === "JM" && event.location === "JMSB"),
-        )
-      : true,
-  );
+  const selectedEvents = filteredEventsByDate[selectedDate] || [];
 
-  const buildingFilters = ["EV", "LB", "H", "JM", "FB"];
+  const buildingFilters = ["EV", "LB", "H", "JMSB", "FB"];
 
   if (!fontsLoaded || loadingReports) {
     return null;
@@ -199,10 +230,10 @@ export default function Events() {
           <>
             <View style={styles.header}>
               <Text style={styles.title}>Your Events</Text>
-              {isAdmin && (
+              {canAddEvents && (
                 <TouchableOpacity
                   style={styles.adminButton}
-                  onPress={() => setShowAdminEventModal(true)}
+                  onPress={openAdminEventModal}
                 >
                   <Text style={styles.adminButtonText}>+ Add Event</Text>
                 </TouchableOpacity>
@@ -236,13 +267,7 @@ export default function Events() {
                     <View
                       style={[
                         styles.subCard,
-                        {
-                          backgroundColor: isActive
-                            ? buildingColorMap[building]
-                            : "transparent",
-                          borderWidth: 2,
-                          borderColor: buildingColorMap[building] ?? "#9c9c9c",
-                        },
+                        isActive ? styles.green : styles.unsubbed,
                         isActive
                           ? styles.subCardActive
                           : styles.subCardInactive,
@@ -261,7 +286,7 @@ export default function Events() {
             <View style={styles.calendarCard}>
               <Calendar
                 markingType="multi-dot"
-                markedDates={markedDates !== null ? markedDates : undefined}
+                markedDates={markedDates}
                 onDayPress={(day) => setSelectedDate(day.dateString)}
                 theme={{
                   backgroundColor: scheme.white,
@@ -289,41 +314,64 @@ export default function Events() {
             </View>
           </>
         }
-        renderItem={({ item }) => (
-          <View
-            style={[
-              styles.notificationCard,
-              {
-                borderLeftColor:
-                  buildingColorMap[item.location] ?? scheme.border,
-              },
-            ]}
-          >
-            <View style={styles.updateCardInner}>
-              <View style={styles.updateCardLeft}>
-                <Text style={styles.updateEventTitle}>{item.title}</Text>
-                <Text style={styles.updateMeta}>{item.time}</Text>
+        renderItem={({ item }) => {
+          const typeLabel = formatEventType(item.type);
 
-                <View style={styles.updateTypeRow}>
-                  <Icon name="event" size={16} color={scheme.primaryDark} />
-                  <Text style={styles.updateTypeLabel}>{item.type}</Text>
-                </View>
-
-                <Text style={styles.updateMeta}>
-                  {buildingNameMap[item.location] ?? item.location}
-                  {item.floor ? ` · Floor ${item.floor}` : ""}
-                </Text>
-              </View>
-            </View>
-
-            <TouchableOpacity
-              style={styles.chevronButton}
-              onPress={() => setSelectedEvent(item)}
+          return (
+            <View
+              style={[
+                styles.notificationCard,
+                {
+                  borderLeftColor:
+                    buildingColorMap[item.location] ?? scheme.border,
+                },
+              ]}
             >
-              <Icon name="expand-more" size={24} color={scheme.primaryDark} />
-            </TouchableOpacity>
-          </View>
-        )}
+              <View style={styles.updateCardInner}>
+                <View style={styles.updateCardLeft}>
+                  <Text style={styles.updateEventTitle}>{item.title}</Text>
+                  <Text style={styles.updateMeta}>{item.time}</Text>
+
+                  <View style={styles.updateTypeRow}>
+                    <Icon
+                      name={item.type === "event" ? "event" : "campaign"}
+                      size={16}
+                      color={scheme.primaryDark}
+                    />
+                    <Text style={styles.updateTypeLabel}>{typeLabel}</Text>
+                  </View>
+
+                  <View style={styles.updateMetaRow}>
+                    <Clock size={13} color="#5A6B80" />
+                    <Text style={styles.updateMeta}>{item.time}</Text>
+                  </View>
+
+                  <View style={styles.updateMetaRow}>
+                    <Building2 size={13} color="#5A6B80" />
+                    <Text style={styles.updateMeta}>
+                      {buildingNameMap[item.location] ?? item.location}
+                      {item.floor ? ` · Floor ${item.floor}` : ""}
+                      {item.room ? ` · Room ${item.room}` : ""}
+                    </Text>
+                  </View>
+
+                  {!!item.description && (
+                    <Text style={styles.eventPreviewText} numberOfLines={2}>
+                      {item.description}
+                    </Text>
+                  )}
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={styles.chevronButton}
+                onPress={() => setSelectedEvent(item)}
+              >
+                <Icon name="expand-more" size={24} color={scheme.primaryDark} />
+              </TouchableOpacity>
+            </View>
+          );
+        }}
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateTitle}>No events for this date</Text>
@@ -361,15 +409,27 @@ export default function Events() {
                   </TouchableOpacity>
                 </View>
 
-                <Text style={styles.modalBuilding}>
-                  {buildingNameMap[selectedEvent.location] ??
-                    selectedEvent.location}
-                  {selectedEvent.floor ? ` — Floor ${selectedEvent.floor}` : ""}
-                </Text>
+                <View style={styles.updateMetaRow}>
+                  <Building2 size={18} color="#444" />
+                  <Text style={styles.modalBuilding}>
+                    {buildingNameMap[selectedEvent.location] ??
+                      selectedEvent.location}
+                    {selectedEvent.floor
+                      ? ` — Floor ${selectedEvent.floor}`
+                      : ""}
+                    {selectedEvent.room ? ` — Room ${selectedEvent.room}` : ""}
+                  </Text>
+                </View>
 
-                <Text style={styles.modalTime}>
-                  {selectedEvent.date} · {selectedEvent.time}
-                </Text>
+                <View style={styles.updateMetaRow}>
+                  <Icon name="event" size={16} color="#888" />
+                  <Text style={styles.modalTime}>{selectedEvent.date}</Text>
+                </View>
+
+                <View style={styles.updateMetaRow}>
+                  <Clock size={16} color="#888" />
+                  <Text style={styles.modalTime}>{selectedEvent.time}</Text>
+                </View>
 
                 <Text style={styles.modalDescription}>
                   {selectedEvent.description || "No description provided."}

@@ -12,7 +12,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import {
   SafeAreaView,
@@ -191,7 +191,7 @@ export default function Signin() {
               activeOpacity={0.7}
               onPress={handleContinueAsGuest}
             >
-              <Text style={styles.guestLink}>Continue as guest</Text>
+              <Text style={styles.guestLink}>Continue without account</Text>
             </TouchableOpacity>
           </View>
 

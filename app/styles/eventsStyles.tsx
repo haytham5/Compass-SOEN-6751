@@ -455,4 +455,12 @@ export const styles = (COLORS: ThemeType) =>
       gap: 5,
       marginBottom: 2,
     },
+
+    eventPreviewText: {
+      marginTop: 8,
+      fontSize: 13,
+      lineHeight: 18,
+      color: "#5A6B80",
+      fontFamily: "Lexend_400Regular",
+    },
   });
