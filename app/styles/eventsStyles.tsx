@@ -71,8 +71,6 @@ export const styles = (COLORS: ThemeType) =>
       alignItems: "center",
       marginRight: 10,
       borderRadius: 16,
-      borderWidth: 1,
-      borderColor: COLORS.border,
       ...Platform.select({
         ios: {
           shadowColor: "#000",
@@ -101,7 +99,7 @@ export const styles = (COLORS: ThemeType) =>
     },
 
     subBody: {
-      fontSize: 22,
+      fontSize: 18,
       fontFamily: "Lexend_400Regular",
       color: COLORS.black,
     },
@@ -138,7 +136,6 @@ export const styles = (COLORS: ThemeType) =>
 
     unsubbed: {
       backgroundColor: COLORS.softBg,
-      opacity: 1,
     },
 
     modalOverlay: {
@@ -325,7 +322,7 @@ export const styles = (COLORS: ThemeType) =>
     subscriptions: {
       flexDirection: "row",
       gap: 0,
-      marginBottom: 26,
+      marginBottom: 30,
     },
 
     subCardActive: {

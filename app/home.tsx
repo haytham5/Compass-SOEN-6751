@@ -41,7 +41,6 @@ import BottomNav from "./components/bottomNav";
 import MapInfo from "./components/mapInfo";
 import NearBuildingBanner from "./components/NearBuildingBanner";
 import OfflineBanner from "./components/offlineBanner";
-import ReportCard from "./components/ReportCard";
 import ReportFormModal from "./components/ReportFormModal";
 import {
   getReports,
@@ -59,13 +58,6 @@ import { Themes } from "./styles/Themes";
 import { getCurrentUser } from "./utils/authStorage";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
 
-// const buildingColorMap: Record<string, string> = {
-//   EV: "#FF9898",
-//   H: "#4CAF50",
-//   FB: "#9C6ADE",
-//   LB: "#FFC107",
-//   JMSB: "#2196F3",
-// };
 const buildingColorMap: Record<string, string> = {
   EV: "#FF9898",
   H: "#4CAF50",
@@ -299,19 +291,30 @@ export default function Home() {
 
   const handleResolve = async (reportId: string) => {
     if (!currentUserId || isGuest) return;
-    await markReportResolved(reportId, currentUserRole ?? "concordian");
+    await markReportResolved(reportId, currentUserId);
     await loadReports();
   };
 
+  // const handleVerify = async (reportId: string) => {
+  //   if (currentUserRole !== "security") return;
+  //   await verifyReport(reportId);
+  //   await loadReports();
+  // };
+  //
+  // const handleMarkSevere = async (reportId: string) => {
+  //   if (currentUserRole !== "security") return;
+  //   await markReportSevere(reportId);
+  //   await loadReports();
+  // };
   const handleVerify = async (reportId: string) => {
-    if (currentUserRole !== "security") return;
-    await verifyReport(reportId, currentUserId as string);
+    if (currentUserRole !== "security" || !currentUserId) return;
+    await verifyReport(reportId, currentUserId);
     await loadReports();
   };
 
   const handleMarkSevere = async (reportId: string) => {
-    if (currentUserRole !== "security") return;
-    await markReportSevere(reportId, currentUserId as string);
+    if (currentUserRole !== "security" || !currentUserId) return;
+    await markReportSevere(reportId, currentUserId);
     await loadReports();
   };
 
@@ -750,7 +753,19 @@ export default function Home() {
                           const hasUpvoted = currentUserId
                             ? report.upvotedBy?.includes(currentUserId)
                             : false;
-                          const isResolved = report.isResolved;
+
+                          const hasResolved = currentUserId
+                            ? (report.resolvedBy ?? []).includes(currentUserId)
+                            : false;
+
+                          const hasVerified = currentUserId
+                            ? (report.verifiedBy ?? []).includes(currentUserId)
+                            : false;
+
+                          const hasMarkedSevere = currentUserId
+                            ? (report.severeBy ?? []).includes(currentUserId)
+                            : false;
+
                           const isDisabled = isGuest || !currentUserId;
 
                           const typeIcon =
@@ -824,6 +839,7 @@ export default function Home() {
                                       {report.time}
                                     </Text>
                                   </View>
+
                                   <View style={styles.updateMetaRow}>
                                     <Building2 size={13} color="#5A6B80" />
                                     <Text style={styles.updateMeta}>
@@ -844,45 +860,77 @@ export default function Home() {
                                           color="#1FA64A"
                                         />
                                         <Text style={styles.verifiedText}>
-                                          Verified
+                                          Verified by Security
                                         </Text>
                                       </View>
                                     )}
                                   </View>
 
                                   {currentUserRole === "security" &&
-                                    !report.isVerifiedBySecurity &&
                                     !report.isResolved && (
-                                      <TouchableOpacity
-                                        onPress={() => handleVerify(report.id)}
-                                        style={styles.markSevereButton}
-                                      >
-                                        <CheckCircle
-                                          size={13}
-                                          color="#1FA64A"
-                                        />
-                                        <Text style={styles.markSevereText}>
-                                          Verify
-                                        </Text>
-                                      </TouchableOpacity>
-                                    )}
+                                      <View style={styles.securityActionsRow}>
+                                        <TouchableOpacity
+                                          onPress={() =>
+                                            handleVerify(report.id)
+                                          }
+                                          style={[
+                                            styles.securityActionButton,
+                                            hasVerified &&
+                                              styles.securityActionButtonActive,
+                                          ]}
+                                        >
+                                          <CheckCircle
+                                            size={13}
+                                            color={
+                                              hasVerified
+                                                ? "#FFFFFF"
+                                                : "#1FA64A"
+                                            }
+                                          />
+                                          <Text
+                                            style={[
+                                              styles.securityActionText,
+                                              hasVerified &&
+                                                styles.securityActionTextActive,
+                                            ]}
+                                          >
+                                            {hasVerified
+                                              ? "Undo Verify"
+                                              : "Verify"}
+                                          </Text>
+                                        </TouchableOpacity>
 
-                                  {currentUserRole === "security" &&
-                                    !report.isSevere && (
-                                      <TouchableOpacity
-                                        onPress={() =>
-                                          handleMarkSevere(report.id)
-                                        }
-                                        style={styles.markSevereButton}
-                                      >
-                                        <TriangleAlert
-                                          size={13}
-                                          color="#F59E0B"
-                                        />
-                                        <Text style={styles.markSevereText}>
-                                          Mark Severe
-                                        </Text>
-                                      </TouchableOpacity>
+                                        <TouchableOpacity
+                                          onPress={() =>
+                                            handleMarkSevere(report.id)
+                                          }
+                                          style={[
+                                            styles.securityActionButton,
+                                            hasMarkedSevere &&
+                                              styles.securitySevereButtonActive,
+                                          ]}
+                                        >
+                                          <TriangleAlert
+                                            size={13}
+                                            color={
+                                              hasMarkedSevere
+                                                ? "#FFFFFF"
+                                                : "#F59E0B"
+                                            }
+                                          />
+                                          <Text
+                                            style={[
+                                              styles.securityActionText,
+                                              hasMarkedSevere &&
+                                                styles.securityActionTextActive,
+                                            ]}
+                                          >
+                                            {hasMarkedSevere
+                                              ? "Undo Severe"
+                                              : "Mark Severe"}
+                                          </Text>
+                                        </TouchableOpacity>
+                                      </View>
                                     )}
                                 </View>
 
@@ -890,21 +938,15 @@ export default function Home() {
                                   <TouchableOpacity
                                     style={[
                                       styles.actionButton,
-                                      isDisabled && styles.actionButtonDisabled, // disabled if guest
-                                      hasUpvoted && styles.actionButtonUpvoted, // highlighted if upvoted
+                                      isDisabled && styles.actionButtonDisabled,
+                                      hasUpvoted && styles.actionButtonUpvoted,
                                     ]}
                                     onPress={() => handleUpvote(report.id)}
-                                    disabled={isDisabled} // ← only disabled for guests, not for having upvoted
+                                    disabled={isDisabled}
                                   >
                                     <ThumbsUp
                                       size={18}
-                                      color={
-                                        isDisabled
-                                          ? "#aaa"
-                                          : hasUpvoted
-                                            ? "#276389"
-                                            : "#276389"
-                                      }
+                                      color={isDisabled ? "#aaa" : "#276389"}
                                     />
                                     <Text
                                       style={[
@@ -915,17 +957,22 @@ export default function Home() {
                                     >
                                       {report.upvotedBy?.length ?? 0}
                                     </Text>
+                                    <Text
+                                      style={[
+                                        styles.actionHelper,
+                                        isDisabled &&
+                                          styles.actionHelperDisabled,
+                                      ]}
+                                    >
+                                      {hasUpvoted ? "Liked" : "Like"}
+                                    </Text>
                                   </TouchableOpacity>
 
-                                  {/* Resolved button */}
                                   <TouchableOpacity
                                     style={[
                                       styles.actionButton,
                                       isDisabled && styles.actionButtonDisabled,
-                                      (
-                                        report.resolvedBy ?? ([] as string[])
-                                      ).includes(currentUserRole ?? "") &&
-                                        styles.actionButtonUpvoted,
+                                      hasResolved && styles.actionButtonUpvoted,
                                     ]}
                                     onPress={() => handleResolve(report.id)}
                                     disabled={isDisabled}
@@ -942,6 +989,15 @@ export default function Home() {
                                       ]}
                                     >
                                       {report.resolvedBy?.length ?? 0}
+                                    </Text>
+                                    <Text
+                                      style={[
+                                        styles.actionHelper,
+                                        isDisabled &&
+                                          styles.actionHelperDisabled,
+                                      ]}
+                                    >
+                                      {hasResolved ? "Undo" : "Resolve"}
                                     </Text>
                                   </TouchableOpacity>
                                 </View>
@@ -1001,27 +1057,19 @@ export default function Home() {
                       No reports for this building today.
                     </Text>
                   ) : (
-                    buildingReports
-                      .filter((r) => r.date === today && !r.isScheduledEvent)
-                      .map((report) => (
-                        <ReportCard
-                          key={report.id}
-                          report={report}
-                          currentUserId={currentUserId}
-                          currentUserRole={currentUserRole}
-                          isGuest={isGuest}
-                          onUpvote={handleUpvote}
-                          onResolve={handleResolve}
-                          onVerify={handleVerify}
-                          onMarkSevere={handleMarkSevere}
-                          onChevronPress={(r) => {
-                            setSelectedBuilding(null);
-                            setTimeout(() => setSelectedReport(r), 300);
-                          }}
-                          styles={styles}
-                          normalizeBuildingId={normalizeBuildingId}
-                        />
-                      ))
+                    buildingReports.map((report) => (
+                      <View key={report.id} style={styles.modalRow}>
+                        <Text style={styles.modalRowText}>{report.name}</Text>
+                        <Text style={styles.modalRowMeta}>
+                          {report.type} · Floor {report.floor} · {report.time}
+                        </Text>
+                        {report.description ? (
+                          <Text style={styles.modalRowMeta}>
+                            {report.description}
+                          </Text>
+                        ) : null}
+                      </View>
+                    ))
                   )}
                 </ScrollView>
               </>
@@ -1126,11 +1174,15 @@ export default function Home() {
                       {event.action === "upvoted" &&
                         `Confirmed by a concordian`}
                       {event.action === "verified" && `Verified by security`}
+                      {event.action === "unverified" &&
+                        `Verification removed by security`}
                       {event.action === "resolved" &&
                         `Marked resolved by ${
                           event.by === "security" ? "security" : "a concordian"
                         }`}
                       {event.action === "severe" && `Marked severe by security`}
+                      {event.action === "unsevere" &&
+                        `Severe status removed by security`}
                       <Text style={styles.timelineTime}> · {event.time}</Text>
                     </Text>
                   </View>
