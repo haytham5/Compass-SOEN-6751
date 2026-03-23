@@ -32,6 +32,7 @@ import BottomNav from "./components/bottomNav";
 import MapInfo from "./components/mapInfo";
 import NearBuildingBanner from "./components/NearBuildingBanner";
 import OfflineBanner from "./components/offlineBanner";
+import ReportCard from "./components/ReportCard";
 import ReportFormModal from "./components/ReportFormModal";
 import {
   getReports,
@@ -46,11 +47,11 @@ import { getCurrentUser } from "./utils/authStorage";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
 
 const buildingColorMap: Record<string, string> = {
-  EV: "#56bab8",
-  H: "#5a8c8b",
-  FB: "#d6b1c3",
-  LB: "#9796b8",
-  JMSB: "#e7548b",
+    EV: "#FF9898",
+    H: "#4CAF50",
+    FB: "#a683eb",
+    JMSB: "#2196F3",
+    LB: "#FFC107",
 };
 
 const today = new Date().toISOString().split("T")[0];
@@ -249,11 +250,13 @@ export default function Home() {
       }, [loadCurrentUserState, loadReports])
   );
 
-  const handleMarkerPress = async (buildingId: string) => {
-    const allReports = await getReports();
-    const filtered = allReports.filter(
-        (r) => normalizeBuildingId(r.building) === buildingId
+  const handleMarkerPress = (buildingId: string) => {
+    const filtered = filteredTodayReports.filter(
+      (r) => normalizeBuildingId(r.building) === buildingId
     );
+
+    if (filtered.length === 0) return;
+
     setBuildingReports(filtered);
     setSelectedBuilding(buildingId);
   };
@@ -357,7 +360,7 @@ export default function Home() {
       { protests: number; accessibility: number }
   > = {};
 
-  allTodayReports.forEach((r) => {
+  filteredTodayReports.forEach((r) => {
     const buildingId = normalizeBuildingId(r.building);
 
     if (!buildingCounts[buildingId]) {
@@ -395,7 +398,7 @@ export default function Home() {
 
     const timeout = setTimeout(createMarkers, 150);
     return () => clearTimeout(timeout);
-  }, [reports]);
+  }, [reports, filteredTodayReports]);
 
   const [fontsLoaded] = useFonts({
     Pacifico_400Regular,
@@ -901,10 +904,10 @@ export default function Home() {
         </ScrollView>
 
         <Modal
-            visible={selectedBuilding !== null}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setSelectedBuilding(null)}
+          visible={selectedBuilding !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setSelectedBuilding(null)}
         >
           <Pressable
               style={styles.modalOverlay}
@@ -915,18 +918,19 @@ export default function Home() {
                 onPress={(e) => e.stopPropagation()}
             >
               {selectedBuilding && (
-                  <>
-                    <View style={styles.modalHeader}>
-                      <Text style={styles.modalTitle}>{selectedBuilding}</Text>
-                      <TouchableOpacity onPress={() => setSelectedBuilding(null)}>
-                        <Icon name="close" size={24} color="#276389" />
-                      </TouchableOpacity>
-                    </View>
+                <>
+                  <View style={styles.modalHeader}>
+                    <Text style={styles.modalTitle}>{selectedBuilding}</Text>
+                    <TouchableOpacity onPress={() => setSelectedBuilding(null)}>
+                      <Icon name="close" size={24} color="#276389" />
+                    </TouchableOpacity>
+                  </View>
 
-                    {buildingReports.length === 0 ? (
-                        <Text style={styles.modalEmptyText}>
-                          No reports submitted for this building yet.
-                        </Text>
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    {buildingReports.filter((r) => r.date === today && !r.isScheduledEvent).length === 0 ? (
+                      <Text style={styles.modalEmptyText}>
+                        No reports for this building today.
+                      </Text>
                     ) : (
                         buildingReports.map((report) => (
                             <View key={report.id} style={styles.modalRow}>
@@ -942,11 +946,8 @@ export default function Home() {
                             </View>
                         ))
                     )}
-
-                    <Text style={styles.modalSecurityCount}>
-                      Total reports: {buildingReports.length}
-                    </Text>
-                  </>
+                  </ScrollView>
+                </>
               )}
             </Pressable>
           </Pressable>

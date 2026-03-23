@@ -39,13 +39,13 @@ import ReportFormModal from "./components/ReportFormModal";
 import { styles } from "./styles/notificationsStyles";
 
 const buildingColorMap: Record<string, string> = {
-  EV: "#56bab8",
-  H: "#5a8c8b",
-  JMSB: "#e7548b",
-  LB: "#9796b8",
-  FB: "#d6b1c3",
+    EV: "#FF9898",
+    H: "#4CAF50",
+    FB: "#a683eb",
+    JMSB: "#2196F3",
+    JM: "#2196F3",  //backup color
+    LB: "#FFC107",
 };
-
 const today = new Date().toISOString().split("T")[0];
 
 export default function Notifications() {
@@ -184,11 +184,11 @@ export default function Notifications() {
 
         <ScrollView contentContainerStyle={styles.scrollableContent}>
           <View style={styles.header}>
-            <Text style={styles.title}>Your Subscriptions</Text>
+            <Text style={styles.title}>Explore</Text>
           </View>
 
           <Text style={styles.sectionDescription}>
-            Tap a building to turn notifications on or off.
+            Tap building names to change filter
           </Text>
 
           <ScrollView
@@ -198,12 +198,24 @@ export default function Notifications() {
           >
             {subscriptions.map((sub) => {
               const isActive = sub.isSubscribed;
+              const color = buildingColorMap[sub.id] ?? "#9c9c9c";
 
               return (
-                  <TouchableOpacity
-                      key={sub.id}
-                      activeOpacity={0.9}
-                      onPress={() => handleToggleSubscription(sub.id)}
+                <TouchableOpacity
+                  key={sub.id}
+                  activeOpacity={0.9}
+                  onPress={() => handleToggleSubscription(sub.id)}
+                >
+                  <View
+                    style={[
+                      styles.subCard,
+                      {
+                        backgroundColor: isActive ? color : "transparent",
+                        borderWidth: 2,
+                        borderColor: color,
+                      },
+                      isActive ? styles.subCardActive : styles.subCardInactive,
+                    ]}
                   >
                     <View
                         style={[
