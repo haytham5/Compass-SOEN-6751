@@ -1,19 +1,28 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
-import { X } from "lucide-react-native";
-import { useState } from "react";
 import {
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  CalendarDays,
+  Check,
+  Clock3,
+  MapPin,
+  X,
+} from "lucide-react-native";
+import { useMemo, useState } from "react";
+import {
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { saveNewReport } from "../data/reportSH";
-import { getCurrentUser } from "../utils/authStorage";
 
 interface AdminEventModalProps {
   visible: boolean;
@@ -21,44 +30,234 @@ interface AdminEventModalProps {
   onSubmitSuccess?: () => void | Promise<void>;
 }
 
+type PickerTarget =
+    | "startDate"
+    | "startTime"
+    | "endDate"
+    | "endTime"
+    | null;
+
+const COLORS = {
+  white: "#FFFFFF",
+  text: "#111111",
+  muted: "#6B7280",
+  border: "#E7E7EC",
+  primary: "#56bab8",
+  primaryDark: "#5a8c8b",
+  pink: "#e7548b",
+  lavender: "#9796b8",
+  softPink: "#d6b1c3",
+  tealTint: "#EEF9F8",
+  pinkTint: "#FCEAF1",
+  lavenderTint: "#F3F1FA",
+};
+
 export default function AdminEventModal({
-  visible,
-  onClose,
-  onSubmitSuccess,
-}: AdminEventModalProps) {
+                                          visible,
+                                          onClose,
+                                          onSubmitSuccess,
+                                        }: AdminEventModalProps) {
   const [name, setName] = useState("");
   const [building, setBuilding] = useState("EV");
   const [description, setDescription] = useState("");
+  const [floor, setFloor] = useState("");
+  const [room, setRoom] = useState("");
+
+  const [allDay, setAllDay] = useState(false);
+
   const [eventStartDate, setEventStartDate] = useState(new Date());
-  const [eventEndDate, setEventEndDate] = useState(new Date());
-  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
-  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
-  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+  const [eventEndDate, setEventEndDate] = useState(() => {
+    const next = new Date();
+    next.setHours(next.getHours() + 1);
+    return next;
+  });
+
+  const [activePicker, setActivePicker] = useState<PickerTarget>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const isIOS = Platform.OS === "ios";
+  const pickerIsOpen = activePicker !== null;
+
   const formatDate = (date: Date) =>
-    date.toLocaleDateString([], {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+      date.toLocaleDateString([], {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
 
   const formatTime = (date: Date) =>
-    date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  const startSummary = useMemo(() => {
+    return allDay
+        ? formatDate(eventStartDate)
+        : `${formatDate(eventStartDate)} · ${formatTime(eventStartDate)}`;
+  }, [allDay, eventStartDate]);
+
+  const endSummary = useMemo(() => {
+    return allDay
+        ? formatDate(eventEndDate)
+        : `${formatDate(eventEndDate)} · ${formatTime(eventEndDate)}`;
+  }, [allDay, eventEndDate]);
 
   const resetForm = () => {
+    const now = new Date();
+    const later = new Date();
+    later.setHours(later.getHours() + 1);
+
     setName("");
     setBuilding("EV");
+    setFloor("");
+    setRoom("");
     setDescription("");
-    setEventStartDate(new Date());
-    setEventEndDate(new Date());
+    setAllDay(false);
+    setEventStartDate(now);
+    setEventEndDate(later);
+    setActivePicker(null);
     setError(null);
   };
 
   const handleClose = () => {
+    if (pickerIsOpen) {
+      setActivePicker(null);
+      return;
+    }
+
     resetForm();
     onClose();
+  };
+
+  const clampEndAfterStart = (newStart: Date) => {
+    if (eventEndDate <= newStart) {
+      const adjustedEnd = new Date(newStart);
+      adjustedEnd.setHours(adjustedEnd.getHours() + (allDay ? 24 : 1));
+      setEventEndDate(adjustedEnd);
+    }
+  };
+
+  const updateDatePart = (base: Date, picked: Date) => {
+    const next = new Date(base);
+    next.setFullYear(
+        picked.getFullYear(),
+        picked.getMonth(),
+        picked.getDate()
+    );
+    return next;
+  };
+
+  const updateTimePart = (base: Date, picked: Date) => {
+    const next = new Date(base);
+    next.setHours(picked.getHours(), picked.getMinutes(), 0, 0);
+    return next;
+  };
+
+  const openPicker = (target: PickerTarget) => {
+    setActivePicker((prev) => (prev === target ? null : target));
+  };
+
+  const handleAndroidPickerChange = (
+      target: Exclude<PickerTarget, null>,
+      event: DateTimePickerEvent,
+      picked?: Date
+  ) => {
+    if (event.type === "dismissed") {
+      setActivePicker(null);
+      return;
+    }
+
+    if (!picked) {
+      setActivePicker(null);
+      return;
+    }
+
+    if (target === "startDate") {
+      const updated = updateDatePart(eventStartDate, picked);
+      setEventStartDate(updated);
+      clampEndAfterStart(updated);
+    }
+
+    if (target === "startTime") {
+      const updated = updateTimePart(eventStartDate, picked);
+      setEventStartDate(updated);
+      clampEndAfterStart(updated);
+    }
+
+    if (target === "endDate") {
+      const updated = updateDatePart(eventEndDate, picked);
+      setEventEndDate(updated);
+    }
+
+    if (target === "endTime") {
+      const updated = updateTimePart(eventEndDate, picked);
+      setEventEndDate(updated);
+    }
+
+    setActivePicker(null);
+    setError(null);
+  };
+
+  const handleIOSInlineChange = (
+      target: Exclude<PickerTarget, null>,
+      picked?: Date
+  ) => {
+    if (!picked) return;
+
+    if (target === "startDate") {
+      const updated = updateDatePart(eventStartDate, picked);
+      setEventStartDate(updated);
+      clampEndAfterStart(updated);
+    }
+
+    if (target === "startTime") {
+      const updated = updateTimePart(eventStartDate, picked);
+      setEventStartDate(updated);
+      clampEndAfterStart(updated);
+    }
+
+    if (target === "endDate") {
+      const updated = updateDatePart(eventEndDate, picked);
+      setEventEndDate(updated);
+    }
+
+    if (target === "endTime") {
+      const updated = updateTimePart(eventEndDate, picked);
+      setEventEndDate(updated);
+    }
+
+    setError(null);
+  };
+
+  const toggleAllDay = (value: boolean) => {
+    setAllDay(value);
+
+    if (value) {
+      const start = new Date(eventStartDate);
+      start.setHours(0, 0, 0, 0);
+
+      const end = new Date(eventEndDate);
+      end.setHours(23, 59, 0, 0);
+
+      if (end <= start) {
+        end.setDate(start.getDate());
+        end.setHours(23, 59, 0, 0);
+      }
+
+      setEventStartDate(start);
+      setEventEndDate(end);
+      setActivePicker(null);
+    } else {
+      const start = new Date(eventStartDate);
+      start.setHours(9, 0, 0, 0);
+
+      const end = new Date(eventEndDate);
+      if (end <= start) {
+        end.setTime(start.getTime());
+        end.setHours(10, 0, 0, 0);
+      }
+
+      setEventStartDate(start);
+      setEventEndDate(end);
+    }
   };
 
   const handleSubmit = async () => {
@@ -72,351 +271,624 @@ export default function AdminEventModal({
       return;
     }
 
-    const user = await getCurrentUser();
+    try {
+      await saveNewReport({
+        id: Date.now().toString(),
+        name: name.trim(),
+        description: description.trim(),
+        type: "event",
+        building,
+        floor: floor.trim() || "—",
+        ...(room.trim() ? { room: room.trim() } : {}),
+        date: eventStartDate.toISOString().split("T")[0],
+        time: allDay ? "All day" : formatTime(eventStartDate),
+        submittedBy: "admin",
+        isScheduledEvent: true,
+        eventStartDate: eventStartDate.toISOString(),
+        eventEndDate: eventEndDate.toISOString(),
+        isSevere: false,
+        upvotedBy: [],
+        isResolved: false,
+      } as any);
 
-    await saveNewReport({
-      id: Date.now().toString(),
-      name: name.trim(),
-      description,
-      type: "event",
-      building,
-      floor: "—",
-      date: eventStartDate.toISOString().split("T")[0],
-      time: formatTime(eventStartDate),
-      submittedBy: "admin",
-      isScheduledEvent: true,
-      eventStartDate: eventStartDate.toISOString(),
-      eventEndDate: eventEndDate.toISOString(),
-      isSevere: false,
-      upvotedBy: [],
-      isResolved: false,
-    });
+      resetForm();
+      onClose();
 
-    resetForm();
-    onClose();
-
-    if (onSubmitSuccess) {
-      await onSubmitSuccess();
+      if (onSubmitSuccess) {
+        await onSubmitSuccess();
+      }
+    } catch (e) {
+      console.log("Error saving admin event:", e);
+      setError("Something went wrong while saving the event.");
     }
   };
 
+  const renderIOSInlinePicker = (target: Exclude<PickerTarget, null>) => {
+    if (!isIOS || activePicker !== target) return null;
+
+    const isDate = target === "startDate" || target === "endDate";
+    const value =
+        target === "startDate" || target === "startTime"
+            ? eventStartDate
+            : eventEndDate;
+
+    return (
+        <View style={styles.inlinePickerWrap}>
+          <DateTimePicker
+              value={value}
+              mode={isDate ? "date" : "time"}
+              display={isDate ? "inline" : "spinner"}
+              onChange={(_, picked) => handleIOSInlineChange(target, picked)}
+              minimumDate={target === "endDate" ? eventStartDate : undefined}
+          />
+          <TouchableOpacity
+              style={styles.inlineDoneButton}
+              onPress={() => setActivePicker(null)}
+          >
+            <Check size={14} color="#FFFFFF" />
+            <Text style={styles.inlineDoneText}>Done</Text>
+          </TouchableOpacity>
+        </View>
+    );
+  };
+
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={handleClose}
-    >
-      <Pressable style={styles.overlay} onPress={handleClose}>
-        <Pressable
-          style={styles.modalCard}
-          onPress={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.title}>Add Scheduled Event</Text>
-            <TouchableOpacity onPress={handleClose}>
-              <X size={22} color="#111" />
-            </TouchableOpacity>
-          </View>
+      <Modal
+          visible={visible}
+          transparent
+          animationType="fade"
+          onRequestClose={handleClose}
+      >
+        <View style={styles.overlay}>
+          <Pressable style={styles.backdrop} onPress={handleClose} />
 
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {/* Event Name */}
-            <Text style={styles.label}>Event Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. Career Fair"
-              placeholderTextColor="#777"
-              value={name}
-              onChangeText={(t) => {
-                setName(t);
-                setError(null);
-              }}
-            />
-
-            {/* Building */}
-            <Text style={styles.label}>Building</Text>
-            <View style={styles.dropdown}>
-              <Picker selectedValue={building} onValueChange={setBuilding}>
-                <Picker.Item label="EV Building" value="EV" />
-                <Picker.Item label="Hall Building" value="H" />
-                <Picker.Item label="JMSB" value="JMSB" />
-                <Picker.Item label="Library (LB)" value="LB" />
-                <Picker.Item label="Faubourg (FB)" value="FB" />
-              </Picker>
-            </View>
-
-            {/* Description */}
-            <Text style={styles.label}>Description</Text>
-            <TextInput
-              style={styles.description}
-              placeholder="Brief description of the event..."
-              placeholderTextColor="#777"
-              multiline
-              numberOfLines={4}
-              value={description}
-              onChangeText={setDescription}
-            />
-
-            {/* Start Date/Time */}
-            <Text style={styles.label}>Start</Text>
-            <View style={styles.dateRow}>
-              <TouchableOpacity
-                style={styles.dateButton}
-                onPress={() => setShowStartDatePicker(true)}
-              >
-                <Text style={styles.dateButtonText}>
-                  📅 {formatDate(eventStartDate)}
+          <View style={styles.modalCard}>
+            <View style={styles.header}>
+              <View style={styles.headerTextBlock}>
+                <Text style={styles.title}>Add Scheduled Event</Text>
+                <Text style={styles.stepTitle}>
+                  Create an event that appears in the events calendar
                 </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.dateButton}
-                onPress={() => setShowStartTimePicker(true)}
-              >
-                <Text style={styles.dateButtonText}>
-                  🕐 {formatTime(eventStartDate)}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {showStartDatePicker && (
-              <DateTimePicker
-                value={eventStartDate}
-                mode="date"
-                display="default"
-                minimumDate={new Date()}
-                onChange={(event, date) => {
-                  setShowStartDatePicker(false);
-                  if (date) {
-                    const updated = new Date(eventStartDate);
-                    updated.setFullYear(
-                      date.getFullYear(),
-                      date.getMonth(),
-                      date.getDate()
-                    );
-                    setEventStartDate(updated);
-                  }
-                }}
-              />
-            )}
-
-            {showStartTimePicker && (
-              <DateTimePicker
-                value={eventStartDate}
-                mode="time"
-                display="default"
-                onChange={(event, date) => {
-                  setShowStartTimePicker(false);
-                  if (date) {
-                    const updated = new Date(eventStartDate);
-                    updated.setHours(date.getHours(), date.getMinutes());
-                    setEventStartDate(updated);
-                  }
-                }}
-              />
-            )}
-
-            {/* End Date/Time */}
-            <Text style={styles.label}>End</Text>
-            <View style={styles.dateRow}>
-              <TouchableOpacity
-                style={styles.dateButton}
-                onPress={() => setShowEndDatePicker(true)}
-              >
-                <Text style={styles.dateButtonText}>
-                  📅 {formatDate(eventEndDate)}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.dateButton}
-                onPress={() => setShowEndTimePicker(true)}
-              >
-                <Text style={styles.dateButtonText}>
-                  🕐 {formatTime(eventEndDate)}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {showEndDatePicker && (
-              <DateTimePicker
-                value={eventEndDate}
-                mode="date"
-                display="default"
-                minimumDate={eventStartDate}
-                onChange={(event, date) => {
-                  setShowEndDatePicker(false);
-                  if (date) {
-                    const updated = new Date(eventEndDate);
-                    updated.setFullYear(
-                      date.getFullYear(),
-                      date.getMonth(),
-                      date.getDate()
-                    );
-                    setEventEndDate(updated);
-                  }
-                }}
-              />
-            )}
-
-            {showEndTimePicker && (
-              <DateTimePicker
-                value={eventEndDate}
-                mode="time"
-                display="default"
-                onChange={(event, date) => {
-                  setShowEndTimePicker(false);
-                  if (date) {
-                    const updated = new Date(eventEndDate);
-                    updated.setHours(date.getHours(), date.getMinutes());
-                    setEventEndDate(updated);
-                  }
-                }}
-              />
-            )}
-
-            {error && (
-              <View style={styles.errorBox}>
-                <Text style={styles.errorText}>{error}</Text>
               </View>
-            )}
-          </ScrollView>
 
-          {/* Footer */}
-          <View style={styles.footer}>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={handleClose}
+              <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+                <X size={22} color="#5a8c8b" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.form}
             >
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.submitButton}
-              onPress={handleSubmit}
-            >
-              <Text style={styles.submitText}>Add Event</Text>
-            </TouchableOpacity>
+              <Text style={styles.label}>Event name</Text>
+              <TextInput
+                  style={styles.input}
+                  placeholder="e.g. Career Fair"
+                  placeholderTextColor="#8E8E98"
+                  value={name}
+                  onChangeText={(t) => {
+                    setName(t);
+                    setError(null);
+                  }}
+              />
+
+              <Text style={styles.label}>Building</Text>
+              <View style={styles.dropdown}>
+                <Picker selectedValue={building} onValueChange={setBuilding}>
+                  <Picker.Item label="EV Building" value="EV" />
+                  <Picker.Item label="Hall Building" value="H" />
+                  <Picker.Item label="JMSB" value="JMSB" />
+                  <Picker.Item label="Library (LB)" value="LB" />
+                  <Picker.Item label="Faubourg (FB)" value="FB" />
+                </Picker>
+              </View>
+
+              <View style={styles.row}>
+                <View style={styles.halfField}>
+                  <Text style={styles.label}>Floor</Text>
+                  <TextInput
+                      style={styles.input}
+                      placeholder="e.g. 2"
+                      placeholderTextColor="#8E8E98"
+                      value={floor}
+                      onChangeText={setFloor}
+                  />
+                </View>
+
+                <View style={styles.halfField}>
+                  <Text style={styles.label}>Room number</Text>
+                  <TextInput
+                      style={styles.input}
+                      placeholder="e.g. H-820"
+                      placeholderTextColor="#8E8E98"
+                      value={room}
+                      onChangeText={setRoom}
+                  />
+                </View>
+              </View>
+
+              <Text style={styles.label}>Description</Text>
+              <Text style={styles.helperText}>
+                Add a short summary so students know what the event is about.
+              </Text>
+              <TextInput
+                  style={styles.description}
+                  placeholder="Brief description of the event..."
+                  placeholderTextColor="#8E8E98"
+                  multiline
+                  numberOfLines={4}
+                  value={description}
+                  onChangeText={setDescription}
+              />
+
+              <View style={styles.allDayRow}>
+                <View style={styles.allDayTextWrap}>
+                  <Text style={styles.labelNoMargin}>All-day event</Text>
+                  <Text style={styles.helperInline}>
+                    Turn this on if the event lasts the whole day.
+                  </Text>
+                </View>
+
+                <Switch
+                    value={allDay}
+                    onValueChange={toggleAllDay}
+                    trackColor={{ false: "#d6b1c3", true: "#56bab8" }}
+                    thumbColor="#FFFFFF"
+                    ios_backgroundColor="#d6b1c3"
+                />
+              </View>
+
+              <Text style={styles.label}>Start</Text>
+
+              <TouchableOpacity
+                  style={styles.dateSummaryCard}
+                  activeOpacity={0.85}
+                  onPress={() => openPicker("startDate")}
+              >
+                <View style={styles.dateSummaryLeft}>
+                  <CalendarDays size={16} color="#5a8c8b" />
+                  <View>
+                    <Text style={styles.dateSummaryLabel}>Date</Text>
+                    <Text style={styles.dateSummaryValue}>
+                      {formatDate(eventStartDate)}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+
+              {isIOS ? (
+                  renderIOSInlinePicker("startDate")
+              ) : (
+                  activePicker === "startDate" && (
+                      <DateTimePicker
+                          value={eventStartDate}
+                          mode="date"
+                          display="default"
+                          minimumDate={new Date()}
+                          onChange={(event, picked) =>
+                              handleAndroidPickerChange("startDate", event, picked)
+                          }
+                      />
+                  )
+              )}
+
+              {!allDay && (
+                  <>
+                    <TouchableOpacity
+                        style={styles.dateSummaryCard}
+                        activeOpacity={0.85}
+                        onPress={() => openPicker("startTime")}
+                    >
+                      <View style={styles.dateSummaryLeft}>
+                        <Clock3 size={16} color="#5a8c8b" />
+                        <View>
+                          <Text style={styles.dateSummaryLabel}>Time</Text>
+                          <Text style={styles.dateSummaryValue}>
+                            {formatTime(eventStartDate)}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+
+                    {isIOS ? (
+                        renderIOSInlinePicker("startTime")
+                    ) : (
+                        activePicker === "startTime" && (
+                            <DateTimePicker
+                                value={eventStartDate}
+                                mode="time"
+                                display="default"
+                                onChange={(event, picked) =>
+                                    handleAndroidPickerChange("startTime", event, picked)
+                                }
+                            />
+                        )
+                    )}
+                  </>
+              )}
+
+              <Text style={styles.label}>End</Text>
+
+              <TouchableOpacity
+                  style={styles.dateSummaryCard}
+                  activeOpacity={0.85}
+                  onPress={() => openPicker("endDate")}
+              >
+                <View style={styles.dateSummaryLeft}>
+                  <CalendarDays size={16} color="#5a8c8b" />
+                  <View>
+                    <Text style={styles.dateSummaryLabel}>Date</Text>
+                    <Text style={styles.dateSummaryValue}>
+                      {formatDate(eventEndDate)}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+
+              {isIOS ? (
+                  renderIOSInlinePicker("endDate")
+              ) : (
+                  activePicker === "endDate" && (
+                      <DateTimePicker
+                          value={eventEndDate}
+                          mode="date"
+                          display="default"
+                          minimumDate={eventStartDate}
+                          onChange={(event, picked) =>
+                              handleAndroidPickerChange("endDate", event, picked)
+                          }
+                      />
+                  )
+              )}
+
+              {!allDay && (
+                  <>
+                    <TouchableOpacity
+                        style={styles.dateSummaryCard}
+                        activeOpacity={0.85}
+                        onPress={() => openPicker("endTime")}
+                    >
+                      <View style={styles.dateSummaryLeft}>
+                        <Clock3 size={16} color="#5a8c8b" />
+                        <View>
+                          <Text style={styles.dateSummaryLabel}>Time</Text>
+                          <Text style={styles.dateSummaryValue}>
+                            {formatTime(eventEndDate)}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+
+                    {isIOS ? (
+                        renderIOSInlinePicker("endTime")
+                    ) : (
+                        activePicker === "endTime" && (
+                            <DateTimePicker
+                                value={eventEndDate}
+                                mode="time"
+                                display="default"
+                                onChange={(event, picked) =>
+                                    handleAndroidPickerChange("endTime", event, picked)
+                                }
+                            />
+                        )
+                    )}
+                  </>
+              )}
+
+              <View style={styles.reviewRow}>
+                <MapPin size={14} color="#5a8c8b" />
+                <Text style={styles.reviewText}>
+                  {building}
+                  {floor ? ` · Floor ${floor}` : ""}
+                  {room ? ` · Room ${room}` : ""}
+                </Text>
+              </View>
+
+              <View style={styles.reviewRow}>
+                <CalendarDays size={14} color="#5a8c8b" />
+                <Text style={styles.reviewText}>
+                  {startSummary} → {endSummary}
+                </Text>
+              </View>
+
+              {error && (
+                  <View style={styles.errorBox}>
+                    <Text style={styles.errorText}>{error}</Text>
+                  </View>
+              )}
+            </ScrollView>
+
+            <View style={styles.footer}>
+              <TouchableOpacity
+                  style={styles.secondaryButton}
+                  onPress={handleClose}
+              >
+                <Text style={styles.secondaryButtonText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={handleSubmit}
+              >
+                <Text style={styles.submitText}>Add Event</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </Pressable>
-      </Pressable>
-    </Modal>
+        </View>
+      </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "flex-end",
+    justifyContent: "center",
+    paddingHorizontal: 20,
   },
+
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(17, 17, 17, 0.35)",
+  },
+
   modalCard: {
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: COLORS.white,
+    borderRadius: 22,
     padding: 20,
+    width: "100%",
     maxHeight: "90%",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    elevation: 6,
   },
+
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 12,
   },
+
+  headerTextBlock: {
+    flex: 1,
+    paddingRight: 10,
+  },
+
   title: {
-    fontSize: 20,
-    fontFamily: "Pacifico_400Regular",
-    color: "#276389",
+    fontSize: 24,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.text,
   },
+
+  stepTitle: {
+    fontSize: 13,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.muted,
+    marginTop: 2,
+  },
+
+  closeButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+
+  form: {
+    paddingBottom: 8,
+  },
+
   label: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
-    color: "#1F1F1F",
+    color: COLORS.text,
     marginBottom: 6,
-    marginTop: 12,
+    marginTop: 14,
   },
+
+  labelNoMargin: {
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.text,
+  },
+
+  helperText: {
+    fontSize: 13,
+    color: COLORS.muted,
+    marginTop: -2,
+    marginBottom: 10,
+    lineHeight: 18,
+    fontFamily: "Lexend_400Regular",
+  },
+
+  helperInline: {
+    fontSize: 12,
+    color: COLORS.muted,
+    marginTop: 2,
+    fontFamily: "Lexend_400Regular",
+  },
+
   input: {
     borderWidth: 1,
-    borderColor: "#DDE3EA",
-    borderRadius: 10,
+    borderColor: COLORS.border,
+    borderRadius: 14,
     padding: 12,
     fontFamily: "Lexend_400Regular",
     fontSize: 14,
-    color: "#1F1F1F",
+    color: COLORS.text,
+    backgroundColor: COLORS.white,
   },
+
   description: {
     borderWidth: 1,
-    borderColor: "#DDE3EA",
-    borderRadius: 10,
+    borderColor: COLORS.border,
+    borderRadius: 14,
     padding: 12,
     fontFamily: "Lexend_400Regular",
     fontSize: 14,
-    color: "#1F1F1F",
-    height: 100,
+    color: COLORS.text,
+    minHeight: 110,
     textAlignVertical: "top",
+    backgroundColor: COLORS.white,
   },
+
   dropdown: {
     borderWidth: 1,
-    borderColor: "#DDE3EA",
-    borderRadius: 10,
+    borderColor: COLORS.border,
+    borderRadius: 14,
     overflow: "hidden",
+    backgroundColor: COLORS.white,
   },
-  dateRow: {
+
+  row: {
     flexDirection: "row",
-    gap: 8,
-    marginBottom: 4,
+    gap: 10,
   },
-  dateButton: {
+
+  halfField: {
     flex: 1,
-    backgroundColor: "#F0F4FF",
-    borderRadius: 8,
-    padding: 10,
-    alignItems: "center",
+  },
+
+  allDayRow: {
+    marginTop: 16,
+    padding: 14,
+    borderRadius: 16,
+    backgroundColor: COLORS.lavenderTint,
     borderWidth: 1,
-    borderColor: "#DDE3EA",
+    borderColor: COLORS.lavender,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10,
   },
-  dateButtonText: {
+
+  allDayTextWrap: {
+    flex: 1,
+    paddingRight: 8,
+  },
+
+  dateSummaryCard: {
+    marginTop: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.tealTint,
+  },
+
+  dateSummaryLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+
+  dateSummaryLabel: {
+    fontSize: 12,
+    color: COLORS.muted,
+    fontFamily: "Lexend_400Regular",
+  },
+
+  dateSummaryValue: {
+    fontSize: 14,
+    color: COLORS.primaryDark,
+    fontFamily: "Lexend_400Regular",
+    marginTop: 1,
+  },
+
+  inlinePickerWrap: {
+    marginTop: 8,
+    marginBottom: 4,
+    borderRadius: 16,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.white,
+  },
+
+  inlineDoneButton: {
+    alignSelf: "flex-end",
+    margin: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: COLORS.primary,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+
+  inlineDoneText: {
+    color: COLORS.white,
+    fontSize: 12,
+    fontFamily: "Lexend_400Regular",
+  },
+
+  reviewRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 14,
+  },
+
+  reviewText: {
+    flex: 1,
+    color: COLORS.primaryDark,
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
-    color: "#276389",
   },
+
   errorBox: {
-    backgroundColor: "#FEE2E2",
-    borderRadius: 8,
+    backgroundColor: COLORS.pinkTint,
+    borderRadius: 12,
     padding: 10,
-    marginTop: 12,
+    marginTop: 14,
+    borderWidth: 1,
+    borderColor: COLORS.softPink,
   },
+
   errorText: {
-    color: "#DC2626",
+    color: COLORS.pink,
     fontSize: 13,
     fontFamily: "Lexend_400Regular",
   },
+
   footer: {
     flexDirection: "row",
     gap: 10,
     marginTop: 16,
   },
-  cancelButton: {
+
+  secondaryButton: {
     flex: 1,
-    padding: 14,
-    borderRadius: 10,
+    paddingVertical: 14,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#DDE3EA",
+    borderColor: COLORS.lavender,
     alignItems: "center",
+    backgroundColor: COLORS.lavenderTint,
   },
-  cancelText: {
+
+  secondaryButtonText: {
     fontFamily: "Lexend_400Regular",
-    color: "#5A6B80",
+    color: COLORS.primaryDark,
     fontSize: 15,
   },
+
   submitButton: {
     flex: 1,
-    padding: 14,
-    borderRadius: 10,
-    backgroundColor: "#276389",
+    paddingVertical: 14,
+    borderRadius: 14,
+    backgroundColor: COLORS.pink,
     alignItems: "center",
   },
+
   submitText: {
     fontFamily: "Lexend_400Regular",
-    color: "#FFFFFF",
+    color: COLORS.white,
     fontSize: 15,
   },
 });

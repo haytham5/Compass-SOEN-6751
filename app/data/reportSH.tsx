@@ -2,8 +2,20 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const REPORTS_STORAGE_KEY = "reports";
 
+// export type TimelineEvent = {
+//   action: "reported" | "upvoted" | "verified" | "resolved" | "severe";
+//   by: string;
+//   time: string;
+// };
 export type TimelineEvent = {
-  action: "reported" | "upvoted" | "verified" | "resolved" | "severe";
+  action:
+      | "reported"
+      | "upvoted"
+      | "verified"
+      | "unverified"
+      | "resolved"
+      | "severe"
+      | "unsevere";
   by: string;
   time: string;
 };
@@ -12,7 +24,8 @@ export type AccessibilitySubtype =
     | "escalator"
     | "elevator"
     | "ramp"
-    | "foot_traffic";
+    | "foot_traffic"
+    | "other";
 
 export type ReportType = "protest" | "event" | "accessibility";
 
@@ -25,6 +38,7 @@ export type Report = {
   type: ReportType;
   building: string;
   floor: string;
+  room?: string;
   image?: string;
   date: string;
   time: string;
@@ -32,10 +46,12 @@ export type Report = {
   submittedBy: UserRole;
   isScheduledEvent: boolean;
   isSevere: boolean;
+  severeBy?: string[];
   upvotedBy: string[];
   isResolved: boolean;
-  resolvedBy?: string[]; 
+  resolvedBy?: string[];
   isVerifiedBySecurity: boolean;
+  verifiedBy?: string[];
   eventStartDate?: string;
   eventEndDate?: string;
   timeline: TimelineEvent[];
@@ -63,21 +79,16 @@ export const saveNewReport = async (report: NewReportInput): Promise<void> => {
     const reportWithDefaults: Report = {
       ...report,
       isVerifiedBySecurity: report.submittedBy === "security",
+
+      verifiedBy: [],     // ← always empty at start
+      severeBy: [],       // ← always empty at start
+
       timeline: [
         {
           action: "reported",
           by: report.submittedBy,
           time: report.time,
         },
-        ...(report.submittedBy === "security"
-            ? [
-              {
-                action: "verified" as const,
-                by: "security",
-                time: report.time,
-              },
-            ]
-            : []),
       ],
     };
 
@@ -88,7 +99,10 @@ export const saveNewReport = async (report: NewReportInput): Promise<void> => {
   }
 };
 
-export const verifyReport = async (reportId: string): Promise<void> => {
+export const verifyReport = async (
+    reportId: string,
+    verifiedBy: string
+): Promise<void> => {
   try {
     const reports = await parseReports();
     const now = new Date().toLocaleTimeString([], {
@@ -96,22 +110,45 @@ export const verifyReport = async (reportId: string): Promise<void> => {
       minute: "2-digit",
     });
 
-    const updated = reports.map((r) =>
-        r.id === reportId
-            ? {
-              ...r,
-              isVerifiedBySecurity: true,
-              timeline: [
-                ...(r.timeline ?? []),
-                {
-                  action: "verified" as const,
-                  by: "security",
-                  time: now,
-                },
-              ],
-            }
-            : r
-    );
+    const updated = reports.map((r) => {
+      if (r.id !== reportId) return r;
+
+      const hasVerified = (r.verifiedBy ?? []).includes(verifiedBy);
+
+      if (hasVerified) {
+        const newVerifiedBy = (r.verifiedBy ?? []).filter(
+            (id) => id !== verifiedBy
+        );
+
+        return {
+          ...r,
+          verifiedBy: newVerifiedBy,
+          isVerifiedBySecurity: newVerifiedBy.length > 0,
+          timeline: [
+            ...(r.timeline ?? []),
+            {
+              action: "unverified" as const,
+              by: verifiedBy,
+              time: now,
+            },
+          ],
+        };
+      }
+
+      return {
+        ...r,
+        verifiedBy: [...(r.verifiedBy ?? []), verifiedBy],
+        isVerifiedBySecurity: true,
+        timeline: [
+          ...(r.timeline ?? []),
+          {
+            action: "verified" as const,
+            by: verifiedBy,
+            time: now,
+          },
+        ],
+      };
+    });
 
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
   } catch (error) {
@@ -151,8 +188,8 @@ export const getActiveReports = async (): Promise<Report[]> => {
 };
 
 export const upvoteReport = async (
-  reportId: string,
-  userId: string,
+    reportId: string,
+    userId: string
 ): Promise<void> => {
   try {
     const reports = await parseReports();
@@ -160,33 +197,36 @@ export const upvoteReport = async (
       hour: "2-digit",
       minute: "2-digit",
     });
+
     const updated = reports.map((r) => {
       if (r.id !== reportId) return r;
-      
+
       const hasUpvoted = (r.upvotedBy ?? []).includes(userId);
-      
+
       if (hasUpvoted) {
-        // ← remove upvote
         return {
           ...r,
-          upvotedBy: r.upvotedBy.filter((id) => id !== userId),
-          timeline: r.timeline.filter((e) => 
-            !(e.action === "upvoted" && e.by === userId)
+          upvotedBy: (r.upvotedBy ?? []).filter((id) => id !== userId),
+          timeline: (r.timeline ?? []).filter(
+              (e) => !(e.action === "upvoted" && e.by === userId)
           ),
         };
-      } else {
-        // ← add upvote
-        return {
-          ...r,
-          upvotedBy: [...(r.upvotedBy ?? []), userId],
-          timeline: [...(r.timeline ?? []), {
+      }
+
+      return {
+        ...r,
+        upvotedBy: [...(r.upvotedBy ?? []), userId],
+        timeline: [
+          ...(r.timeline ?? []),
+          {
             action: "upvoted" as const,
             by: userId,
             time: now,
-          }],
-        };
-      }
+          },
+        ],
+      };
     });
+
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
   } catch (error) {
     console.error("Error upvoting report:", error);
@@ -194,8 +234,8 @@ export const upvoteReport = async (
 };
 
 export const markReportResolved = async (
-  reportId: string,
-  resolvedBy: string,
+    reportId: string,
+    resolvedBy: string
 ): Promise<void> => {
   try {
     const reports = await parseReports();
@@ -203,43 +243,52 @@ export const markReportResolved = async (
       hour: "2-digit",
       minute: "2-digit",
     });
+
     const updated = reports.map((r) => {
       if (r.id !== reportId) return r;
 
       const hasResolved = (r.resolvedBy ?? []).includes(resolvedBy);
 
       if (hasResolved) {
-        // ← remove resolution
-        const newResolvedBy = (r.resolvedBy ?? []).filter((id) => id !== resolvedBy);
+        const newResolvedBy = (r.resolvedBy ?? []).filter(
+            (id) => id !== resolvedBy
+        );
+
         return {
           ...r,
           resolvedBy: newResolvedBy,
           isResolved: newResolvedBy.length > 0,
-          timeline: r.timeline.filter((e) =>
-            !(e.action === "resolved" && e.by === resolvedBy)
+          timeline: (r.timeline ?? []).filter(
+              (e) => !(e.action === "resolved" && e.by === resolvedBy)
           ),
         };
-      } else {
-        // ← add resolution
-        return {
-          ...r,
-          resolvedBy: [...(r.resolvedBy ?? []), resolvedBy],
-          isResolved: true,
-          timeline: [...(r.timeline ?? []), {
+      }
+
+      return {
+        ...r,
+        resolvedBy: [...(r.resolvedBy ?? []), resolvedBy],
+        isResolved: true,
+        timeline: [
+          ...(r.timeline ?? []),
+          {
             action: "resolved" as const,
             by: resolvedBy,
             time: now,
-          }],
-        };
-      }
+          },
+        ],
+      };
     });
+
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
   } catch (error) {
     console.error("Error marking report resolved:", error);
   }
 };
 
-export const markReportSevere = async (reportId: string): Promise<void> => {
+export const markReportSevere = async (
+    reportId: string,
+    markedBy: string
+): Promise<void> => {
   try {
     const reports = await parseReports();
     const report = reports.find((r) => r.id === reportId);
@@ -254,35 +303,61 @@ export const markReportSevere = async (reportId: string): Promise<void> => {
       minute: "2-digit",
     });
 
-    const updated = reports.map((r) =>
-        r.id === reportId
-            ? {
-              ...r,
-              isSevere: true,
-              timeline: [
-                ...(r.timeline ?? []),
-                {
-                  action: "severe" as const,
-                  by: "security",
-                  time: now,
-                },
-              ],
-            }
-            : r
-    );
+    const updated = reports.map((r) => {
+      if (r.id !== reportId) return r;
+
+      const hasMarkedSevere = (r.severeBy ?? []).includes(markedBy);
+
+      if (hasMarkedSevere) {
+        const newSevereBy = (r.severeBy ?? []).filter((id) => id !== markedBy);
+
+        return {
+          ...r,
+          severeBy: newSevereBy,
+          isSevere: newSevereBy.length > 0,
+          timeline: [
+            ...(r.timeline ?? []),
+            {
+              action: "unsevere" as const,
+              by: markedBy,
+              time: now,
+            },
+          ],
+        };
+      }
+
+      return {
+        ...r,
+        severeBy: [...(r.severeBy ?? []), markedBy],
+        isSevere: true,
+        timeline: [
+          ...(r.timeline ?? []),
+          {
+            action: "severe" as const,
+            by: markedBy,
+            time: now,
+          },
+        ],
+      };
+    });
 
     await AsyncStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(updated));
 
-    const nearBuildingData = {
-      buildingId: report.building,
-      buildingName: report.building,
-      time: now,
-      isSevere: true,
-    };
+    const updatedReport = updated.find((r) => r.id === reportId);
 
-    console.log("Writing nearBuilding:", nearBuildingData);
-    await AsyncStorage.setItem("nearBuilding", JSON.stringify(nearBuildingData));
-    console.log("nearBuilding written successfully");
+    if (updatedReport?.isSevere) {
+      const nearBuildingData = {
+        buildingId: report.building,
+        buildingName: report.building,
+        time: now,
+        isSevere: true,
+      };
+
+      await AsyncStorage.setItem(
+          "nearBuilding",
+          JSON.stringify(nearBuildingData)
+      );
+    }
   } catch (error) {
     console.error("Error marking report severe:", error);
   }
