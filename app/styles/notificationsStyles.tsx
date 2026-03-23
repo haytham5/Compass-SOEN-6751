@@ -461,6 +461,21 @@ export const styles = StyleSheet.create({
     color: COLORS.success,
   },
 
+  // actionButton: {
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   padding: 7,
+  //   borderRadius: 12,
+  //   borderWidth: 1,
+  //   borderColor: COLORS.primary,
+  //   minWidth: 46,
+  //   backgroundColor: COLORS.tealTint,
+  // },
+  //
+  // actionButtonDisabled: {
+  //   borderColor: COLORS.border,
+  //   backgroundColor: COLORS.softBg,
+  // },
   actionButton: {
     alignItems: "center",
     justifyContent: "center",
@@ -477,13 +492,18 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.softBg,
   },
 
+  // actionCount: {
+  //   fontSize: 12,
+  //   fontFamily: "Lexend_400Regular",
+  //   color: COLORS.primaryDark,
+  //   marginTop: 2,
+  // },
   actionCount: {
     fontSize: 12,
     fontFamily: "Lexend_400Regular",
     color: COLORS.primaryDark,
     marginTop: 2,
   },
-
   actionCountDisabled: {
     color: COLORS.disabled,
   },
@@ -547,4 +567,17 @@ export const styles = StyleSheet.create({
     gap: 5,
     marginBottom: 2,
   },
+
+  actionHelper: {
+    fontSize: 10,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.primaryDark,
+    marginTop: 2,
+  },
+
+  actionHelperDisabled: {
+    color: COLORS.disabled,
+  },
+
+
 });

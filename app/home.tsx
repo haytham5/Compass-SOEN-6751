@@ -3,7 +3,13 @@ import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as NavigationBar from "expo-navigation-bar";
 import { useFocusEffect } from "expo-router";
-import { Building2, CheckCircle, Clock, ThumbsUp, TriangleAlert } from "lucide-react-native";
+import {
+  Building2,
+  CheckCircle,
+  Clock,
+  ThumbsUp,
+  TriangleAlert,
+} from "lucide-react-native";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Image,
@@ -39,13 +45,6 @@ import { styles } from "./styles/indexStyles";
 import { getCurrentUser } from "./utils/authStorage";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
 
-// const buildingColorMap: Record<string, string> = {
-//   EV: "#FF9898",
-//   H: "#4CAF50",
-//   FB: "#9C6ADE",
-//   LB: "#FFC107",
-//   JMSB: "#2196F3",
-// };
 const buildingColorMap: Record<string, string> = {
   EV: "#56bab8",
   H: "#5a8c8b",
@@ -138,7 +137,8 @@ export default function Home() {
   const [isGuest, setIsGuest] = useState(true);
 
   const [preferredBuildings, setPreferredBuildings] = useState<string[]>([]);
-  const [reportViewMode, setReportViewMode] = useState<ReportViewMode>("preferences");
+  const [reportViewMode, setReportViewMode] =
+      useState<ReportViewMode>("preferences");
 
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
@@ -246,7 +246,7 @@ export default function Home() {
       useCallback(() => {
         loadCurrentUserState();
         loadReports();
-      }, [loadCurrentUserState, loadReports]),
+      }, [loadCurrentUserState, loadReports])
   );
 
   const handleMarkerPress = async (buildingId: string) => {
@@ -270,7 +270,7 @@ export default function Home() {
 
   const handleResolve = async (reportId: string) => {
     if (!currentUserId || isGuest) return;
-    await markReportResolved(reportId, currentUserRole ?? "concordian");
+    await markReportResolved(reportId, currentUserId);
     await loadReports();
   };
 
@@ -318,7 +318,7 @@ export default function Home() {
     if (Platform.OS === "android") {
       mapInstance.setMapBoundaries(
           { latitude: 45.5000284224813, longitude: -73.5759524037535 },
-          { latitude: 45.49070461581633, longitude: -73.58196697011486 },
+          { latitude: 45.49070461581633, longitude: -73.58196697011486 }
       );
     }
   };
@@ -341,7 +341,10 @@ export default function Home() {
     return allTodayReports;
   }, [allTodayReports, reportViewMode, activeBuildingIds]);
 
-  const buildingCounts: Record<string, { protests: number; accessibility: number }> = {};
+  const buildingCounts: Record<
+      string,
+      { protests: number; accessibility: number }
+  > = {};
 
   allTodayReports.forEach((r) => {
     const buildingId = normalizeBuildingId(r.building);
@@ -477,7 +480,10 @@ export default function Home() {
               <Text style={styles.mapPreviewText}>Tap to expand map</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.addReport} onPress={handleOpenReportFlow}>
+            <TouchableOpacity
+                style={styles.addReport}
+                onPress={handleOpenReportFlow}
+            >
               <Icon name="add-circle" size={24} color="#276389" />
             </TouchableOpacity>
 
@@ -531,7 +537,8 @@ export default function Home() {
                 <TouchableOpacity
                     style={[
                       styles.reportModeButton,
-                      reportViewMode === "preferences" && styles.reportModeButtonActive,
+                      reportViewMode === "preferences" &&
+                      styles.reportModeButtonActive,
                       isGuest && styles.reportModeButtonDisabled,
                     ]}
                     onPress={() => {
@@ -542,7 +549,8 @@ export default function Home() {
                   <Text
                       style={[
                         styles.reportModeButtonText,
-                        reportViewMode === "preferences" && styles.reportModeButtonTextActive,
+                        reportViewMode === "preferences" &&
+                        styles.reportModeButtonTextActive,
                         isGuest && styles.reportModeButtonTextDisabled,
                       ]}
                   >
@@ -561,7 +569,8 @@ export default function Home() {
                   <Text
                       style={[
                         styles.reportModeButtonText,
-                        reportViewMode === "all" && styles.reportModeButtonTextActive,
+                        reportViewMode === "all" &&
+                        styles.reportModeButtonTextActive,
                       ]}
                   >
                     All Today
@@ -574,10 +583,10 @@ export default function Home() {
               const reportsToDisplay = filteredTodayReports;
 
               const accessReports = reportsToDisplay.filter(
-                  (r) => r.type === "accessibility" && !r.isResolved,
+                  (r) => r.type === "accessibility" && !r.isResolved
               );
               const disruptionReports = reportsToDisplay.filter(
-                  (r) => (r.type === "protest" || r.type === "event") && !r.isResolved,
+                  (r) => (r.type === "protest" || r.type === "event") && !r.isResolved
               );
               const resolvedReports = reportsToDisplay.filter((r) => r.isResolved);
 
@@ -605,211 +614,265 @@ export default function Home() {
                 },
               ];
 
-              return sections.map(({ key, label, reports: sectionReports, icon, severeCount }) => (
-                  <View key={key} style={styles.accordionSection}>
-                    <TouchableOpacity
-                        style={styles.accordionHeader}
-                        onPress={() => toggleSection(key)}
-                        activeOpacity={0.8}
-                    >
-                      <View style={styles.accordionHeaderLeft}>
-                        <Icon name={icon} size={22} color="#276389" />
-                        <Text style={styles.accordionLabel}>{label}</Text>
+              return sections.map(
+                  ({ key, label, reports: sectionReports, icon, severeCount }) => (
+                      <View key={key} style={styles.accordionSection}>
+                        <TouchableOpacity
+                            style={styles.accordionHeader}
+                            onPress={() => toggleSection(key)}
+                            activeOpacity={0.8}
+                        >
+                          <View style={styles.accordionHeaderLeft}>
+                            <Icon name={icon} size={22} color="#276389" />
+                            <Text style={styles.accordionLabel}>{label}</Text>
 
-                        <View style={styles.accordionBadge}>
-                          <Text style={styles.accordionBadgeText}>{sectionReports.length}</Text>
-                        </View>
+                            <View style={styles.accordionBadge}>
+                              <Text style={styles.accordionBadgeText}>
+                                {sectionReports.length}
+                              </Text>
+                            </View>
 
-                        {severeCount > 0 && (
-                            <View style={styles.severeBadge}>
-                              <TriangleAlert size={14} color="#F59E0B" />
-                              <Text style={styles.severeBadgeText}>{severeCount}</Text>
+                            {severeCount > 0 && (
+                                <View style={styles.severeBadge}>
+                                  <TriangleAlert size={14} color="#F59E0B" />
+                                  <Text style={styles.severeBadgeText}>{severeCount}</Text>
+                                </View>
+                            )}
+                          </View>
+
+                          <Icon
+                              name={openSections[key] ? "expand-less" : "expand-more"}
+                              size={24}
+                              color="#276389"
+                          />
+                        </TouchableOpacity>
+
+                        {openSections[key] && (
+                            <View style={styles.accordionContent}>
+                              {sectionReports.length === 0 ? (
+                                  <Text style={styles.accordionEmptyText}>
+                                    {reportViewMode === "preferences" && key !== "resolved"
+                                        ? `No ${label.toLowerCase()} reports matching your preferences today.`
+                                        : `No ${label.toLowerCase()} reports today.`}
+                                  </Text>
+                              ) : (
+                                  sectionReports.map((report) => {
+                                    const hasUpvoted = currentUserId
+                                        ? report.upvotedBy?.includes(currentUserId)
+                                        : false;
+
+                                    const hasResolved = currentUserId
+                                        ? (report.resolvedBy ?? []).includes(currentUserId)
+                                        : false;
+
+                                    const isDisabled = isGuest || !currentUserId;
+
+                                    const typeIcon =
+                                        report.type === "accessibility"
+                                            ? "accessible"
+                                            : "campaign";
+
+                                    const typeLabel = report.accessibilitySubtype
+                                        ? report.accessibilitySubtype.replace("_", " ")
+                                        : report.type;
+
+                                    const submitterLabel =
+                                        report.submittedBy === "security"
+                                            ? "security"
+                                            : "a concordian";
+
+                                    return (
+                                        <View
+                                            key={report.id}
+                                            style={[
+                                              styles.updateCard,
+                                              {
+                                                borderLeftColor:
+                                                    buildingColorMap[
+                                                        normalizeBuildingId(report.building)
+                                                        ] ?? "#DDE3EA",
+                                              },
+                                            ]}
+                                        >
+                                          <View style={styles.updateCardInner}>
+                                            <View style={styles.updateCardLeft}>
+                                              <Text style={styles.updateEventTitle}>
+                                                {report.name || report.type}
+                                              </Text>
+
+                                              {report.isSevere && (
+                                                  <View style={styles.severeIndicator}>
+                                                    <TriangleAlert size={13} color="#F59E0B" />
+                                                    <Text style={styles.severeIndicatorText}>
+                                                      Marked Severe by Security
+                                                    </Text>
+                                                  </View>
+                                              )}
+
+                                              {report.isResolved && report.timeline && (
+                                                  <Text style={styles.resolvedMeta}>
+                                                    Resolved at{" "}
+                                                    {report.timeline.find(
+                                                        (e) => e.action === "resolved"
+                                                    )?.time ?? "unknown"}
+                                                  </Text>
+                                              )}
+
+                                              <View style={styles.updateTypeRow}>
+                                                <Icon name={typeIcon} size={16} color="#276389" />
+                                                <Text style={styles.updateTypeLabel}>
+                                                  {typeLabel}
+                                                </Text>
+                                              </View>
+
+                                              <View style={styles.updateMetaRow}>
+                                                <Clock size={13} color="#5A6B80" />
+                                                <Text style={styles.updateMeta}>
+                                                  {report.time}
+                                                </Text>
+                                              </View>
+
+                                              <View style={styles.updateMetaRow}>
+                                                <Building2 size={13} color="#5A6B80" />
+                                                <Text style={styles.updateMeta}>
+                                                  {report.building} · Floor {report.floor}
+                                                </Text>
+                                              </View>
+
+                                              <View style={styles.updateReporterRow}>
+                                                <Text style={styles.updateMeta}>
+                                                  Reported by {submitterLabel}
+                                                </Text>
+
+                                                {report.isVerifiedBySecurity && (
+                                                    <View style={styles.verifiedBadge}>
+                                                      <Icon
+                                                          name="check-circle"
+                                                          size={13}
+                                                          color="#1FA64A"
+                                                      />
+                                                      <Text style={styles.verifiedText}>
+                                                        Verified
+                                                      </Text>
+                                                    </View>
+                                                )}
+                                              </View>
+
+                                              {currentUserRole === "security" &&
+                                                  !report.isVerifiedBySecurity &&
+                                                  !report.isResolved && (
+                                                      <TouchableOpacity
+                                                          onPress={() => handleVerify(report.id)}
+                                                          style={styles.markSevereButton}
+                                                      >
+                                                        <CheckCircle
+                                                            size={13}
+                                                            color="#1FA64A"
+                                                        />
+                                                        <Text style={styles.markSevereText}>
+                                                          Verify
+                                                        </Text>
+                                                      </TouchableOpacity>
+                                                  )}
+
+                                              {currentUserRole === "security" &&
+                                                  !report.isSevere && (
+                                                      <TouchableOpacity
+                                                          onPress={() => handleMarkSevere(report.id)}
+                                                          style={styles.markSevereButton}
+                                                      >
+                                                        <TriangleAlert
+                                                            size={13}
+                                                            color="#F59E0B"
+                                                        />
+                                                        <Text style={styles.markSevereText}>
+                                                          Mark Severe
+                                                        </Text>
+                                                      </TouchableOpacity>
+                                                  )}
+                                            </View>
+
+
+                                            <View style={styles.updateCardActions}>
+                                              <TouchableOpacity
+                                                  style={[
+                                                    styles.actionButton,
+                                                    isDisabled && styles.actionButtonDisabled,
+                                                    hasUpvoted && styles.actionButtonUpvoted,
+                                                  ]}
+                                                  onPress={() => handleUpvote(report.id)}
+                                                  disabled={isDisabled}
+                                              >
+                                                <ThumbsUp
+                                                    size={18}
+                                                    color={isDisabled ? "#aaa" : "#276389"}
+                                                />
+                                                <Text
+                                                    style={[
+                                                      styles.actionCount,
+                                                      isDisabled && styles.actionCountDisabled,
+                                                    ]}
+                                                >
+                                                  {report.upvotedBy?.length ?? 0}
+                                                </Text>
+                                                <Text
+                                                    style={[
+                                                      styles.actionHelper,
+                                                      isDisabled && styles.actionHelperDisabled,
+                                                    ]}
+                                                >
+                                                  {hasUpvoted ? "Liked" : "Like"}
+                                                </Text>
+                                              </TouchableOpacity>
+
+                                              <TouchableOpacity
+                                                  style={[
+                                                    styles.actionButton,
+                                                    isDisabled && styles.actionButtonDisabled,
+                                                    hasResolved && styles.actionButtonUpvoted,
+                                                  ]}
+                                                  onPress={() => handleResolve(report.id)}
+                                                  disabled={isDisabled}
+                                              >
+                                                <CheckCircle
+                                                    size={18}
+                                                    color={isDisabled ? "#aaa" : "#276389"}
+                                                />
+                                                <Text
+                                                    style={[
+                                                      styles.actionCount,
+                                                      isDisabled && styles.actionCountDisabled,
+                                                    ]}
+                                                >
+                                                  {report.resolvedBy?.length ?? 0}
+                                                </Text>
+                                                <Text
+                                                    style={[
+                                                      styles.actionHelper,
+                                                      isDisabled && styles.actionHelperDisabled,
+                                                    ]}
+                                                >
+                                                  {hasResolved ? "Undo" : "Resolve"}
+                                                </Text>
+                                              </TouchableOpacity>
+                                            </View>
+                                          </View>
+
+                                          <TouchableOpacity
+                                              style={styles.chevronButton}
+                                              onPress={() => setSelectedReport(report)}
+                                          >
+                                            <Icon name="expand-more" size={24} color="#276389" />
+                                          </TouchableOpacity>
+                                        </View>
+                                    );
+                                  })
+                              )}
                             </View>
                         )}
                       </View>
-
-                      <Icon
-                          name={openSections[key] ? "expand-less" : "expand-more"}
-                          size={24}
-                          color="#276389"
-                      />
-                    </TouchableOpacity>
-
-                    {openSections[key] && (
-                        <View style={styles.accordionContent}>
-                          {sectionReports.length === 0 ? (
-                              <Text style={styles.accordionEmptyText}>
-                                {reportViewMode === "preferences" && key !== "resolved"
-                                    ? `No ${label.toLowerCase()} reports matching your preferences today.`
-                                    : `No ${label.toLowerCase()} reports today.`}
-                              </Text>
-                          ) : (
-                              sectionReports.map((report) => {
-                                const hasUpvoted = currentUserId
-                                    ? report.upvotedBy?.includes(currentUserId)
-                                    : false;
-                                const isResolved = report.isResolved;
-                                const isDisabled = isGuest || !currentUserId;
-
-                                const typeIcon =
-                                    report.type === "accessibility" ? "accessible" : "campaign";
-
-                                const typeLabel = report.accessibilitySubtype
-                                    ? report.accessibilitySubtype.replace("_", " ")
-                                    : report.type;
-
-                                const submitterLabel =
-                                    report.submittedBy === "security" ? "security" : "a concordian";
-
-                                return (
-                                    <View
-                                        key={report.id}
-                                        style={[
-                                          styles.updateCard,
-                                          {
-                                            borderLeftColor:
-                                                buildingColorMap[normalizeBuildingId(report.building)] ?? "#DDE3EA",
-                                          },
-                                        ]}
-                                    >
-                                      <View style={styles.updateCardInner}>
-                                        <View style={styles.updateCardLeft}>
-                                          <Text style={styles.updateEventTitle}>
-                                            {report.name || report.type}
-                                          </Text>
-
-                                          {report.isSevere && (
-                                              <View style={styles.severeIndicator}>
-                                                <TriangleAlert size={13} color="#F59E0B" />
-                                                <Text style={styles.severeIndicatorText}>
-                                                  Marked Severe by Security
-                                                </Text>
-                                              </View>
-                                          )}
-
-                                          {report.isResolved && report.timeline && (
-                                              <Text style={styles.resolvedMeta}>
-                                                Resolved at{" "}
-                                                {report.timeline.find((e) => e.action === "resolved")?.time ??
-                                                    "unknown"}
-                                              </Text>
-                                          )}
-
-                                          <View style={styles.updateTypeRow}>
-                                            <Icon name={typeIcon} size={16} color="#276389" />
-                                            <Text style={styles.updateTypeLabel}>{typeLabel}</Text>
-                                          </View>
-
-                                          <View style={styles.updateMetaRow}>
-                                            <Clock size={13} color="#5A6B80" />
-                                            <Text style={styles.updateMeta}>{report.time}</Text>
-                                          </View>
-                                          <View style={styles.updateMetaRow}>
-                                            <Building2 size={13} color="#5A6B80" />
-                                            <Text style={styles.updateMeta}>{report.building} · Floor {report.floor}</Text>
-                                          </View>
-
-                                          <View style={styles.updateReporterRow}>
-                                            <Text style={styles.updateMeta}>
-                                              Reported by {submitterLabel}
-                                            </Text>
-
-                                            {report.isVerifiedBySecurity && (
-                                                <View style={styles.verifiedBadge}>
-                                                  <Icon
-                                                      name="check-circle"
-                                                      size={13}
-                                                      color="#1FA64A"
-                                                  />
-                                                  <Text style={styles.verifiedText}>Verified</Text>
-                                                </View>
-                                            )}
-                                          </View>
-
-                                          {currentUserRole === "security" &&
-                                              !report.isVerifiedBySecurity &&
-                                              !report.isResolved && (
-                                                  <TouchableOpacity
-                                                      onPress={() => handleVerify(report.id)}
-                                                      style={styles.markSevereButton}
-                                                  >
-                                                    <CheckCircle size={13} color="#1FA64A" />
-                                                    <Text style={styles.markSevereText}>Verify</Text>
-                                                  </TouchableOpacity>
-                                              )}
-
-                                          {currentUserRole === "security" && !report.isSevere && (
-                                              <TouchableOpacity
-                                                  onPress={() => handleMarkSevere(report.id)}
-                                                  style={styles.markSevereButton}
-                                              >
-                                                <TriangleAlert size={13} color="#F59E0B" />
-                                                <Text style={styles.markSevereText}>Mark Severe</Text>
-                                              </TouchableOpacity>
-                                          )}
-                                        </View>
-
-                                        <View style={styles.updateCardActions}>
-                                          <TouchableOpacity
-                                            style={[
-                                              styles.actionButton,
-                                              isDisabled && styles.actionButtonDisabled,      // disabled if guest
-                                              hasUpvoted && styles.actionButtonUpvoted,       // highlighted if upvoted
-                                            ]}
-                                            onPress={() => handleUpvote(report.id)}
-                                            disabled={isDisabled}  // ← only disabled for guests, not for having upvoted
-                                          >
-                                            <ThumbsUp
-                                              size={18}
-                                              color={isDisabled ? "#aaa" : hasUpvoted ? "#276389" : "#276389"}
-                                            />
-                                            <Text style={[
-                                              styles.actionCount,
-                                              isDisabled && styles.actionCountDisabled,
-                                            ]}>
-                                              {report.upvotedBy?.length ?? 0}
-                                            </Text>
-                                          </TouchableOpacity>
-
-                                          {/* Resolved button */}
-                                        <TouchableOpacity
-                                          style={[
-                                            styles.actionButton,
-                                            isDisabled && styles.actionButtonDisabled,
-                                            (report.resolvedBy ?? []).includes(currentUserRole ?? "") && styles.actionButtonUpvoted,
-                                          ]}
-                                          onPress={() => handleResolve(report.id)}
-                                          disabled={isDisabled}
-                                        >
-                                          <CheckCircle
-                                            size={18}
-                                            color={isDisabled ? "#aaa" : "#276389"}
-                                          />
-                                          <Text style={[
-                                            styles.actionCount,
-                                            isDisabled && styles.actionCountDisabled,
-                                          ]}>
-                                            {report.resolvedBy?.length ?? 0}
-                                          </Text>
-                                        </TouchableOpacity>
-
-                                        </View>
-                                      </View>
-
-                                      <TouchableOpacity
-                                          style={styles.chevronButton}
-                                          onPress={() => setSelectedReport(report)}
-                                      >
-                                        <Icon name="expand-more" size={24} color="#276389" />
-                                      </TouchableOpacity>
-                                    </View>
-                                );
-                              })
-                          )}
-                        </View>
-                    )}
-                  </View>
-              ));
+                  )
+              );
             })()}
           </View>
         </ScrollView>
@@ -820,8 +883,14 @@ export default function Home() {
             animationType="fade"
             onRequestClose={() => setSelectedBuilding(null)}
         >
-          <Pressable style={styles.modalOverlay} onPress={() => setSelectedBuilding(null)}>
-            <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
+          <Pressable
+              style={styles.modalOverlay}
+              onPress={() => setSelectedBuilding(null)}
+          >
+            <Pressable
+                style={styles.modalCard}
+                onPress={(e) => e.stopPropagation()}
+            >
               {selectedBuilding && (
                   <>
                     <View style={styles.modalHeader}>
@@ -843,7 +912,9 @@ export default function Home() {
                                 {report.type} · Floor {report.floor} · {report.time}
                               </Text>
                               {report.description ? (
-                                  <Text style={styles.modalRowMeta}>{report.description}</Text>
+                                  <Text style={styles.modalRowMeta}>
+                                    {report.description}
+                                  </Text>
                               ) : null}
                             </View>
                         ))
@@ -892,8 +963,14 @@ export default function Home() {
             animationType="fade"
             onRequestClose={() => setSelectedReport(null)}
         >
-          <Pressable style={styles.modalOverlay} onPress={() => setSelectedReport(null)}>
-            <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation()}>
+          <Pressable
+              style={styles.modalOverlay}
+              onPress={() => setSelectedReport(null)}
+          >
+            <Pressable
+                style={styles.modalCard}
+                onPress={(e) => e.stopPropagation()}
+            >
               {selectedReport && (
                   <>
                     <View style={styles.modalHeader}>
@@ -915,7 +992,9 @@ export default function Home() {
                     {selectedReport.isSevere && (
                         <View style={styles.severeIndicator}>
                           <TriangleAlert size={13} color="#F59E0B" />
-                          <Text style={styles.severeIndicatorText}>Marked Severe by Security</Text>
+                          <Text style={styles.severeIndicatorText}>
+                            Marked Severe by Security
+                          </Text>
                         </View>
                     )}
 
@@ -941,14 +1020,18 @@ export default function Home() {
                         <View key={index} style={styles.timelineRow}>
                           <View style={styles.timelineDot} />
                           <Text style={styles.timelineText}>
-                            {event.action === "reported" && `First reported by ${event.by}`}
-                            {event.action === "upvoted" && `Confirmed by a concordian`}
-                            {event.action === "verified" && `Verified by security`}
+                            {event.action === "reported" &&
+                                `First reported by ${event.by}`}
+                            {event.action === "upvoted" &&
+                                `Confirmed by a concordian`}
+                            {event.action === "verified" &&
+                                `Verified by security`}
                             {event.action === "resolved" &&
                                 `Marked resolved by ${
                                     event.by === "security" ? "security" : "a concordian"
                                 }`}
-                            {event.action === "severe" && `Marked severe by security`}
+                            {event.action === "severe" &&
+                                `Marked severe by security`}
                             <Text style={styles.timelineTime}> · {event.time}</Text>
                           </Text>
                         </View>

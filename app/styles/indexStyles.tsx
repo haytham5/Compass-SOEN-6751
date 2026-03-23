@@ -721,6 +721,17 @@ export const styles = StyleSheet.create({
     color: COLORS.disabled,
   },
 
+  actionHelper: {
+    fontSize: 10,
+    fontFamily: "Lexend_400Regular",
+    color: COLORS.primaryDark,
+    marginTop: 2,
+  },
+
+  actionHelperDisabled: {
+    color: COLORS.disabled,
+  },
+
   chevronButton: {
     alignItems: "center",
     paddingTop: 6,
@@ -935,4 +946,5 @@ export const styles = StyleSheet.create({
     gap: 5,
     marginBottom: 2,
   },
+
 });
