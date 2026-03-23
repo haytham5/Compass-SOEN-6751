@@ -40,6 +40,7 @@ import { styles } from "./styles/indexStyles";
 import { getCurrentUser } from "./utils/authStorage";
 import { simulateNearBuilding } from "./utils/simulateGeofence";
 
+
 const buildingColorMap: Record<string, string> = {
     EV: "#FF9898",
     H: "#4CAF50",
@@ -243,11 +244,13 @@ export default function Home() {
       }, [loadCurrentUserState, loadReports]),
   );
 
-  const handleMarkerPress = async (buildingId: string) => {
-    const allReports = await getReports();
-    const filtered = allReports.filter(
-        (r) => normalizeBuildingId(r.building) === buildingId
+  const handleMarkerPress = (buildingId: string) => {
+    const filtered = filteredTodayReports.filter(
+      (r) => normalizeBuildingId(r.building) === buildingId
     );
+
+    if (filtered.length === 0) return;
+
     setBuildingReports(filtered);
     setSelectedBuilding(buildingId);
   };
@@ -337,7 +340,7 @@ export default function Home() {
 
   const buildingCounts: Record<string, { protests: number; accessibility: number }> = {};
 
-  allTodayReports.forEach((r) => {
+  filteredTodayReports.forEach((r) => {
     const buildingId = normalizeBuildingId(r.building);
 
     if (!buildingCounts[buildingId]) {
@@ -375,7 +378,7 @@ export default function Home() {
 
     const timeout = setTimeout(createMarkers, 150);
     return () => clearTimeout(timeout);
-  }, [reports]);
+  }, [reports, filteredTodayReports]);
 
   const [fontsLoaded] = useFonts({
     Pacifico_400Regular,
