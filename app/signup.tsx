@@ -11,6 +11,7 @@ import {
 } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -19,7 +20,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import {
   SafeAreaView,
@@ -91,12 +92,7 @@ export default function SignUp() {
   };
 
   const validateAccountForm = () => {
-    if (
-      !firstName.trim() ||
-      !idNumber.trim() ||
-      !email.trim() ||
-      !password.trim()
-    ) {
+    if (!firstName.trim() || !email.trim() || !password.trim()) {
       setError("Please fill in all required fields.");
       return false;
     }
@@ -109,6 +105,11 @@ export default function SignUp() {
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(email.trim())) {
       setError("Please enter a valid email.");
+      return false;
+    }
+
+    if (!email.trim().toLowerCase().endsWith("concordia.ca")) {
+      setError("Please use your Concordia email address.");
       return false;
     }
 
@@ -188,7 +189,6 @@ export default function SignUp() {
           </Text>
         </View>
       </TouchableOpacity>
-
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
@@ -199,6 +199,11 @@ export default function SignUp() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.logoArea}>
+            <Image
+              source={require("../assets/images/logo.png")}
+              style={styles.logoBig}
+              resizeMode="contain"
+            />
             <Text style={styles.appTitle}>Compass</Text>
           </View>
 
@@ -301,7 +306,7 @@ export default function SignUp() {
                   </TouchableOpacity>
                 </View>
 
-                <RequiredLabel label="Student ID" />
+                <OptionalLabel label="Student ID" />
                 <TextInput
                   style={styles.input}
                   placeholder="Student ID"
@@ -329,7 +334,7 @@ export default function SignUp() {
                 <RequiredLabel label="Email" />
                 <TextInput
                   style={styles.input}
-                  placeholder="you@university.ca"
+                  placeholder="you@concordia.ca"
                   placeholderTextColor="#8E8E98"
                   keyboardType="email-address"
                   autoCapitalize="none"

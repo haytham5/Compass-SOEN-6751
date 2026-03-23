@@ -1,4 +1,5 @@
 import { Platform, StyleSheet } from "react-native";
+
 import { ThemeType } from "../data/themeProvider";
 
 // const COLORS = {
@@ -19,10 +20,6 @@ import { ThemeType } from "../data/themeProvider";
 //   tealTint: "#EEF9F8",
 //   pinkTint: "#FCEAF1",
 //   lavenderTint: "#F3F1FA",
-
-//   success: "#2E9B63",
-//   warning: "#D98B1F",
-//   disabled: "#B8BDC7",
 // };
 
 export const styles = (COLORS: ThemeType) =>
@@ -74,8 +71,6 @@ export const styles = (COLORS: ThemeType) =>
       alignItems: "center",
       marginRight: 10,
       borderRadius: 16,
-      borderWidth: 1,
-      borderColor: COLORS.border,
       ...Platform.select({
         ios: {
           shadowColor: "#000",
@@ -91,8 +86,6 @@ export const styles = (COLORS: ThemeType) =>
     },
 
     subCardActive: {
-      borderWidth: 1.5,
-      borderColor: COLORS.primary,
       transform: [{ scale: 1.02 }],
       margin: 2,
     },
@@ -345,7 +338,6 @@ export const styles = (COLORS: ThemeType) =>
       fontSize: 16,
       fontFamily: "Lexend_400Regular",
       color: COLORS.subtext,
-      marginBottom: 6,
     },
 
     modalBadgeRow: {
@@ -360,7 +352,6 @@ export const styles = (COLORS: ThemeType) =>
       fontFamily: "Lexend_400Regular",
       color: COLORS.muted,
       fontStyle: "italic",
-      marginBottom: 12,
     },
 
     modalSectionTitle: {
@@ -538,5 +529,17 @@ export const styles = (COLORS: ThemeType) =>
     timelineTime: {
       color: COLORS.muted,
       fontStyle: "italic",
+    },
+
+    actionButtonUpvoted: {
+      backgroundColor: "#E8F0F7",
+      borderColor: "#276389",
+    },
+
+    updateMetaRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 5,
+      marginBottom: 2,
     },
   });

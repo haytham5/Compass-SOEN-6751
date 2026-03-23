@@ -937,4 +937,16 @@ export const styles = (COLORS: ThemeType) =>
       backgroundColor: COLORS.white,
       zIndex: 999,
     },
+
+    updateMetaRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 5,
+      marginBottom: 2,
+    },
+
+    actionButtonUpvoted: {
+      backgroundColor: COLORS.white,
+      borderColor: COLORS.primary,
+    },
   });

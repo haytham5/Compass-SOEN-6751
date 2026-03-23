@@ -318,4 +318,9 @@ export const styles = (COLORS: ThemeType) =>
     roleButtonTextActive: {
       color: COLORS.primaryDark,
     },
+
+    logoBig: {
+      width: 200,
+      height: 200,
+    },
   });

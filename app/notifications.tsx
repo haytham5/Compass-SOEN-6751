@@ -3,7 +3,13 @@ import { Pacifico_400Regular, useFonts } from "@expo-google-fonts/pacifico";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as NavigationBar from "expo-navigation-bar";
 import { useFocusEffect } from "expo-router";
-import { CheckCircle, ThumbsUp, TriangleAlert } from "lucide-react-native";
+import {
+  Building2,
+  CheckCircle,
+  Clock,
+  ThumbsUp,
+  TriangleAlert,
+} from "lucide-react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { initialSubscriptions } from "./data/notificationData";
 import {
@@ -22,7 +28,7 @@ import {
   StatusBar,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -34,13 +40,13 @@ import { useTheme } from "./data/themeProvider";
 import { styles as importStyles } from "./styles/notificationsStyles";
 
 const buildingColorMap: Record<string, string> = {
-  EV: "#56bab8",
-  H: "#5a8c8b",
-  JMSB: "#e7548b",
-  LB: "#9796b8",
-  FB: "#d6b1c3",
+  EV: "#FF9898",
+  H: "#4CAF50",
+  FB: "#a683eb",
+  JMSB: "#2196F3",
+  JM: "#2196F3", //backup color
+  LB: "#FFC107",
 };
-
 const today = new Date().toISOString().split("T")[0];
 
 export default function Notifications() {
@@ -182,11 +188,11 @@ export default function Notifications() {
 
       <ScrollView contentContainerStyle={styles.scrollableContent}>
         <View style={styles.header}>
-          <Text style={styles.title}>Your Subscriptions</Text>
+          <Text style={styles.title}>Explore</Text>
         </View>
 
         <Text style={styles.sectionDescription}>
-          Tap a building to turn notifications on or off.
+          Tap building names to change filter
         </Text>
 
         <ScrollView
@@ -196,6 +202,7 @@ export default function Notifications() {
         >
           {subscriptions.map((sub) => {
             const isActive = sub.isSubscribed;
+            const color = buildingColorMap[sub.id] ?? "#9c9c9c";
 
             return (
               <TouchableOpacity
@@ -203,26 +210,33 @@ export default function Notifications() {
                 activeOpacity={0.9}
                 onPress={() => handleToggleSubscription(sub.id)}
               >
-                {/*<View*/}
-                {/*    style={[*/}
-                {/*      styles.subCard,*/}
-                {/*      isActive*/}
-                {/*          ? sub.tone === "red"*/}
-                {/*              ? styles.red*/}
-                {/*              : styles.green*/}
-                {/*          : styles.unsubbed,*/}
-                {/*      isActive ? styles.subCardActive : styles.subCardInactive,*/}
-                {/*    ]}*/}
-                {/*>*/}
                 <View
                   style={[
                     styles.subCard,
-                    isActive ? styles.green : styles.unsubbed,
+                    {
+                      backgroundColor: isActive ? color : "transparent",
+                      borderWidth: 2,
+                      borderColor: color,
+                    },
                     isActive ? styles.subCardActive : styles.subCardInactive,
                   ]}
                 >
-                  <Text style={styles.subBody}>{sub.label}</Text>
-                  <Text style={styles.subLabel}>{isActive ? "On" : "Off"}</Text>
+                  <Text
+                    style={[
+                      styles.subBody,
+                      { color: isActive ? "white" : "#555" },
+                    ]}
+                  >
+                    {sub.label}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.subLabel,
+                      { color: isActive ? "white" : "#555" },
+                    ]}
+                  >
+                    {isActive ? "On" : "Off"}
+                  </Text>
                 </View>
               </TouchableOpacity>
             );
@@ -327,11 +341,20 @@ export default function Notifications() {
                       </Text>
                     )}
 
-                    <Text style={styles.updateMeta}>{report.time}</Text>
-
                     <View style={styles.updateTypeRow}>
                       <Icon name={typeIcon} size={16} color="#5a8c8b" />
                       <Text style={styles.updateTypeLabel}>{typeLabel}</Text>
+                    </View>
+
+                    <View style={styles.updateMetaRow}>
+                      <Clock size={13} color="#5A6B80" />
+                      <Text style={styles.updateMeta}>{report.time}</Text>
+                    </View>
+                    <View style={styles.updateMetaRow}>
+                      <Building2 size={13} color="#5A6B80" />
+                      <Text style={styles.updateMeta}>
+                        {report.building} · Floor {report.floor}
+                      </Text>
                     </View>
 
                     <View style={styles.updateReporterRow}>
@@ -352,53 +375,60 @@ export default function Notifications() {
                     <TouchableOpacity
                       style={[
                         styles.actionButton,
-                        (hasUpvoted || isDisabled) &&
-                          styles.actionButtonDisabled,
+                        isDisabled && styles.actionButtonDisabled, // disabled if guest
+                        hasUpvoted && styles.actionButtonUpvoted, // highlighted if upvoted
                       ]}
                       onPress={() => handleUpvote(report.id)}
-                      disabled={hasUpvoted || isDisabled}
+                      disabled={isDisabled} // ← only disabled for guests, not for having upvoted
                     >
                       <ThumbsUp
                         size={18}
-                        color={hasUpvoted || isDisabled ? "#B8BDC7" : "#56bab8"}
+                        color={
+                          isDisabled
+                            ? "#aaa"
+                            : hasUpvoted
+                              ? "#276389"
+                              : "#276389"
+                        }
                       />
                       <Text
                         style={[
                           styles.actionCount,
-                          (hasUpvoted || isDisabled) &&
-                            styles.actionCountDisabled,
+                          isDisabled && styles.actionCountDisabled,
                         ]}
                       >
                         {report.upvotedBy?.length ?? 0}
                       </Text>
                     </TouchableOpacity>
 
+                    {/* Resolved button */}
                     <TouchableOpacity
                       style={[
                         styles.actionButton,
-                        (isResolved || isDisabled) &&
-                          styles.actionButtonDisabled,
+                        isDisabled && styles.actionButtonDisabled,
+                        (report.resolvedBy ?? ([] as string[])).includes(
+                          currentUserRole ?? "",
+                        ) && styles.actionButtonUpvoted,
                       ]}
                       onPress={() => handleResolve(report.id)}
-                      disabled={isResolved || isDisabled}
+                      disabled={isDisabled}
                     >
                       <CheckCircle
                         size={18}
-                        color={isResolved || isDisabled ? "#B8BDC7" : "#56bab8"}
+                        color={isDisabled ? "#aaa" : "#276389"}
                       />
                       <Text
                         style={[
                           styles.actionCount,
-                          (isResolved || isDisabled) &&
-                            styles.actionCountDisabled,
+                          isDisabled && styles.actionCountDisabled,
                         ]}
                       >
-                        {isResolved ? "✓" : "0"}
+                        {report.resolvedBy?.length ?? 0}
                       </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
-
+                {/* See more button */}
                 <TouchableOpacity
                   style={styles.chevronButton}
                   onPress={() => setSelectedReport(report)}
@@ -436,9 +466,12 @@ export default function Notifications() {
                   </TouchableOpacity>
                 </View>
 
-                <Text style={styles.modalBuilding}>
-                  {selectedReport.building} · Floor {selectedReport.floor}
-                </Text>
+                <View style={styles.updateMetaRow}>
+                  <Building2 size={18} color="#444" />
+                  <Text style={styles.modalBuilding}>
+                    {selectedReport.building} · Floor {selectedReport.floor}
+                  </Text>
+                </View>
 
                 {selectedReport.isSevere && (
                   <View style={styles.severeIndicator}>
@@ -451,7 +484,6 @@ export default function Notifications() {
 
                 {selectedReport.description ? (
                   <>
-                    <Text style={styles.modalSectionTitle}>Description</Text>
                     <Text style={styles.modalDescription}>
                       {selectedReport.description}
                     </Text>

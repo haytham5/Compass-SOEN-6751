@@ -3,7 +3,13 @@ import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as NavigationBar from "expo-navigation-bar";
 import { useFocusEffect, useRouter } from "expo-router";
-import { CheckCircle, ThumbsUp, TriangleAlert } from "lucide-react-native";
+import {
+  Building2,
+  CheckCircle,
+  Clock,
+  ThumbsUp,
+  TriangleAlert,
+} from "lucide-react-native";
 import React, {
   useCallback,
   useEffect,
@@ -35,6 +41,7 @@ import BottomNav from "./components/bottomNav";
 import MapInfo from "./components/mapInfo";
 import NearBuildingBanner from "./components/NearBuildingBanner";
 import OfflineBanner from "./components/offlineBanner";
+import ReportCard from "./components/ReportCard";
 import ReportFormModal from "./components/ReportFormModal";
 import {
   getReports,
@@ -60,11 +67,11 @@ import { simulateNearBuilding } from "./utils/simulateGeofence";
 //   JMSB: "#2196F3",
 // };
 const buildingColorMap: Record<string, string> = {
-  EV: "#56bab8",
-  H: "#5a8c8b",
-  FB: "#d6b1c3",
-  LB: "#9796b8",
-  JMSB: "#e7548b",
+  EV: "#FF9898",
+  H: "#4CAF50",
+  FB: "#a683eb",
+  JMSB: "#2196F3",
+  LB: "#FFC107",
 };
 
 const today = new Date().toISOString().split("T")[0];
@@ -269,11 +276,13 @@ export default function Home() {
     }, [loadCurrentUserState, loadReports]),
   );
 
-  const handleMarkerPress = async (buildingId: string) => {
-    const allReports = await getReports();
-    const filtered = allReports.filter(
+  const handleMarkerPress = (buildingId: string) => {
+    const filtered = filteredTodayReports.filter(
       (r) => normalizeBuildingId(r.building) === buildingId,
     );
+
+    if (filtered.length === 0) return;
+
     setBuildingReports(filtered);
     setSelectedBuilding(buildingId);
   };
@@ -371,7 +380,7 @@ export default function Home() {
     { protests: number; accessibility: number }
   > = {};
 
-  allTodayReports.forEach((r) => {
+  filteredTodayReports.forEach((r) => {
     const buildingId = normalizeBuildingId(r.building);
 
     if (!buildingCounts[buildingId]) {
@@ -409,7 +418,7 @@ export default function Home() {
 
     const timeout = setTimeout(createMarkers, 150);
     return () => clearTimeout(timeout);
-  }, [reports]);
+  }, [reports, filteredTodayReports]);
 
   const [fontsLoaded] = useFonts({
     Pacifico_400Regular,
@@ -798,11 +807,6 @@ export default function Home() {
                                     </Text>
                                   )}
 
-                                  <Text style={styles.updateMeta}>
-                                    {normalizeBuildingId(report.building)} ·{" "}
-                                    {report.time}
-                                  </Text>
-
                                   <View style={styles.updateTypeRow}>
                                     <Icon
                                       name={typeIcon}
@@ -811,6 +815,19 @@ export default function Home() {
                                     />
                                     <Text style={styles.updateTypeLabel}>
                                       {typeLabel}
+                                    </Text>
+                                  </View>
+
+                                  <View style={styles.updateMetaRow}>
+                                    <Clock size={13} color="#5A6B80" />
+                                    <Text style={styles.updateMeta}>
+                                      {report.time}
+                                    </Text>
+                                  </View>
+                                  <View style={styles.updateMetaRow}>
+                                    <Building2 size={13} color="#5A6B80" />
+                                    <Text style={styles.updateMeta}>
+                                      {report.building} · Floor {report.floor}
                                     </Text>
                                   </View>
 
@@ -873,24 +890,26 @@ export default function Home() {
                                   <TouchableOpacity
                                     style={[
                                       styles.actionButton,
-                                      (hasUpvoted || isDisabled) &&
-                                        styles.actionButtonDisabled,
+                                      isDisabled && styles.actionButtonDisabled, // disabled if guest
+                                      hasUpvoted && styles.actionButtonUpvoted, // highlighted if upvoted
                                     ]}
                                     onPress={() => handleUpvote(report.id)}
-                                    disabled={hasUpvoted || isDisabled}
+                                    disabled={isDisabled} // ← only disabled for guests, not for having upvoted
                                   >
                                     <ThumbsUp
                                       size={18}
                                       color={
-                                        hasUpvoted || isDisabled
+                                        isDisabled
                                           ? "#aaa"
-                                          : "#276389"
+                                          : hasUpvoted
+                                            ? "#276389"
+                                            : "#276389"
                                       }
                                     />
                                     <Text
                                       style={[
                                         styles.actionCount,
-                                        (hasUpvoted || isDisabled) &&
+                                        isDisabled &&
                                           styles.actionCountDisabled,
                                       ]}
                                     >
@@ -898,31 +917,31 @@ export default function Home() {
                                     </Text>
                                   </TouchableOpacity>
 
+                                  {/* Resolved button */}
                                   <TouchableOpacity
                                     style={[
                                       styles.actionButton,
-                                      (isResolved || isDisabled) &&
-                                        styles.actionButtonDisabled,
+                                      isDisabled && styles.actionButtonDisabled,
+                                      (
+                                        report.resolvedBy ?? ([] as string[])
+                                      ).includes(currentUserRole ?? "") &&
+                                        styles.actionButtonUpvoted,
                                     ]}
                                     onPress={() => handleResolve(report.id)}
-                                    disabled={isResolved || isDisabled}
+                                    disabled={isDisabled}
                                   >
                                     <CheckCircle
                                       size={18}
-                                      color={
-                                        isResolved || isDisabled
-                                          ? "#aaa"
-                                          : "#276389"
-                                      }
+                                      color={isDisabled ? "#aaa" : "#276389"}
                                     />
                                     <Text
                                       style={[
                                         styles.actionCount,
-                                        (isResolved || isDisabled) &&
+                                        isDisabled &&
                                           styles.actionCountDisabled,
                                       ]}
                                     >
-                                      {isResolved ? "✓" : "0"}
+                                      {report.resolvedBy?.length ?? 0}
                                     </Text>
                                   </TouchableOpacity>
                                 </View>
@@ -974,29 +993,37 @@ export default function Home() {
                   </TouchableOpacity>
                 </View>
 
-                {buildingReports.length === 0 ? (
-                  <Text style={styles.modalEmptyText}>
-                    No reports submitted for this building yet.
-                  </Text>
-                ) : (
-                  buildingReports.map((report) => (
-                    <View key={report.id} style={styles.modalRow}>
-                      <Text style={styles.modalRowText}>{report.name}</Text>
-                      <Text style={styles.modalRowMeta}>
-                        {report.type} · Floor {report.floor} · {report.time}
-                      </Text>
-                      {report.description ? (
-                        <Text style={styles.modalRowMeta}>
-                          {report.description}
-                        </Text>
-                      ) : null}
-                    </View>
-                  ))
-                )}
-
-                <Text style={styles.modalSecurityCount}>
-                  Total reports: {buildingReports.length}
-                </Text>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {buildingReports.filter(
+                    (r) => r.date === today && !r.isScheduledEvent,
+                  ).length === 0 ? (
+                    <Text style={styles.modalEmptyText}>
+                      No reports for this building today.
+                    </Text>
+                  ) : (
+                    buildingReports
+                      .filter((r) => r.date === today && !r.isScheduledEvent)
+                      .map((report) => (
+                        <ReportCard
+                          key={report.id}
+                          report={report}
+                          currentUserId={currentUserId}
+                          currentUserRole={currentUserRole}
+                          isGuest={isGuest}
+                          onUpvote={handleUpvote}
+                          onResolve={handleResolve}
+                          onVerify={handleVerify}
+                          onMarkSevere={handleMarkSevere}
+                          onChevronPress={(r) => {
+                            setSelectedBuilding(null);
+                            setTimeout(() => setSelectedReport(r), 300);
+                          }}
+                          styles={styles}
+                          normalizeBuildingId={normalizeBuildingId}
+                        />
+                      ))
+                  )}
+                </ScrollView>
               </>
             )}
           </Pressable>
@@ -1056,10 +1083,12 @@ export default function Home() {
                   </TouchableOpacity>
                 </View>
 
-                <Text style={styles.modalBuilding}>
-                  {normalizeBuildingId(selectedReport.building)} · Floor{" "}
-                  {selectedReport.floor}
-                </Text>
+                <View style={styles.updateMetaRow}>
+                  <Building2 size={17} color="#444" />
+                  <Text style={styles.modalBuilding}>
+                    {selectedReport.building} · Floor {selectedReport.floor}
+                  </Text>
+                </View>
 
                 {selectedReport.isSevere && (
                   <View style={styles.severeIndicator}>

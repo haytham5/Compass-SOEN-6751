@@ -1,4 +1,5 @@
 import { Platform, StyleSheet } from "react-native";
+
 import { ThemeType } from "../data/themeProvider";
 
 // const COLORS = {
@@ -187,7 +188,6 @@ export const styles = (COLORS: ThemeType) =>
       fontSize: 16,
       fontFamily: "Lexend_400Regular",
       color: COLORS.subtext,
-      marginBottom: 6,
     },
 
     modalTime: {
@@ -195,7 +195,6 @@ export const styles = (COLORS: ThemeType) =>
       fontFamily: "Lexend_400Regular",
       color: COLORS.muted,
       fontStyle: "italic",
-      marginBottom: 12,
     },
 
     modalDescription: {
@@ -330,8 +329,6 @@ export const styles = (COLORS: ThemeType) =>
     },
 
     subCardActive: {
-      borderWidth: 1.5,
-      borderColor: COLORS.primary,
       transform: [{ scale: 1.02 }],
       margin: 2,
     },
@@ -450,5 +447,12 @@ export const styles = (COLORS: ThemeType) =>
       alignItems: "center",
       paddingTop: 4,
       paddingBottom: 0,
+    },
+
+    updateMetaRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 5,
+      marginBottom: 2,
     },
   });
