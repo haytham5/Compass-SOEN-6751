@@ -477,16 +477,16 @@ export default function Settings() {
                     </Text>
                   )}
 
-                    {!isGuestUser && (
-                        <TouchableOpacity
-                            style={styles.primaryProfileButtonFull}
-                            onPress={() => setIsPreferencesOpen(true)}
-                        >
-                            <Text style={styles.primaryProfileButtonText}>
-                                Edit Building Preferences
-                            </Text>
-                        </TouchableOpacity>
-                    )}
+                  {!isGuestUser && (
+                    <TouchableOpacity
+                      style={styles.primaryProfileButtonFull}
+                      onPress={() => setIsPreferencesOpen(true)}
+                    >
+                      <Text style={styles.primaryProfileButtonText}>
+                        Edit Building Preferences
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               </>
             )}
@@ -495,8 +495,8 @@ export default function Settings() {
           <>
             <View style={styles.settingsCard}>
               <SettingRow
-                label="Light Mode"
-                value={mode === "light"}
+                label="Dark Mode"
+                value={mode !== "light"}
                 onChange={toggleTheme}
               />
               <View style={styles.settingsDivider} />
