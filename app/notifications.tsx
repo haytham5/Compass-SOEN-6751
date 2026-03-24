@@ -152,7 +152,7 @@ export default function Notifications() {
     (r) => !r.isScheduledEvent && r.date === today,
   );
 
-  if (activeBuildingIds.length > 0) {
+  if (activeBuildingIds.length >= 0) {
     visibleReports = visibleReports.filter((report) =>
       activeBuildingIds.includes(report.building),
     );
@@ -439,9 +439,9 @@ export default function Notifications() {
       </Modal>
 
       <ReportFormModal
-          visible={isReportModalVisible}
-          onClose={() => setIsReportModalVisible(false)}
-          onSubmitSuccess={loadReports}
+        visible={isReportModalVisible}
+        onClose={() => setIsReportModalVisible(false)}
+        onSubmitSuccess={loadReports}
       />
 
       <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />
