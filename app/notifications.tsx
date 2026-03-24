@@ -444,7 +444,6 @@ export default function Notifications() {
         onSubmitSuccess={loadReports}
       />
 
-      <BottomNav />
-    </SafeAreaView>
+      <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />    </SafeAreaView>
   );
 }
