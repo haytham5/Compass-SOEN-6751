@@ -54,8 +54,8 @@ export default function Settings() {
   });
 
   // const [lightMode, setLightMode] = useState(true);
-  const [notifications, setNotifications] = useState(true);
-  const [accessibility, setAccessibility] = useState(true);
+  // const [notifications, setNotifications] = useState(true);
+  // const [accessibility, setAccessibility] = useState(true);
   const [activeTab, setActiveTab] = useState<ActiveTab>("profile");
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -493,27 +493,34 @@ export default function Settings() {
           </View>
         ) : (
           <>
-            <View style={styles.settingsCard}>
-              <SettingRow
-                label="Light Mode"
-                value={mode === "light"}
-                onChange={toggleTheme}
-              />
-              <View style={styles.settingsDivider} />
+            {/*<View style={styles.settingsCard}>*/}
+            {/*  <SettingRow*/}
+            {/*    label="Light Mode"*/}
+            {/*    value={mode === "light"}*/}
+            {/*    onChange={toggleTheme}*/}
+            {/*  />*/}
+            {/*  <View style={styles.settingsDivider} />*/}
 
-              <SettingRow
-                label="Notifications"
-                value={notifications}
-                onChange={setNotifications}
-              />
-              <View style={styles.settingsDivider} />
+            {/*  <SettingRow*/}
+            {/*    label="Notifications"*/}
+            {/*    value={notifications}*/}
+            {/*    onChange={setNotifications}*/}
+            {/*  />*/}
+            {/*  <View style={styles.settingsDivider} />*/}
 
-              <SettingRow
-                label="Accessibility"
-                value={accessibility}
-                onChange={setAccessibility}
-              />
-            </View>
+            {/*  <SettingRow*/}
+            {/*    label="Accessibility"*/}
+            {/*    value={accessibility}*/}
+            {/*    onChange={setAccessibility}*/}
+            {/*  />*/}
+            {/*</View>*/}
+              <View style={styles.settingsCard}>
+                  <SettingRow
+                      label="Light Mode"
+                      value={mode === "light"}
+                      onChange={toggleTheme}
+                  />
+              </View>
 
             {isGuestUser ? (
               <TouchableOpacity
