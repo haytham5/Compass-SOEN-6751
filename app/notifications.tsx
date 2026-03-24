@@ -439,12 +439,12 @@ export default function Notifications() {
       </Modal>
 
       <ReportFormModal
-        visible={isReportModalVisible}
-        onClose={() => setIsReportModalVisible(false)}
-        onSubmitSuccess={loadReports}
+          visible={isReportModalVisible}
+          onClose={() => setIsReportModalVisible(false)}
+          onSubmitSuccess={loadReports}
       />
 
-      <BottomNav />
+      <BottomNav onPressAdd={() => setIsReportModalVisible(true)} />
     </SafeAreaView>
   );
 }

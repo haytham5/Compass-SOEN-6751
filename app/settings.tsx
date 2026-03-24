@@ -477,14 +477,16 @@ export default function Settings() {
                     </Text>
                   )}
 
-                  <TouchableOpacity
-                    style={styles.primaryProfileButtonFull}
-                    onPress={() => setIsPreferencesOpen(true)}
-                  >
-                    <Text style={styles.primaryProfileButtonText}>
-                      Edit Building Preferences
-                    </Text>
-                  </TouchableOpacity>
+                    {!isGuestUser && (
+                        <TouchableOpacity
+                            style={styles.primaryProfileButtonFull}
+                            onPress={() => setIsPreferencesOpen(true)}
+                        >
+                            <Text style={styles.primaryProfileButtonText}>
+                                Edit Building Preferences
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
               </>
             )}
