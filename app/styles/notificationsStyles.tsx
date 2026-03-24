@@ -62,6 +62,7 @@ export const styles = (COLORS: ThemeType) =>
       flexDirection: "row",
       gap: 0,
       marginBottom: 30,
+      paddingStart: 6,
     },
 
     subCard: {
