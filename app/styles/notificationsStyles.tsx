@@ -340,7 +340,7 @@ export const styles = (COLORS: ThemeType) =>
     },
 
     modalBuilding: {
-      fontSize: 16,
+      fontSize: 15,
       fontFamily: "Lexend_400Regular",
       color: COLORS.subtext,
     },
@@ -371,6 +371,7 @@ export const styles = (COLORS: ThemeType) =>
       fontFamily: "Lexend_400Regular",
       color: COLORS.text,
       lineHeight: 22,
+      marginBottom: 10,
     },
 
     severeIndicator: {
@@ -378,7 +379,7 @@ export const styles = (COLORS: ThemeType) =>
       alignItems: "center",
       gap: 4,
       marginTop: 2,
-      marginBottom: 4,
+      marginBottom: 5,
       backgroundColor: "#FFF6E8",
       alignSelf: "flex-start",
       paddingHorizontal: 8,

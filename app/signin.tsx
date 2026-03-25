@@ -128,7 +128,7 @@ export default function Signin() {
             <Text style={styles.inputLabel}>Email</Text>
             <TextInput
               style={styles.input}
-              placeholder="you@university.ca"
+              placeholder="you@concordia.ca"
               placeholderTextColor="#8E8E98"
               keyboardType="email-address"
               autoCapitalize="none"
