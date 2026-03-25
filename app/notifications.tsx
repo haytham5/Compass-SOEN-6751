@@ -21,6 +21,7 @@ import {
 import { getCurrentUser } from "./utils/authStorage";
 
 import {
+  Image,
   Modal,
   Pressable,
   ScrollView,
@@ -412,7 +413,7 @@ export default function Notifications() {
                 </View>
 
                 <View style={styles.updateMetaRow}>
-                  <Building2 size={18} color="#444" />
+                  <Building2 size={17} color="#444" />
                   <Text style={styles.modalBuilding}>
                     {selectedReport.building} · Floor {selectedReport.floor}
                   </Text>
@@ -432,6 +433,40 @@ export default function Notifications() {
                     {selectedReport.description}
                   </Text>
                 ) : null}
+
+                {selectedReport.image ? (
+                  <>
+                    <Text style={styles.modalSectionTitle}>Photo</Text>
+                    <Image
+                      source={{ uri: selectedReport.image }}
+                      style={styles.modalImage}
+                      resizeMode="cover"
+                    />
+                  </>
+                ) : null}
+
+                <Text style={styles.modalSectionTitle}></Text>
+                {(selectedReport.timeline ?? []).map((event, index) => (
+                  <View key={index} style={styles.timelineRow}>
+                    <View style={styles.timelineDot} />
+                    <Text style={styles.timelineText}>
+                      {event.action === "reported" &&
+                        `First reported by ${event.by}`}
+                      {event.action === "upvoted" && `Confirmed by a concordian`}
+                      {event.action === "verified" && `Verified by security`}
+                      {event.action === "unverified" &&
+                        `Verification removed by security`}
+                      {event.action === "resolved" &&
+                        `Marked resolved by ${
+                          event.by === "security" ? "security" : "a concordian"
+                        }`}
+                      {event.action === "severe" && `Marked severe by security`}
+                      {event.action === "unsevere" &&
+                        `Severe status removed by security`}
+                      <Text style={styles.timelineTime}> · {event.time}</Text>
+                    </Text>
+                  </View>
+                ))}
               </>
             )}
           </Pressable>
