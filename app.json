@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "bundleIdentifier": "com.jiai1991.soen6751project",
       "supportsTablet": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "CampusAlert uses your location to notify you of alerts near buildings.",
@@ -88,5 +89,6 @@
         "projectId": "1956bdac-6d3e-4890-b50b-069729660755"
       }
     }
+
   }
 }
