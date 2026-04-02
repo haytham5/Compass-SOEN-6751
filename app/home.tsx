@@ -113,6 +113,26 @@ const buildings: Record<string, { latitude: number; longitude: number }> = {
   JMSB: { latitude: 45.49515518152054, longitude: -73.57885668774541 },
 };
 
+// Adjust markers so they don't overlap
+const buildingOffsets: Record<string, { latitude: number; longitude: number }> = {
+  EV:   { latitude:  0.0000, longitude:  0.0005 },  // nudge EV right
+  JMSB: { latitude:  0.0000, longitude: -0.0003 },  // nudge JMSB left
+  H:    { latitude:  0.0000, longitude:  0.0000 },  // fine as-is
+  LB:   { latitude:  -0.0003, longitude:  0.0000 },  // fine as-is
+  FB:   { latitude:  -0.0003, longitude:  -0.0009 },  // fine as-is
+};
+
+const markerCoordinates: Record<string, { latitude: number; longitude: number }> =
+  Object.fromEntries(
+    Object.entries(buildings).map(([id, coord]) => [
+      id,
+      {
+        latitude:  coord.latitude  + (buildingOffsets[id]?.latitude  ?? 0),
+        longitude: coord.longitude + (buildingOffsets[id]?.longitude ?? 0),
+      },
+    ])
+  );
+
 function extractPreferredBuildings(user: any): BuildingPreference[] {
   if (!user) return [];
   if (Array.isArray(user.buildingPreferences)) {
@@ -447,7 +467,7 @@ export default function Home() {
         customMapStyle={scheme === Themes.dark ? darkMapTheme : lightMapTheme}
       >
         {Object.keys(buildings).map((b) => {
-          const coord = buildings[b];
+          const coord = markerCoordinates[b];
 
           if (!markerImages[b]) return null;
 
