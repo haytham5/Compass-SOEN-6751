@@ -744,12 +744,9 @@ export default function Home() {
                     <View style={styles.accordionHeaderLeft}>
                       <Icon name={icon} size={22} color="#276389" />
                       <Text style={styles.accordionLabel}>{label}</Text>
+                    </View>
 
-                      <View style={styles.accordionBadge}>
-                        <Text style={styles.accordionBadgeText}>
-                          {sectionReports.length}
-                        </Text>
-                      </View>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
 
                       {severeCount > 0 && (
                         <View style={styles.severeBadge}>
@@ -759,13 +756,19 @@ export default function Home() {
                           </Text>
                         </View>
                       )}
-                    </View>
+
+                      <View style={styles.accordionBadge}>
+                        <Text style={styles.accordionBadgeText}>
+                          {sectionReports.length}
+                        </Text>
+                      </View>
 
                     <Icon
                       name={openSections[key] ? "expand-less" : "expand-more"}
                       size={24}
                       color="#276389"
                     />
+                    </View>
                   </TouchableOpacity>
 
                   {openSections[key] && (
