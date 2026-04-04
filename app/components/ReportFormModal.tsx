@@ -124,7 +124,7 @@ export default function ReportFormModal({
       case 3:
         return "Details";
       case 4:
-        return "Photo & Submit";
+        return "Photo & Review";
       default:
         return "Add Report";
     }
