@@ -878,7 +878,7 @@ export default function Settings() {
         if (currentUser?.isGuest) return "Guest";
         if (currentUser?.role === "security") return "Security";
         if (currentUser?.role === "admin") return "Admin";
-        return "Student";
+        return "Concordian";
     }, [currentUser]);
 
     const fullName = useMemo(() => {
@@ -970,7 +970,7 @@ export default function Settings() {
                                 </View>
 
                                 <Text style={styles.profileSubText}>
-                                    Student ID: {currentUser?.idNumber || "-"}
+                                    ID: {currentUser?.idNumber || "-"}
                                 </Text>
                             </View>
                         </View>
@@ -1028,12 +1028,12 @@ export default function Settings() {
                                         </View>
 
                                         <View style={styles.inputGroup}>
-                                            <Text style={styles.profileLabel}>Student ID</Text>
+                                            <Text style={styles.profileLabel}>ID</Text>
                                             <TextInput
                                                 style={styles.profileInput}
                                                 value={editedIdNumber}
                                                 onChangeText={setEditedIdNumber}
-                                                placeholder="Student ID"
+                                                placeholder="ID"
                                                 placeholderTextColor="#8E8E98"
                                             />
                                         </View>
@@ -1129,7 +1129,7 @@ export default function Settings() {
                                     </View>
 
                                     <View style={styles.infoItemLast}>
-                                        <Text style={styles.profileLabel}>Student ID</Text>
+                                        <Text style={styles.profileLabel}>ID</Text>
                                         <Text style={styles.profileValue}>
                                             {currentUser?.idNumber || "-"}
                                         </Text>
