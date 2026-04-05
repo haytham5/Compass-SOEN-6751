@@ -317,11 +317,18 @@ export default function Settings() {
                                             />
                                         </View>
 
-                                        <View style={styles.inputGroup}>
-                                            <Text style={styles.profileLabel}>Account Type</Text>
-                                            <View style={styles.profileReadOnlyBox}>
-                                                <Text style={styles.profileReadOnlyText}>{roleLabel}</Text>
+
+                                        <View style={styles.lockedLabelRow}>
+                                            <Text style={styles.profileLabel}>
+                                                Account Type <Text style={styles.requiredStar}>*</Text>
+                                            </Text>
+                                            <View style={styles.lockedBadge}>
+                                                <Text style={styles.lockedBadgeText}>Locked</Text>
                                             </View>
+
+                                        </View>
+                                        <View style={styles.disabledFieldBox}>
+                                            <Text style={styles.disabledFieldText}>{roleLabel}</Text>
                                         </View>
 
                                         <View style={styles.inputGroup}>
