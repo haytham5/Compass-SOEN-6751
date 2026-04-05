@@ -262,7 +262,6 @@ export default function Events() {
     }, [filteredEventsByDate, selectedDate]);
 
     const selectedEvents = filteredEventsByDate[selectedDate] || [];
-    const buildingFilters = ["EV", "LB", "H", "JM", "FB"];
 
     const [currentUser, setCurrentUser] = useState<any>(null);
 
@@ -322,12 +321,8 @@ export default function Events() {
                     <>
                         <View style={styles.header}>
                             <Text style={styles.title}>Your Events</Text>
-                            {/*{canAddEvents && (*/}
-                            {canAddEvents &&
-                                selectedEvent &&
-                                reports.find(
-                                    (r) => r.id === selectedEvent.id.replace("report-", "")
-                                )?.createdBy === currentUser?.id && (
+
+                            {canAddEvents && (
                                 <TouchableOpacity
                                     style={styles.adminButton}
                                     onPress={openAdminEventModal}
@@ -341,52 +336,6 @@ export default function Events() {
                             Tap a building to filter events.
                         </Text>
 
-                        {/*<ScrollView*/}
-                        {/*    horizontal*/}
-                        {/*    showsHorizontalScrollIndicator={false}*/}
-                        {/*    contentContainerStyle={styles.subscriptions}*/}
-                        {/*>*/}
-                        {/*    {buildingFilters.map((building) => {*/}
-                        {/*        const isActive = selectedBuildings.includes(building);*/}
-                        {/*        const color = getBuildingColor(building);*/}
-
-                        {/*        return (*/}
-                        {/*            <TouchableOpacity*/}
-                        {/*                key={building}*/}
-                        {/*                activeOpacity={0.9}*/}
-                        {/*                onPress={() =>*/}
-                        {/*                    setSelectedBuildings((prev) =>*/}
-                        {/*                        prev.includes(building)*/}
-                        {/*                            ? prev.filter((b) => b !== building)*/}
-                        {/*                            : [...prev, building],*/}
-                        {/*                    )*/}
-                        {/*                }*/}
-                        {/*            >*/}
-                        {/*                <View*/}
-                        {/*                    style={[*/}
-                        {/*                        styles.subCard,*/}
-                        {/*                        {*/}
-                        {/*                            backgroundColor: isActive ? color : "transparent",*/}
-                        {/*                            borderWidth: 2,*/}
-                        {/*                            borderColor: color,*/}
-                        {/*                        },*/}
-                        {/*                        isActive ? styles.subCardActive : styles.subCardInactive,*/}
-                        {/*                    ]}*/}
-                        {/*                >*/}
-                        {/*                    <View*/}
-                        {/*                        style={[*/}
-                        {/*                            styles.subCard,*/}
-                        {/*                            isActive ? styles.green : styles.unsubbed,*/}
-                        {/*                            isActive ? styles.subCardActive : styles.subCardInactive,*/}
-                        {/*                        ]}*/}
-                        {/*                    >*/}
-                        {/*                        <Text style={styles.subBody}>{building}</Text>*/}
-                        {/*                    </View>*/}
-                        {/*                </View>*/}
-                        {/*            </TouchableOpacity>*/}
-                        {/*        );*/}
-                        {/*    })}*/}
-                        {/*</ScrollView>*/}
                         <ScrollView
                             horizontal
                             showsHorizontalScrollIndicator={false}
@@ -468,14 +417,27 @@ export default function Events() {
                     </>
                 }
                 renderItem={({ item }) => {
-                    const typeLabel = formatEventType(item.type);
 
+                    const typeLabel = formatEventType(item.type);
+                    const eventColor = getBuildingColor(item.location);
+                    const eventBackground = `${eventColor}12`;
                     return (
+                        // <View
+                        //     style={[
+                        //         styles.notificationCard,
+                        //         {
+                        //             borderLeftColor: getBuildingColor(item.location),
+                        //         },
+                        //     ]}
+                        // >
+
                         <View
+
                             style={[
                                 styles.notificationCard,
                                 {
-                                    borderLeftColor: getBuildingColor(item.location),
+                                    borderLeftColor: eventColor,
+                                    backgroundColor: eventBackground,
                                 },
                             ]}
                         >
