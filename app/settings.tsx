@@ -29,6 +29,7 @@ import {
     updateCurrentUser,
     type CurrentUser,
 } from "./utils/authStorage";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 interface RowProps {
     label: string;
@@ -99,10 +100,13 @@ export default function Settings() {
                     <Text style={styles.collapsibleTitle}>{title}</Text>
                 </View>
 
+
                 <View style={styles.collapsibleRight}>
-                    <Text style={styles.collapsibleChevron}>
-                        {isOpen ? "⌃" : "⌄"}
-                    </Text>
+                    <Icon
+                        name={isOpen ? "expand-less" : "expand-more"}
+                        size={24}
+                        color="#276389"
+                    />
                 </View>
             </TouchableOpacity>
 
