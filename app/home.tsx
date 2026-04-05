@@ -372,23 +372,42 @@ export default function Home() {
   }, [reports]);
 
   function normalizeDayKey(day?: string): string {
-    return day?.toLowerCase().trim() ?? "";
+    const value = day?.toLowerCase().trim() ?? "";
+
+    switch (value) {
+      case "mon":
+      case "monday":
+        return "mon";
+      case "tue":
+      case "tues":
+      case "tuesday":
+        return "tue";
+      case "wed":
+      case "wednesday":
+        return "wed";
+      case "thu":
+      case "thur":
+      case "thurs":
+      case "thursday":
+        return "thu";
+      case "fri":
+      case "friday":
+        return "fri";
+      case "sat":
+      case "saturday":
+        return "sat";
+      case "sun":
+      case "sunday":
+        return "sun";
+      default:
+        return value;
+    }
   }
 
   function getTodayDayKey(date = new Date()): string {
-    const dayNames = [
-      "sunday",
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday",
-      "saturday",
-    ];
-
+    const dayNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
     return dayNames[date.getDay()];
   }
-
   const filteredTodayReports = useMemo(() => {
     if (reportViewMode === "preferences") {
       if (preferredBuildings.length === 0) return [];
@@ -409,9 +428,10 @@ export default function Home() {
             (d) => normalizeDayKey(d.day) === todayKey,
         );
 
-        if (!dayPref?.enabled) return false;
-
+        if (!dayPref) return false;
+        if (!dayPref.enabled) return false;
         if (dayPref.allDay) return true;
+
 
         const [startH, startM] = (dayPref.startTime ?? "08:00")
             .split(":")
@@ -663,9 +683,6 @@ export default function Home() {
               <Icon name="add-circle" size={24} color="#276389" />
             </TouchableOpacity>
 
-            {/* <TouchableOpacity style={styles.fullScreenReportFilters}>
-              <Icon name="filter-alt" size={24} color="#276389" />
-            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={styles.fullScreenRelaxMode}

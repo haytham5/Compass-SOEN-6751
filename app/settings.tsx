@@ -29,6 +29,7 @@ import {
     updateCurrentUser,
     type CurrentUser,
 } from "./utils/authStorage";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 interface RowProps {
     label: string;
@@ -100,9 +101,11 @@ export default function Settings() {
                 </View>
 
                 <View style={styles.collapsibleRight}>
-                    <Text style={styles.collapsibleChevron}>
-                        {isOpen ? "⌃" : "⌄"}
-                    </Text>
+                    <Icon
+                        name={isOpen ? "expand-less" : "expand-more"}
+                        size={24}
+                        color="#276389"
+                    />
                 </View>
             </TouchableOpacity>
 
@@ -317,11 +320,18 @@ export default function Settings() {
                                             />
                                         </View>
 
-                                        <View style={styles.inputGroup}>
-                                            <Text style={styles.profileLabel}>Account Type</Text>
-                                            <View style={styles.profileReadOnlyBox}>
-                                                <Text style={styles.profileReadOnlyText}>{roleLabel}</Text>
+
+                                        <View style={styles.lockedLabelRow}>
+                                            <Text style={styles.profileLabel}>
+                                                Account Type <Text style={styles.requiredStar}>*</Text>
+                                            </Text>
+                                            <View style={styles.lockedBadge}>
+                                                <Text style={styles.lockedBadgeText}>Locked</Text>
                                             </View>
+
+                                        </View>
+                                        <View style={styles.disabledFieldBox}>
+                                            <Text style={styles.disabledFieldText}>{roleLabel}</Text>
                                         </View>
 
                                         <View style={styles.inputGroup}>
