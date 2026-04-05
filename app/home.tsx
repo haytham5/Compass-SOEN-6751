@@ -296,11 +296,6 @@ export default function Home() {
     setSelectedBuilding(buildingId);
   };
 
-  // const handleReportSubmitSuccess = async () => {
-  //   await loadReports();
-  //   setReportViewMode("all");
-  //   triggerSnackbar();
-  // };
   const handleReportSubmitSuccess = async () => {
     await loadCurrentUserState();
     await loadReports();
@@ -437,34 +432,6 @@ export default function Home() {
     return hours * 60 + minutes;
   }
 
-  // function doesReportMatchPreferences(
-  //     report: Report,
-  //     preferredBuildings: BuildingPreference[],
-  //     now: Date,
-  // ): boolean {
-  //   const normalizedBuilding = normalizeBuildingId(report.building);
-  //
-  //   const pref = preferredBuildings.find(
-  //       (b) => normalizeBuildingId(b.buildingId) === normalizedBuilding,
-  //   );
-  //
-  //   if (!pref || !pref.subscribed) return false;
-  //
-  //   const todayKey = getTodayDayKey(now);
-  //
-  //   const dayPref = pref.dayPreferences?.find(
-  //       (d) => normalizeDayKey(d.day) === todayKey,
-  //   );
-  //
-  //   if (!dayPref || !dayPref.enabled) return false;
-  //   if (dayPref.allDay) return true;
-  //
-  //   const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  //   const startMinutes = timeToMinutes(dayPref.startTime, "08:00");
-  //   const endMinutes = timeToMinutes(dayPref.endTime, "17:00");
-  //
-  //   return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
-  // }
 
   function doesReportMatchPreferences(
       report: Report,
@@ -496,48 +463,6 @@ export default function Home() {
 
     return reportMinutes >= startMinutes && reportMinutes <= endMinutes;
   }
-
-  // const filteredTodayReports = useMemo(() => {
-  //   if (reportViewMode === "preferences") {
-  //     if (preferredBuildings.length === 0) return [];
-  //
-  //     const now = new Date();
-  //     const todayKey = getTodayDayKey(now);
-  //     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  //
-  //     return allTodayReports.filter((r) => {
-  //       const normalizedBuilding = normalizeBuildingId(r.building);
-  //
-  //       const pref = preferredBuildings.find(
-  //           (b) => normalizeBuildingId(b.buildingId) === normalizedBuilding,
-  //       );
-  //       if (!pref || !pref.subscribed) return false;
-  //
-  //       const dayPref = pref.dayPreferences?.find(
-  //           (d) => normalizeDayKey(d.day) === todayKey,
-  //       );
-  //
-  //       if (!dayPref) return false;
-  //       if (!dayPref.enabled) return false;
-  //       if (dayPref.allDay) return true;
-  //
-  //
-  //       const [startH, startM] = (dayPref.startTime ?? "08:00")
-  //           .split(":")
-  //           .map(Number);
-  //       const [endH, endM] = (dayPref.endTime ?? "17:00")
-  //           .split(":")
-  //           .map(Number);
-  //
-  //       const startMinutes = (startH ?? 8) * 60 + (startM ?? 0);
-  //       const endMinutes = (endH ?? 17) * 60 + (endM ?? 0);
-  //
-  //       return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
-  //     });
-  //   }
-  //
-  //   return allTodayReports;
-  // }, [allTodayReports, reportViewMode, preferredBuildings]);
 
   const filteredTodayReports = useMemo(() => {
     if (reportViewMode !== "preferences") {
