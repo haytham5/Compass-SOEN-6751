@@ -52,7 +52,7 @@ const WEEKDAY_SET = new Set<DayKey>([
     "Fri",
 ]);
 
-type WizardStep = 0 | 1;
+type WizardStep = 0 | 1 | 2;
 
 interface BuildingPreferencesWizardProps {
     showIntro?: boolean;
@@ -113,6 +113,11 @@ export default function BuildingPreferencesWizard({
         [preferences],
     );
 
+    const selectedBuildings = useMemo(
+        () => preferences.filter((pref) => pref.subscribed),
+        [preferences],
+    );
+
     const activeBuilding = preferences[activeBuildingIndex] ?? preferences[0];
     const isFirstBuilding = activeBuildingIndex === 0;
     const isLastBuilding = activeBuildingIndex === preferences.length - 1;
@@ -137,7 +142,24 @@ export default function BuildingPreferencesWizard({
         }
     };
 
-    const handleSave = async () => {
+    // const handleSave = async () => {
+    //     if (!canSave) return;
+    //
+    //     try {
+    //         setIsSaving(true);
+    //         await onSave(preferences);
+    //     } finally {
+    //         setIsSaving(false);
+    //     }
+    // };
+
+
+    const handleOpenReview = () => {
+        if (!canSave) return;
+        setStep(2);
+    };
+
+    const handleCommitSave = async () => {
         if (!canSave) return;
 
         try {
@@ -571,6 +593,7 @@ export default function BuildingPreferencesWizard({
         );
     };
 
+
     const renderPreferences = () => (
         <>
             <View style={styles.sectionIntro}>
@@ -706,25 +729,56 @@ export default function BuildingPreferencesWizard({
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.bottomActions}>
-                {/*<TouchableOpacity*/}
-                {/*    style={styles.primaryButton}*/}
-                {/*    onPress={handleSave}*/}
-                {/*    disabled={isSaving}*/}
-                {/*>*/}
-                <TouchableOpacity
-                    style={[
-                        styles.primaryButton,
-                        !canSave && styles.primaryButtonDisabled,
-                    ]}
-                    onPress={handleSave}
-                    disabled={!canSave}
-                >
-                    <Text style={styles.primaryButtonText}>
-                        {isSaving ? "Saving..." : saveButtonLabel}
-                    </Text>
-                </TouchableOpacity>
+        </>
+    );
+
+    const renderReview = () => (
+        <>
+            <View style={styles.sectionIntro}>
+                {/*<Text style={styles.sectionTitle}>Review your preferences</Text>*/}
+                {/*<Text style={styles.sectionDescription}>*/}
+                {/*    Only your selected buildings are shown below. Please confirm before saving.*/}
+                {/*</Text>*/}
+                <Text style={styles.sectionTitle}>Review before saving</Text>
+                <Text style={styles.sectionDescription}>
+                    Here is a summary of the alerts you selected. Only subscribed buildings are shown.
+                </Text>
             </View>
+
+            {selectedBuildings.length === 0 ? (
+                <View style={styles.disabledStateBox}>
+                    <Text style={styles.disabledStateText}>
+                        You have not selected any buildings yet.
+                    </Text>
+                </View>
+            ) : (
+                selectedBuildings.map((building) => {
+                    const enabledDays = building.dayPreferences.filter((day) => day.enabled);
+
+                    return (
+                        <View key={building.buildingId} style={styles.reviewCard}>
+                            <Text style={styles.reviewBuildingTitle}>{building.buildingName}</Text>
+
+                            {enabledDays.length === 0 ? (
+                                <Text style={styles.reviewEmptyText}>
+                                    Alerts are on, but no days were selected.
+                                </Text>
+                            ) : (
+                                enabledDays.map((day) => (
+                                    <View key={day.day} style={styles.reviewRow}>
+                                        <Text style={styles.reviewDay}>{day.day}</Text>
+                                        <Text style={styles.reviewTime}>
+                                            {day.allDay
+                                                ? "All day"
+                                                : `${day.startTime} - ${day.endTime}`}
+                                        </Text>
+                                    </View>
+                                ))
+                            )}
+                        </View>
+                    );
+                })
+            )}
         </>
     );
 
@@ -735,10 +789,115 @@ export default function BuildingPreferencesWizard({
 
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.contentScroll}
+                contentContainerStyle={[
+                    styles.contentScroll,
+                    { paddingBottom: 150 },
+                ]}
             >
-                {step === 0 ? renderIntro() : renderPreferences()}
+                {step === 0
+                    ? renderIntro()
+                    : step === 1
+                        ? renderPreferences()
+                        : renderReview()}
             </ScrollView>
+
+            {step !== 0 ? (
+                <View
+                    style={[
+                        styles.stickyFooter,
+                        { paddingBottom: Math.max(insets.bottom, 12) },
+                    ]}
+                >
+                    {step === 1 ? (
+                        <>
+                            <Text style={styles.footerHint}>
+                                Building {activeBuildingIndex + 1} of {preferences.length}
+                            </Text>
+
+                            <View style={styles.footerNavRow}>
+                                <TouchableOpacity
+                                    style={[
+                                        styles.secondaryFooterButton,
+                                        isFirstBuilding && styles.footerButtonDisabled,
+                                    ]}
+                                    onPress={() =>
+                                        !isFirstBuilding &&
+                                        setActiveBuildingIndex((prev) => prev - 1)
+                                    }
+                                    disabled={isFirstBuilding}
+                                >
+                                    <View style={styles.footerButtonContent}>
+                                        <ChevronLeft
+                                            size={18}
+                                            color={isFirstBuilding ? theme.muted : theme.primaryDark}
+                                            strokeWidth={2.5}
+                                        />
+                                        <Text
+                                            style={[
+                                                styles.secondaryFooterButtonText,
+                                                isFirstBuilding && styles.navButtonTextDisabled,
+                                            ]}
+                                        >
+                                            Previous
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={[
+                                        styles.primaryFooterButton,
+                                        isLastBuilding && styles.footerButtonDisabled,
+                                    ]}
+                                    onPress={() =>
+                                        !isLastBuilding &&
+                                        setActiveBuildingIndex((prev) => prev + 1)
+                                    }
+                                    disabled={isLastBuilding}
+                                >
+                                    <View style={styles.footerButtonContent}>
+                                        <Text style={styles.primaryButtonText}>Next</Text>
+                                        <ChevronRight size={18} color={theme.white} strokeWidth={2.5} />
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+
+                            <TouchableOpacity
+                                style={[
+                                    styles.primaryButton,
+                                    styles.footerSaveButton,
+                                    !canSave && styles.primaryButtonDisabled,
+                                ]}
+                                onPress={handleOpenReview}
+                                disabled={!canSave}
+                            >
+                                <Text style={styles.primaryButtonText}>Review & Save</Text>
+                            </TouchableOpacity>
+                        </>
+                    ) : (
+                        <View style={styles.reviewFooterRow}>
+                            <TouchableOpacity
+                                style={styles.secondaryFooterButton}
+                                onPress={() => setStep(1)}
+                            >
+                                <Text style={styles.secondaryFooterButtonText}>Back to Edit</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[
+                                    styles.primaryFooterButton,
+                                    !canSave && styles.primaryButtonDisabled,
+                                ]}
+                                onPress={handleCommitSave}
+                                disabled={!canSave}
+                            >
+                                <Text style={styles.primaryButtonText}>
+                                    {isSaving ? "Saving..." : saveButtonLabel}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                </View>
+            ) : null}
 
             {showExitConfirm ? (
                 <View style={styles.confirmOverlay}>
@@ -1365,5 +1524,120 @@ const makeStyles = (COLORS: ThemeType) =>
 
         primaryButtonDisabled: {
             opacity: 0.5,
+        },
+
+        stickyFooter: {
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            paddingHorizontal: 16,
+            paddingTop: 12,
+            backgroundColor: COLORS.white,
+            borderTopWidth: 1,
+            borderTopColor: COLORS.border,
+        },
+
+        reviewFooterRow: {
+            flexDirection: "row",
+            columnGap: 10,
+        },
+
+        secondaryFooterButton: {
+            flex: 1,
+            backgroundColor: COLORS.softBg,
+            borderWidth: 1,
+            borderColor: COLORS.border,
+            borderRadius: 18,
+            paddingVertical: 15,
+            alignItems: "center",
+            justifyContent: "center",
+        },
+
+        secondaryFooterButtonText: {
+            fontFamily: "Lexend_400Regular",
+            fontSize: 14,
+            color: COLORS.primaryDark,
+        },
+
+        primaryFooterButton: {
+            flex: 1,
+            backgroundColor: COLORS.pink,
+            borderRadius: 18,
+            paddingVertical: 15,
+            alignItems: "center",
+            justifyContent: "center",
+        },
+
+        reviewCard: {
+            backgroundColor: COLORS.white,
+            borderWidth: 1,
+            borderColor: COLORS.border,
+            borderRadius: 20,
+            padding: 16,
+            marginBottom: 12,
+        },
+
+        reviewBuildingTitle: {
+            fontFamily: "Lexend_400Regular",
+            fontSize: 15,
+            color: COLORS.black,
+            marginBottom: 10,
+        },
+
+        reviewRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingVertical: 6,
+            borderTopWidth: 1,
+            borderTopColor: COLORS.softBg,
+        },
+
+        reviewDay: {
+            fontFamily: "Lexend_400Regular",
+            fontSize: 13,
+            color: COLORS.black,
+        },
+
+        reviewTime: {
+            fontFamily: "Lexend_400Regular",
+            fontSize: 13,
+            color: COLORS.muted,
+        },
+
+        reviewEmptyText: {
+            fontFamily: "Lexend_400Regular",
+            fontSize: 13,
+            color: COLORS.muted,
+        },
+
+        footerHint: {
+            fontFamily: "Lexend_400Regular",
+            fontSize: 12,
+            color: COLORS.muted,
+            textAlign: "center",
+            marginBottom: 10,
+        },
+
+        footerNavRow: {
+            flexDirection: "row",
+            columnGap: 10,
+            marginBottom: 10,
+        },
+
+        footerButtonContent: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            columnGap: 6,
+        },
+
+        footerButtonDisabled: {
+            opacity: 0.5,
+        },
+
+        footerSaveButton: {
+            width: "100%",
         },
     });
