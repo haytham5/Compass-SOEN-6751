@@ -77,6 +77,7 @@ interface BuildingPreferencesWizardProps {
     saveButtonLabel?: string;
     onSave: (prefs: BuildingPreference[]) => void | Promise<void>;
     onCancel?: () => void;
+    onSkip?: () => void; 
 }
 
 export default function BuildingPreferencesWizard({
@@ -88,6 +89,7 @@ export default function BuildingPreferencesWizard({
                                                       saveButtonLabel = "Save Preferences",
                                                       onSave,
                                                       onCancel,
+                                                      onSkip,
                                                   }: BuildingPreferencesWizardProps) {
     const { theme } = useTheme();
     const styles = makeStyles(theme);
@@ -595,7 +597,7 @@ export default function BuildingPreferencesWizard({
             {allowSkip && (
                 <TouchableOpacity
                     style={styles.secondaryButton}
-                    onPress={handleRequestClose}
+                    onPress={() => onSkip ? onSkip() : handleRequestClose()}
                 >
                     <Text style={styles.secondaryButtonText}>Skip for now</Text>
                 </TouchableOpacity>
