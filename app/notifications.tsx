@@ -10,7 +10,8 @@ import {
     ThumbsUp,
     TriangleAlert,
 } from "lucide-react-native";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";import { initialSubscriptions } from "./data/notificationData";
+import React, { useCallback, useEffect, useState } from "react";
+import { initialSubscriptions } from "./data/notificationData";
 import {
     getReports,
     markReportResolved,
@@ -157,21 +158,15 @@ export default function Notifications() {
         .filter((sub) => sub.isSubscribed)
         .map((sub) => sub.id);
 
-    let visibleReports = reports.filter(
-        (r) => !r.isScheduledEvent && r.date === today,
-    );
+    let visibleItems = reports.filter((r) => r.date === today);
 
     if (activeBuildingIds.length >= 0) {
-        visibleReports = visibleReports.filter((report) =>
-            activeBuildingIds.includes(report.building),
-        );
+    visibleItems = visibleItems.filter((r) =>
+        activeBuildingIds.includes(r.building),
+    );
     }
 
-    visibleReports = [...visibleReports].sort((a, b) => {
-        if (sortMode === "building") {
-            return a.building.localeCompare(b.building);
-        }
-
+    visibleItems = [...visibleItems].sort((a, b) => {
         const toMins = (t: string) => {
             const match = t.match(/(\d{1,2}):(\d{2})\s?(AM|PM|am|pm)?/);
             if (!match) return 0;
@@ -182,7 +177,6 @@ export default function Notifications() {
             if (mer === "am" && h === 12) h = 0;
             return h * 60 + m;
         };
-
         return toMins(b.time) - toMins(a.time);
     });
 
@@ -251,38 +245,83 @@ export default function Notifications() {
                     })}
                 </ScrollView>
 
-                {visibleReports.map((report) => {
-                    const hasUpvoted = currentUserId
-                        ? report.upvotedBy?.includes(currentUserId)
-                        : false;
+                {visibleItems.map((report) => {
+                const eventColor = buildingColorMap[report.building] ?? "#56bab8";
 
-                    const hasResolved = currentUserId
-                        ? (report.resolvedBy ?? []).includes(currentUserId)
-                        : false;
-
-                    const isDisabled = isGuest || !currentUserId;
-
-                    const typeIcon =
-                        report.type === "accessibility" ? "accessible" : "campaign";
-
-                    const typeLabel = report.accessibilitySubtype
-                        ? report.accessibilitySubtype.replace("_", " ")
-                        : report.type;
-
-                    const submitterLabel =
-                        report.submittedBy === "security" ? "security" : "a concordian";
-
+                if (report.isScheduledEvent) {
+                    // Event card style (same as events page)
                     return (
-                        <View
-                            key={report.id}
-                            style={[
-                                styles.notificationCard,
-                                {
-                                    borderLeftColor:
-                                        buildingColorMap[report.building] ?? "#E7E7EC",
-                                },
-                            ]}
+                    <View
+                        key={report.id}
+                        style={[
+                        styles.notificationCard,
+                        {
+                            borderLeftColor: eventColor,
+                            backgroundColor: `${eventColor}12`,
+                        },
+                        ]}
+                    >
+                        <View style={styles.updateCardInner}>
+                        <View style={styles.updateCardLeft}>
+                            <Text style={styles.updateEventTitle}>
+                            {report.name || report.type}
+                            </Text>
+                            <View style={styles.updateTypeRow}>
+                            <Icon name="event" size={16} color="#5a8c8b" />
+                            <Text style={styles.updateTypeLabel}>Event</Text>
+                            </View>
+                            <View style={styles.updateMetaRow}>
+                            <Clock size={13} color="#5A6B80" />
+                            <Text style={styles.updateMeta}>{report.time}</Text>
+                            </View>
+                            <View style={styles.updateMetaRow}>
+                            <Building2 size={13} color="#5A6B80" />
+                            <Text style={styles.updateMeta}>
+                                {report.building}
+                                {report.floor ? ` · Floor ${report.floor}` : ""}
+                                {report.room ? ` · Room ${report.room}` : ""}
+                            </Text>
+                            </View>
+                            {!!report.description && (
+                            <Text style={styles.updateMeta} numberOfLines={2}>
+                                {report.description}
+                            </Text>
+                            )}
+                        </View>
+                        </View>
+                        <TouchableOpacity
+                        style={styles.chevronButton}
+                        onPress={() => setSelectedReport(report)}
                         >
+                        <Icon name="expand-more" size={24} color="#5a8c8b" />
+                        </TouchableOpacity>
+                    </View>
+                    );
+                }
+
+                // Regular report card (existing code unchanged)
+                const hasUpvoted = currentUserId
+                    ? report.upvotedBy?.includes(currentUserId)
+                    : false;
+                const hasResolved = currentUserId
+                    ? (report.resolvedBy ?? []).includes(currentUserId)
+                    : false;
+                const isDisabled = isGuest || !currentUserId;
+                const typeIcon = report.type === "accessibility" ? "accessible" : "campaign";
+                const typeLabel = report.accessibilitySubtype
+                    ? report.accessibilitySubtype.replace("_", " ")
+                    : report.type;
+                const submitterLabel =
+                    report.submittedBy === "security" ? "security" : "a concordian";
+
+                return (
+                    <View
+                    key={report.id}
+                    style={[
+                        styles.notificationCard,
+                        { borderLeftColor: buildingColorMap[report.building] ?? "#E7E7EC" },
+                    ]}
+                    >
                             <View style={styles.updateCardInner}>
                                 <View style={styles.updateCardLeft}>
                                     <Text style={styles.updateEventTitle}>
