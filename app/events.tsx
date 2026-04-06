@@ -46,7 +46,6 @@ const buildingNameMap: Record<string, string> = {
     EV: "Engineering and Visual Arts",
     H: "Hall Building",
     JMSB: "JMSB",
-    JM: "JMSB",
     LB: "Main Library",
     FB: "Faubourg Building",
 };
@@ -58,18 +57,12 @@ const buildingColorMap: Record<string, string> = {
     H: "#4CAF50",
     FB: "#a683eb",
     JMSB: "#2196F3",
-    JM: "#2196F3",
     LB: "#FFC107",
 };
 
-const normalizeBuildingKey = (building: string) => {
-    if (building === "JM") return "JMSB";
-    return building;
-};
 
 const getBuildingColor = (building: string) => {
-    const normalized = normalizeBuildingKey(building);
-    return buildingColorMap[normalized] ?? "#56bab8";
+    return buildingColorMap[building] ?? "#56bab8";
 };
 
 const formatEventType = (type: Event["type"]) => {
@@ -207,16 +200,13 @@ export default function Events() {
         const filtered: Record<string, Event[]> = {};
 
         Object.entries(reportEventsByDate).forEach(([date, events]) => {
-            const normalizedSelectedBuildings = selectedBuildings.map(normalizeBuildingKey);
 
-            const matchingEvents =
-                normalizedSelectedBuildings.length === 0
-                    ? events
-                    : events.filter((event) =>
-                        normalizedSelectedBuildings.includes(
-                            normalizeBuildingKey(event.location),
-                        ),
-                    );
+                const matchingEvents =
+                    selectedBuildings.length === 0
+                        ? events
+                        : events.filter((event) =>
+                            selectedBuildings.includes(event.location),
+                        );
 
             if (matchingEvents.length > 0) {
                 filtered[date] = matchingEvents;
@@ -232,17 +222,13 @@ export default function Events() {
         Object.keys(filteredEventsByDate).forEach((date) => {
             const uniqueBuildingDots = Array.from(
                 new Map(
-                    filteredEventsByDate[date].map((event) => {
-                        const normalizedLocation = normalizeBuildingKey(event.location);
-
-                        return [
-                            normalizedLocation,
-                            {
-                                key: normalizedLocation,
-                                color: getBuildingColor(normalizedLocation),
-                            },
-                        ];
-                    }),
+                    filteredEventsByDate[date].map((event) => [
+                        event.location,
+                        {
+                            key: event.location,
+                            color: getBuildingColor(event.location),
+                        },
+                    ]),
                 ).values(),
             );
 
