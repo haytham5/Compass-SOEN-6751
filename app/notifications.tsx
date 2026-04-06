@@ -301,16 +301,6 @@ export default function Notifications() {
                 if (report.isScheduledEvent) {
                     // Event card style (same as events page)
                     return (
-                    // <View
-                    //     key={report.id}
-                    //     style={[
-                    //     styles.notificationCard,
-                    //     {
-                    //         borderLeftColor: eventColor,
-                    //         backgroundColor: simulatedOpacity(eventColor, 0.2),
-                    //     },
-                    //     ]}
-                    // >
 
                         <View
                             key={report.id}
@@ -343,11 +333,7 @@ export default function Notifications() {
                                 {report.room ? ` · Room ${report.room}` : ""}
                             </Text>
                             </View>
-                            {/*{!!report.description && (*/}
-                            {/*<Text style={styles.updateMeta} numberOfLines={2}>*/}
-                            {/*    {report.description}*/}
-                            {/*</Text>*/}
-                            {/*)}*/}
+
                             {!!report.description && (
                                 <Text style={styles.eventPreviewText} numberOfLines={2}>
                                     {report.description}
