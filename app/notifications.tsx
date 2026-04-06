@@ -307,7 +307,7 @@ export default function Notifications() {
                         styles.notificationCard,
                         {
                             borderLeftColor: eventColor,
-                            backgroundColor: simulatedOpacity(eventColor, 0.2),
+                            backgroundColor: simulatedOpacity(eventColor, 0.12),
                         },
                         ]}
                     >
