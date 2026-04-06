@@ -45,19 +45,18 @@ const buildingColorMap: Record<string, string> = {
     H: "#4CAF50",
     FB: "#a683eb",
     JMSB: "#2196F3",
-    JM: "#2196F3", //backup color
     LB: "#FFC107",
 };
+
 const buildingLabelMap: Record<string, string> = {
     EV: "EV",
     H: "Hall",
     FB: "FB",
-    JMSB: "JM",
-    JM: "JM",
+    JMSB: "JMSB",
     LB: "LB",
 };
 
-const today = new Date().toISOString().split("T")[0];
+const today = new Date().toLocaleDateString("en-CA");
 
 export default function Notifications() {
     const { theme } = useTheme();
@@ -97,12 +96,17 @@ export default function Notifications() {
             try {
                 const raw = await AsyncStorage.getItem("subscriptions");
                 if (raw) {
-                    setSubscriptions(JSON.parse(raw));
+                    const parsed = JSON.parse(raw);
+                    // If old JM data exists, clear it and use fresh initialSubscriptions
+                    const hasOldJM = parsed.some((s: any) => s.id === "JM");
+                    if (hasOldJM) {
+                        await AsyncStorage.setItem("subscriptions", JSON.stringify(initialSubscriptions));
+                        setSubscriptions(initialSubscriptions);
+                    } else {
+                        setSubscriptions(parsed);
+                    }
                 } else {
-                    await AsyncStorage.setItem(
-                        "subscriptions",
-                        JSON.stringify(initialSubscriptions),
-                    );
+                    await AsyncStorage.setItem("subscriptions", JSON.stringify(initialSubscriptions));
                 }
             } catch (e) {
                 console.log("Error loading subscriptions:", e);
@@ -120,8 +124,27 @@ export default function Notifications() {
 
     const loadReports = useCallback(async () => {
         try {
+            let seeded = false;
+            let attempts = 0;
+
+            while (!seeded && attempts < 20) {
+                const flag = await AsyncStorage.getItem("seeded");
+                if (flag === "true") {
+                    seeded = true;
+                } else {
+                    await new Promise((resolve) => setTimeout(resolve, 100));
+                    attempts++;
+                }
+            }
+
             const data = await getReports();
             setReports(data);
+            console.log("all reports with dates:", data.map(r => ({ 
+                id: r.id, 
+                building: r.building, 
+                date: r.date, 
+                isScheduledEvent: r.isScheduledEvent 
+            })));
         } catch (error) {
             console.log("error loading reports", error);
         }
@@ -385,7 +408,7 @@ export default function Notifications() {
                                     <View style={styles.updateMetaRow}>
                                         <Building2 size={13} color="#5A6B80" />
                                         <Text style={styles.updateMeta}>
-                                            {report.building} Â· Floor {report.floor}
+                                            {report.building} · Floor {report.floor}
                                         </Text>
                                     </View>
 
@@ -501,7 +524,7 @@ export default function Notifications() {
                                 <View style={styles.updateMetaRow}>
                                     <Building2 size={17} color="#444" />
                                     <Text style={styles.modalBuilding}>
-                                        {selectedReport.building} Â· Floor {selectedReport.floor}
+                                        {selectedReport.building} · Floor {selectedReport.floor}
                                     </Text>
                                 </View>
 
@@ -549,7 +572,7 @@ export default function Notifications() {
                                             {event.action === "severe" && `Marked severe by security`}
                                             {event.action === "unsevere" &&
                                                 `Severe status removed by security`}
-                                            <Text style={styles.timelineTime}> Â· {event.time}</Text>
+                                            <Text style={styles.timelineTime}> · {event.time}</Text>
                                         </Text>
                                     </View>
                                 ))}
