@@ -152,12 +152,17 @@ You can log in using different roles to explore features:
 | Admin       | Create, edit, and delete their own events      |
 
 ## 👥 Team Members
-* Amr Abdalla (ID: 40310151)
-* Michel Assouka (ID: 40295568)
-* Ynes-Tamazight Djoudi (ID: 40212570)
-* Haytham Hnine (ID: 40128181)
-* Melina Medjdoub (ID: 40101065)
-* Celeste Mittelhauser (ID: 40307980)
+
+CODING
+  * Ynes-Tamazight Djoudi (ID: 40212570)
+  * Haytham Hnine (ID: 40128181)
+  * Celeste Mittelhauser (ID: 40307980)
+
+REPORT
+  * Amr Abdalla (ID: 40310151)
+  * Michel Assouka (ID: 40295568)
+  * Melina Medjdoub (ID: 40101065)
+
 
 
 
